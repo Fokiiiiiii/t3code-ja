@@ -4874,6 +4874,28 @@ for (const [key, source] of Object.entries(EN_MESSAGES) as ReadonlyArray<
   }
 }
 
+function escapeMessagePattern(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+const WEB_MESSAGE_TEMPLATES = (
+  Object.entries(EN_MESSAGES) as ReadonlyArray<readonly [WebMessageKey, string]>
+)
+  .filter(([, source]) => /\{[A-Za-z][A-Za-z0-9]*\}/u.test(source))
+  .map(([key, source]) => {
+    const placeholders: string[] = [];
+    let lastIndex = 0;
+    let pattern = "^";
+    for (const match of source.matchAll(/\{([A-Za-z][A-Za-z0-9]*)\}/gu)) {
+      pattern += escapeMessagePattern(source.slice(lastIndex, match.index));
+      pattern += "([\\s\\S]*?)";
+      placeholders.push(match[1]!);
+      lastIndex = match.index + match[0].length;
+    }
+    pattern += `${escapeMessagePattern(source.slice(lastIndex))}$`;
+    return { key, placeholders, pattern: new RegExp(pattern, "u") };
+  });
+
 const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Background Activity": "バックグラウンド動作",
   "Pull request merged": "プルリクエストをマージしました",
@@ -5237,7 +5259,16 @@ export function translateWebSource(locale: ResolvedAppLocale, source: string): s
     if (translatedSource !== undefined) return translatedSource;
   }
   const key = WEB_MESSAGE_KEY_BY_ENGLISH_SOURCE.get(source);
-  return key === undefined ? source : WEB_MESSAGES[locale][key];
+  if (key !== undefined) return WEB_MESSAGES[locale][key];
+  for (const template of WEB_MESSAGE_TEMPLATES) {
+    const match = template.pattern.exec(source);
+    if (!match) continue;
+    const values = Object.fromEntries(
+      template.placeholders.map((placeholder, index) => [placeholder, match[index + 1] ?? ""]),
+    );
+    return translateWebMessage(locale, template.key, values);
+  }
+  return source;
 }
 
 export function translateWebMessage(

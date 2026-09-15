@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import { EN_MESSAGES, translateWebMessage, WEB_MESSAGES } from "./messages";
+import { EN_MESSAGES, translateWebMessage, translateWebSource, WEB_MESSAGES } from "./messages";
 
 describe("translateWebMessage", () => {
+  it("translates dynamic DOM source text while preserving interpolated values", () => {
+    expect(translateWebSource("ja", "Current shared policy: Balanced.")).toBe(
+      "現在の共有ポリシー：Balanced。",
+    );
+  });
   it("uses English as the complete baseline catalog", () => {
     expect(translateWebMessage("en", "sidebar.newThread")).toBe("New thread");
   });
