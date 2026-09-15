@@ -274,6 +274,7 @@ import {
 import { ContextWindowMeter, ContextWindowMeterPlaceholder } from "./ContextWindowMeter";
 import {
   providerSupportsManualCompaction,
+  resolveQuotaFailoverProvider,
   resolveContextWindowModelDisplayName,
   shouldReserveContextWindowMeter,
 } from "./ContextWindowMeter.logic";
@@ -1822,7 +1823,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
   );
   const selectedProviderByThreadId = composerDraft.activeProvider ?? null;
   const {
-    selectedProviderEntry,
+    selectedProviderEntry: requestedProviderEntry,
     requestedDriverKind,
     lockedContinuationGroupKey,
     unavailableProviderInstanceId,
@@ -1847,6 +1848,19 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
       selectedProviderByThreadId,
       lockedProvider,
       providerInstanceEntries,
+    ],
+  );
+  const selectedProviderEntry = useMemo(
+    () =>
+      activeThread?.session || (activeThread?.messages.length ?? 0) > 0
+        ? requestedProviderEntry
+        : (resolveQuotaFailoverProvider(requestedProviderEntry, providerInstanceEntries) ??
+          requestedProviderEntry),
+    [
+      activeThread?.messages.length,
+      activeThread?.session,
+      providerInstanceEntries,
+      requestedProviderEntry,
     ],
   );
   const selectedInstanceId =

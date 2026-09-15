@@ -7,6 +7,7 @@ import {
   hasDismissedResumeCompaction,
   resolveContextWindowModelDisplayName,
   resolveContextHygieneState,
+  resolveQuotaFailoverProvider,
   shouldOfferResumeCompaction,
   shouldReserveContextWindowMeter,
 } from "./ContextWindowMeter.logic";
@@ -79,6 +80,28 @@ describe("hasAvailableCompactionProvider", () => {
         lockedInstanceId: originalInstanceId,
       }),
     ).toBe(true);
+  });
+});
+
+describe("resolveQuotaFailoverProvider", () => {
+  it("moves only a quota-exhausted new selection to a ready account of the same provider", () => {
+    const entries = deriveProviderInstanceEntries([
+      {
+        ...claudeProvider({ instanceId: "claude_a", continuationGroupKey: "a" }),
+        usageLimits: {
+          checkedAt: "2026-08-24T12:00:00.000Z",
+          windows: [{ id: "five_hour", kind: "session", label: "5 hour", usedPercent: 100 }],
+        },
+      },
+      {
+        ...claudeProvider({ instanceId: "claude_b", continuationGroupKey: "b" }),
+        usageLimits: {
+          checkedAt: "2026-08-24T12:00:00.000Z",
+          windows: [{ id: "five_hour", kind: "session", label: "5 hour", usedPercent: 30 }],
+        },
+      },
+    ]);
+    expect(resolveQuotaFailoverProvider(entries[0], entries)?.instanceId).toBe("claude_b");
   });
 });
 

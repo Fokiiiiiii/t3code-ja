@@ -64,6 +64,35 @@ export function providerSupportsManualCompaction(
   return provider?.snapshot.slashCommands.some((command) => command.name === "compact") ?? false;
 }
 
+/** A conservative, pre-turn account failover. It never crosses provider kinds. */
+export function resolveQuotaFailoverProvider(
+  selected: ProviderInstanceEntry | null | undefined,
+  entries: ReadonlyArray<ProviderInstanceEntry>,
+): ProviderInstanceEntry | null {
+  if (!selected || !selected.snapshot.usageLimits) return null;
+  const selectedWindows = selected.snapshot.usageLimits.windows;
+  if (!selectedWindows.some((window) => window.usedPercent >= 100)) return null;
+
+  const candidates = entries.filter((entry) => {
+    if (entry.instanceId === selected.instanceId || entry.driverKind !== selected.driverKind)
+      return false;
+    if (!entry.enabled || !entry.isAvailable || !entry.snapshot.usageLimits) return false;
+    return entry.snapshot.usageLimits.windows.every((window) => window.usedPercent < 100);
+  });
+  if (candidates.length === 0) return null;
+  return (
+    [...candidates].sort((left, right) => {
+      const leftRemaining = Math.min(
+        ...left.snapshot.usageLimits!.windows.map((window) => 100 - window.usedPercent),
+      );
+      const rightRemaining = Math.min(
+        ...right.snapshot.usageLimits!.windows.map((window) => 100 - window.usedPercent),
+      );
+      return rightRemaining - leftRemaining;
+    })[0] ?? null
+  );
+}
+
 export function hasAvailableCompactionProvider(input: {
   readonly providers: ReadonlyArray<ProviderInstanceEntry>;
   readonly driverKind: ProviderDriverKind;
