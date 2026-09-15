@@ -1171,7 +1171,7 @@ export function AppearanceSettingsPanel() {
             <Select
               value={appLocale}
               onValueChange={(value) => {
-                if (value === "system" || value === "en" || value === "ja" || value === "zh-CN") {
+                if (value === "system" || value === "en" || value === "ja") {
                   setAppLocale(value);
                 }
               }}
@@ -1186,16 +1186,13 @@ export function AppearanceSettingsPanel() {
                     ? t("settings.language.system")
                     : appLocale === "ja"
                       ? t("settings.language.japanese")
-                      : appLocale === "zh-CN"
-                        ? t("settings.language.chineseSimplified")
-                        : t("settings.language.english")}
+                      : t("settings.language.english")}
                 </SelectValue>
               </SelectTrigger>
               <SelectPopup align="end" alignItemWithTrigger={false}>
                 <SelectItem value="system">{t("settings.language.system")}</SelectItem>
                 <SelectItem value="en">{t("settings.language.english")}</SelectItem>
                 <SelectItem value="ja">{t("settings.language.japanese")}</SelectItem>
-                <SelectItem value="zh-CN">{t("settings.language.chineseSimplified")}</SelectItem>
               </SelectPopup>
             </Select>
           }
