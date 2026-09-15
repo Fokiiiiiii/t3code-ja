@@ -1,4 +1,8 @@
-import type { OrchestrationThreadActivity, ThreadTokenUsageSnapshot } from "@t3tools/contracts";
+import type {
+  OrchestrationThreadActivity,
+  ThreadTokenUsageSnapshot,
+  TurnId,
+} from "@t3tools/contracts";
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" ? (value as Record<string, unknown>) : null;
@@ -72,6 +76,23 @@ export function deriveLatestContextWindowSnapshot(
   }
 
   return null;
+}
+
+/**
+ * The provider emits usage against a turn as it streams. Keep only the latest
+ * snapshot for each parent turn so an assistant footer never mixes in activity
+ * from a subagent or from a later turn.
+ */
+export function deriveContextWindowSnapshotsByTurn(
+  activities: ReadonlyArray<OrchestrationThreadActivity>,
+): ReadonlyMap<TurnId, ContextWindowSnapshot> {
+  const snapshots = new Map<TurnId, ContextWindowSnapshot>();
+  for (const activity of activities) {
+    if (!activity?.turnId || activity.kind !== "context-window.updated") continue;
+    const snapshot = deriveLatestContextWindowSnapshot([activity]);
+    if (snapshot) snapshots.set(activity.turnId, snapshot);
+  }
+  return snapshots;
 }
 
 export function formatContextWindowTokens(value: number | null): string {

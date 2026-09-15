@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vite-plus/test";
 import { EventId, type OrchestrationThreadActivity, TurnId } from "@t3tools/contracts";
 
-import { deriveLatestContextWindowSnapshot, formatContextWindowTokens } from "./contextWindow";
+import {
+  deriveContextWindowSnapshotsByTurn,
+  deriveLatestContextWindowSnapshot,
+  formatContextWindowTokens,
+} from "./contextWindow";
 
 function makeActivity(id: string, kind: string, payload: unknown): OrchestrationThreadActivity {
   return {
@@ -82,5 +86,24 @@ describe("contextWindow", () => {
 
     expect(snapshot?.usedTokens).toBe(81_659);
     expect(snapshot?.totalProcessedTokens).toBe(748_126);
+  });
+
+  it("keeps each turn's latest usage separate", () => {
+    const firstTurn = TurnId.make("turn-1");
+    const secondTurn = TurnId.make("turn-2");
+    const snapshots = deriveContextWindowSnapshotsByTurn([
+      makeActivity("activity-1", "context-window.updated", { usedTokens: 1_000 }),
+      {
+        ...makeActivity("activity-2", "context-window.updated", { usedTokens: 4_000 }),
+        turnId: secondTurn,
+      },
+      {
+        ...makeActivity("activity-3", "context-window.updated", { usedTokens: 2_000 }),
+        turnId: firstTurn,
+      },
+    ]);
+
+    expect(snapshots.get(firstTurn)?.usedTokens).toBe(2_000);
+    expect(snapshots.get(secondTurn)?.usedTokens).toBe(4_000);
   });
 });

@@ -6,6 +6,7 @@ import {
   hasAvailableCompactionProvider,
   hasDismissedResumeCompaction,
   resolveContextWindowModelDisplayName,
+  resolveContextHygieneState,
   shouldOfferResumeCompaction,
   shouldReserveContextWindowMeter,
 } from "./ContextWindowMeter.logic";
@@ -136,6 +137,19 @@ describe("formatContextWindowCompactionMessage", () => {
     expect(formatContextWindowCompactionMessage("Claude Sonnet 5", 300_000)).toBe(
       "Compacts automatically at 300,000 tokens.",
     );
+  });
+});
+
+describe("resolveContextHygieneState", () => {
+  it("keeps ordinary sessions quiet and escalates before the window is exhausted", () => {
+    expect(resolveContextHygieneState(61)).toMatchObject({ level: "healthy" });
+    expect(resolveContextHygieneState(78)).toMatchObject({ level: "prepare" });
+    expect(resolveContextHygieneState(88)).toMatchObject({ level: "checkpoint" });
+    expect(resolveContextHygieneState(92)).toMatchObject({ level: "checkpoint" });
+  });
+
+  it("treats an unavailable percentage as a quiet state", () => {
+    expect(resolveContextHygieneState(null)).toMatchObject({ level: "healthy" });
   });
 });
 

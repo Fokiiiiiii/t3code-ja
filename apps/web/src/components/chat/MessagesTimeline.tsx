@@ -238,6 +238,7 @@ import { cn } from "~/lib/utils";
 import { useUiStateStore } from "~/uiStateStore";
 import { type TimestampFormat } from "@t3tools/contracts/settings";
 import { formatChatTimestampTooltip, formatDayAwareTimestamp } from "../../timestampFormat";
+import { type ContextWindowSnapshot } from "../../lib/contextWindow";
 
 import { SkillInlineText } from "./SkillInlineText";
 import { deriveAgentSpawnSummary } from "./agentSpawnSummary";
@@ -286,6 +287,7 @@ interface TimelineRowSharedState {
   onOpenWorktreeSetupTerminal: ((terminalId: string) => void) | null;
   onSteerQueuedMessage: (id: string) => void;
   onRemoveQueuedMessage: (id: string) => void;
+  turnUsageByTurnId: ReadonlyMap<TurnId, ContextWindowSnapshot>;
 }
 
 interface TimelineRowActivityState {
@@ -395,6 +397,8 @@ interface MessagesTimelineProps {
   latestTurn: TimelineLatestTurn | null;
   runningTurnId: TurnId | null;
   turnDiffSummaries: ReadonlyArray<TurnDiffSummary>;
+  /** Latest parent-turn usage only; subagent usage stays in the Agents panel. */
+  turnUsageByTurnId?: ReadonlyMap<TurnId, ContextWindowSnapshot>;
   routeThreadKey: string;
   /**
    * Thread whose entries are currently painted. Differs from `routeThreadKey`
@@ -467,6 +471,7 @@ export const MessagesTimeline = memo(function MessagesTimeline({
   latestTurn,
   runningTurnId,
   turnDiffSummaries,
+  turnUsageByTurnId = new Map(),
   routeThreadKey,
   displayThreadKey,
   onOpenTurnDiff,
@@ -941,6 +946,7 @@ export const MessagesTimeline = memo(function MessagesTimeline({
       onOpenWorktreeSetupTerminal: onOpenWorktreeSetupTerminal ?? null,
       onSteerQueuedMessage,
       onRemoveQueuedMessage,
+      turnUsageByTurnId,
     }),
     [
       readyCitationRequest,
@@ -973,6 +979,7 @@ export const MessagesTimeline = memo(function MessagesTimeline({
       onOpenWorktreeSetupTerminal,
       onSteerQueuedMessage,
       onRemoveQueuedMessage,
+      turnUsageByTurnId,
     ],
   );
   const activityState = useMemo<TimelineRowActivityState>(
@@ -2127,6 +2134,7 @@ function AssistantMessageMeta({
   alwaysVisible?: boolean;
 }) {
   const ctx = use(TimelineRowCtx);
+  const usage = message.turnId ? ctx.turnUsageByTurnId.get(message.turnId) : undefined;
 
   return (
     <div
@@ -2143,6 +2151,7 @@ function AssistantMessageMeta({
         showCopyButton={showCopyButton}
         streaming={copyStreaming}
       />
+      {usage ? <AssistantTurnUsage usage={usage} /> : null}
       {!message.streaming && (
         <Tooltip>
           <TooltipTrigger render={<p className="text-muted-foreground text-xs tabular-nums" />}>
@@ -2155,6 +2164,21 @@ function AssistantMessageMeta({
       )}
     </div>
   );
+}
+
+function AssistantTurnUsage({ usage }: { readonly usage: ContextWindowSnapshot }) {
+  const formatTurnTokens = (value: number) =>
+    value < 1_000 ? `${value}` : `${(value / 1_000).toFixed(1).replace(/\.0$/, "")}k`;
+  const metrics = [
+    usage.lastInputTokens != null ? `↑ ${formatTurnTokens(usage.lastInputTokens)}` : null,
+    usage.lastOutputTokens != null ? `↓ ${formatTurnTokens(usage.lastOutputTokens)}` : null,
+    usage.lastReasoningOutputTokens != null
+      ? `${formatTurnTokens(usage.lastReasoningOutputTokens)} reasoning`
+      : null,
+    usage.toolUses != null ? `${usage.toolUses} tools` : null,
+  ].filter((metric): metric is string => metric !== null);
+  if (metrics.length === 0) return null;
+  return <span className="truncate text-muted-foreground">{metrics.join(" · ")}</span>;
 }
 
 function AssistantCopyButton({

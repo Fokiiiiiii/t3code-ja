@@ -390,7 +390,11 @@ import {
   hasDismissedResumeCompaction,
   shouldOfferResumeCompaction,
 } from "./chat/ContextWindowMeter.logic";
-import { deriveLatestContextWindowSnapshot, formatContextWindowTokens } from "../lib/contextWindow";
+import {
+  deriveContextWindowSnapshotsByTurn,
+  deriveLatestContextWindowSnapshot,
+  formatContextWindowTokens,
+} from "../lib/contextWindow";
 import {
   DRAFT_HERO_TRANSITION_ANIMATION_ID,
   DRAFT_HERO_TRANSITION_DURATION_MS,
@@ -2861,6 +2865,10 @@ export default function ChatView(props: ChatViewProps) {
   }, [latestCheckpointCompletedAt, threadActivities]);
   const activeContextWindow = useMemo(
     () => deriveLatestContextWindowSnapshot(threadActivities),
+    [threadActivities],
+  );
+  const turnUsageByTurnId = useMemo(
+    () => deriveContextWindowSnapshotsByTurn(threadActivities),
     [threadActivities],
   );
   const workLogEntries = useMemo(() => deriveWorkLogEntries(threadActivities), [threadActivities]);
@@ -9453,6 +9461,7 @@ export default function ChatView(props: ChatViewProps) {
                     ? EMPTY_HELD_TURN_DIFF_SUMMARIES
                     : activeThread.checkpoints
                 }
+                turnUsageByTurnId={paintOnlyDisplayedTimeline ? new Map() : turnUsageByTurnId}
                 activeThreadEnvironmentId={
                   displayedThreadRef?.environmentId ?? activeThread.environmentId
                 }

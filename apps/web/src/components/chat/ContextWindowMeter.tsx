@@ -1,7 +1,10 @@
 import { Button } from "../ui/button";
 import { type ContextWindowSnapshot, formatContextWindowTokens } from "~/lib/contextWindow";
 import { Popover, PopoverPopup, PopoverTrigger } from "../ui/popover";
-import { formatContextWindowCompactionMessage } from "./ContextWindowMeter.logic";
+import {
+  formatContextWindowCompactionMessage,
+  resolveContextHygieneState,
+} from "./ContextWindowMeter.logic";
 import { Minimize2Icon } from "lucide-react";
 import { composerFloatingLayerProps } from "./composerEventScope";
 
@@ -15,14 +18,32 @@ function formatPercentage(value: number | null): string | null {
   return `${Math.round(value)}%`;
 }
 
+function formatDuration(durationMs: number | null): string | null {
+  if (durationMs === null || !Number.isFinite(durationMs) || durationMs < 0) return null;
+  const totalSeconds = Math.floor(durationMs / 1_000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
+}
+
+export type ContextWindowQuotaSummary = {
+  readonly label: string;
+  readonly windows: ReadonlyArray<{
+    readonly label: string;
+    readonly usedPercent: number;
+  }>;
+};
+
 export function ContextWindowMeter(props: {
   usage: ContextWindowSnapshot;
   modelDisplayName?: string | null;
   onCompact?: (() => void) | undefined;
   compactDisabled?: boolean | undefined;
   compactDisabledReason?: string | null | undefined;
+  quota?: ContextWindowQuotaSummary | null | undefined;
 }) {
-  const { usage, modelDisplayName, onCompact, compactDisabled, compactDisabledReason } = props;
+  const { usage, modelDisplayName, onCompact, compactDisabled, compactDisabledReason, quota } =
+    props;
   const usedPercentage = formatPercentage(usage.usedPercentage);
   const normalizedPercentage = Math.max(0, Math.min(100, usage.usedPercentage ?? 0));
   const radius = 9.75;
@@ -31,6 +52,14 @@ export function ContextWindowMeter(props: {
   const totalProcessedTokens = usage.totalProcessedTokens ?? null;
   const showTotalProcessed = totalProcessedTokens !== null && totalProcessedTokens > 0;
   const isOverloaded = normalizedPercentage > 90;
+  const hygiene = resolveContextHygieneState(usage.usedPercentage);
+  const turnMetrics = [
+    { label: "Input", value: usage.lastInputTokens },
+    { label: "Output", value: usage.lastOutputTokens },
+    { label: "Reasoning", value: usage.lastReasoningOutputTokens },
+    { label: "Cache read", value: usage.lastCachedInputTokens },
+  ].filter((metric): metric is { label: string; value: number } => metric.value != null);
+  const turnDuration = formatDuration(usage.durationMs ?? null);
   const usageColor = isOverloaded
     ? "var(--color-error)"
     : "color-mix(in oklab, var(--color-muted-foreground) 72%, transparent)";
@@ -43,9 +72,9 @@ export function ContextWindowMeter(props: {
         closeDelay={onCompact ? 150 : 0}
         render={
           <Button
-            size="icon-sm"
+            size="xs"
             variant="ghost-muted"
-            className="size-7 rounded-full hover:text-muted-foreground data-pressed:text-muted-foreground"
+            className="h-7 gap-1 rounded-full px-1.5 hover:text-muted-foreground data-pressed:text-muted-foreground"
             aria-label={
               usage.maxTokens !== null && usedPercentage
                 ? `Context window ${usedPercentage} used`
@@ -80,6 +109,12 @@ export function ContextWindowMeter(props: {
                 />
               </svg>
             </span>
+            {usedPercentage && usage.maxTokens !== null ? (
+              <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
+                {usedPercentage} · {formatContextWindowTokens(usage.usedTokens)}/
+                {formatContextWindowTokens(usage.maxTokens ?? null)}
+              </span>
+            ) : null}
           </Button>
         }
       />
@@ -91,7 +126,7 @@ export function ContextWindowMeter(props: {
         viewportClassName="p-0"
         className="w-64 max-w-none text-left whitespace-normal"
       >
-        <div className="flex flex-col gap-2 p-[var(--floating-content-inset)]">
+        <div className="flex flex-col gap-2.5 p-[var(--floating-content-inset)]">
           <div className="flex items-center justify-between gap-3">
             <div className="font-medium text-muted-foreground text-xs">Context Window</div>
             {usage.maxTokens !== null && usedPercentage ? (
@@ -124,37 +159,120 @@ export function ContextWindowMeter(props: {
               />
             </div>
           ) : null}
-          {showTotalProcessed ? (
-            <div className="flex items-center justify-between gap-3 text-[11px] leading-4">
-              <span className="text-secondary-label">Total processed</span>
-              <span className="font-medium tabular-nums text-secondary-label">
-                {formatContextWindowTokens(totalProcessedTokens)}
-              </span>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-1 border-y border-border/60 py-2 text-[11px] leading-4">
+            <span className="text-secondary-label">Current context</span>
+            <span className="text-right font-medium tabular-nums text-secondary-label">
+              {formatContextWindowTokens(usage.usedTokens)}
+            </span>
+            <span className="text-secondary-label">Context capacity</span>
+            <span className="text-right font-medium tabular-nums text-secondary-label">
+              {usage.maxTokens === null
+                ? "Unknown"
+                : formatContextWindowTokens(usage.maxTokens ?? null)}
+            </span>
+            {showTotalProcessed ? (
+              <>
+                <span className="text-secondary-label">Total processed</span>
+                <span className="text-right font-medium tabular-nums text-secondary-label">
+                  {formatContextWindowTokens(totalProcessedTokens ?? null)}
+                </span>
+              </>
+            ) : null}
+          </div>
+          {turnMetrics.length > 0 || usage.toolUses != null || turnDuration !== null ? (
+            <div className="flex flex-col gap-1 text-[11px] leading-4">
+              <span className="font-medium text-muted-foreground">This turn</span>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                {turnMetrics.map((metric) => (
+                  <>
+                    <span key={`${metric.label}:label`} className="text-secondary-label">
+                      {metric.label}
+                    </span>
+                    <span
+                      key={`${metric.label}:value`}
+                      className="text-right font-medium tabular-nums text-secondary-label"
+                    >
+                      {formatContextWindowTokens(metric.value)}
+                    </span>
+                  </>
+                ))}
+                {usage.toolUses != null ? (
+                  <>
+                    <span className="text-secondary-label">Tool calls</span>
+                    <span className="text-right font-medium tabular-nums text-secondary-label">
+                      {usage.toolUses}
+                    </span>
+                  </>
+                ) : null}
+                {turnDuration !== null ? (
+                  <>
+                    <span className="text-secondary-label">Duration</span>
+                    <span className="text-right font-medium tabular-nums text-secondary-label">
+                      {turnDuration}
+                    </span>
+                  </>
+                ) : null}
+              </div>
             </div>
           ) : null}
+          {quota && quota.windows.length > 0 ? (
+            <div className="flex flex-col gap-1 text-[11px] leading-4">
+              <span className="font-medium text-muted-foreground">{quota.label} quota</span>
+              {quota.windows.slice(0, 2).map((window) => (
+                <div
+                  key={window.label}
+                  className="flex items-center justify-between gap-3 text-secondary-label"
+                >
+                  <span>{window.label}</span>
+                  <span className="font-medium tabular-nums">
+                    {Math.max(0, Math.min(100, Math.round(100 - window.usedPercent)))}% left
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : null}
+          <div className="rounded-md bg-muted/45 px-2.5 py-2 text-[11px] leading-4">
+            <div className="flex items-center justify-between gap-3">
+              <span className="font-medium text-muted-foreground">Session health</span>
+              <span className="font-medium text-secondary-label">{hygiene.label}</span>
+            </div>
+            <p className="mt-0.5 text-secondary-label">{hygiene.description}</p>
+            {hygiene.level !== "healthy" ? (
+              <div className="mt-2 grid grid-cols-2 gap-2 border-t border-border/50 pt-2 text-[10px]">
+                <div>
+                  <div className="font-medium text-muted-foreground">Preserved</div>
+                  <div className="text-secondary-label">Task, decisions, changed files</div>
+                </div>
+                <div>
+                  <div className="font-medium text-muted-foreground">Discardable</div>
+                  <div className="text-secondary-label">Old tool output, repeated logs</div>
+                </div>
+              </div>
+            ) : null}
+          </div>
           {usage.compactsAutomatically ? (
             <div className="mt-1 text-pretty text-secondary-label text-[11px] font-medium">
               {formatContextWindowCompactionMessage(modelDisplayName, usage.autoCompactThreshold)}
             </div>
           ) : null}
           {onCompact ? (
-            <>
+            <div className="mt-0.5 flex gap-1.5">
               <Button
                 size="xs"
                 variant="outline"
-                className="mt-1 w-full justify-center"
+                className="flex-1 justify-center"
                 disabled={compactDisabled}
                 onClick={onCompact}
               >
                 <Minimize2Icon aria-hidden="true" />
                 Compact context
               </Button>
-              {compactDisabled && compactDisabledReason ? (
-                <div className="text-pretty text-secondary-label text-[11px]">
-                  {compactDisabledReason}
-                </div>
-              ) : null}
-            </>
+            </div>
+          ) : null}
+          {compactDisabled && compactDisabledReason && onCompact ? (
+            <div className="text-pretty text-secondary-label text-[11px]">
+              {compactDisabledReason}
+            </div>
           ) : null}
         </div>
       </PopoverPopup>

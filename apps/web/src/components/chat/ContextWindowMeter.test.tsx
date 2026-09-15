@@ -59,4 +59,47 @@ describe("ContextWindowMeter", () => {
     expect(markup).toContain(">Send or clear your draft before compacting<");
     expect(markup).not.toContain('aria-label="Send or clear your draft before compacting"');
   });
+
+  it("shows the compact session summary without turning the composer into a dashboard", () => {
+    const markup = renderToStaticMarkup(
+      <ContextWindowMeter
+        usage={{
+          ...usage,
+          totalProcessedTokens: 748_126,
+          lastInputTokens: 12_400,
+          lastOutputTokens: 3_800,
+          lastReasoningOutputTokens: 8_100,
+          lastCachedInputTokens: 41_700,
+          toolUses: 14,
+          durationMs: 138_000,
+        }}
+        quota={{ label: "Codex", windows: [{ label: "5 hour", usedPercent: 32 }] }}
+      />,
+    );
+
+    expect(markup).toContain("Session health");
+    expect(markup).toContain("Current context");
+    expect(markup).toContain("Context capacity");
+    expect(markup).toContain("Total processed");
+    expect(markup).toContain("This turn");
+    expect(markup).toContain("Reasoning");
+    expect(markup).toContain("Cache read");
+    expect(markup).toContain("Tool calls");
+    expect(markup).toContain("Codex quota");
+    expect(markup).toContain("5 hour");
+  });
+
+  it("keeps the hygiene detail informational when the context is nearly full", () => {
+    const markup = renderToStaticMarkup(
+      <ContextWindowMeter
+        usage={{ ...usage, usedTokens: 920_000, usedPercentage: 92 }}
+        onCompact={() => {}}
+      />,
+    );
+
+    expect(markup).toContain("Context is high");
+    expect(markup).toContain("Preserved");
+    expect(markup).toContain("Discardable");
+    expect(markup).not.toContain("New chat");
+  });
 });

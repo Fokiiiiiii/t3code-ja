@@ -12,6 +12,52 @@ import { getTriggerDisplayModelName, type ModelEsque } from "./providerIconUtils
 const CLAUDE_RESUME_COMPACTION_MINUTES = 70;
 const CLAUDE_RESUME_COMPACTION_TOKENS = 100_000;
 
+/**
+ * A deliberately small, provider-neutral escalation policy for the context
+ * affordance. The provider remains responsible for compaction; this makes the
+ * next safe action obvious before a nearly-full window degrades the session.
+ */
+export type ContextHygieneState = {
+  readonly level: "healthy" | "prepare" | "checkpoint";
+  readonly label: string;
+  readonly description: string;
+};
+
+export function resolveContextHygieneState(
+  usedPercentage: number | null | undefined,
+): ContextHygieneState {
+  if (
+    typeof usedPercentage !== "number" ||
+    !Number.isFinite(usedPercentage) ||
+    usedPercentage < 78
+  ) {
+    return {
+      level: "healthy",
+      label: "Healthy context",
+      description: "No action needed.",
+    };
+  }
+  if (usedPercentage < 88) {
+    return {
+      level: "prepare",
+      label: "Preparing durable state",
+      description: "Important task state is ready to carry forward.",
+    };
+  }
+  if (usedPercentage < 92) {
+    return {
+      level: "checkpoint",
+      label: "Checkpoint recommended",
+      description: "Compact now to preserve the active task before the window fills.",
+    };
+  }
+  return {
+    level: "checkpoint",
+    label: "Context is high",
+    description: "Review the preserved task state before continuing.",
+  };
+}
+
 export function providerSupportsManualCompaction(
   provider: ProviderInstanceEntry | null | undefined,
 ): boolean {

@@ -500,6 +500,51 @@ describe("MessagesTimeline", () => {
     expect(markup).toContain("Worked for 8.0s");
   });
 
+  it("renders parent-turn token metrics below the matching assistant response", () => {
+    const turnId = TurnId.make("turn-with-usage");
+    const assistantEntry = buildAssistantTimelineEntry("Done.");
+    const markup = renderToStaticMarkup(
+      <MessagesTimeline
+        {...buildProps()}
+        turnUsageByTurnId={
+          new Map([
+            [
+              turnId,
+              {
+                usedTokens: 84_000,
+                totalProcessedTokens: 1_270_000,
+                maxTokens: 200_000,
+                remainingTokens: 116_000,
+                usedPercentage: 42,
+                remainingPercentage: 58,
+                inputTokens: null,
+                cachedInputTokens: null,
+                outputTokens: null,
+                reasoningOutputTokens: null,
+                lastUsedTokens: null,
+                lastInputTokens: 12_400,
+                lastCachedInputTokens: null,
+                lastOutputTokens: 3_800,
+                lastReasoningOutputTokens: 8_100,
+                toolUses: 14,
+                durationMs: null,
+                compactsAutomatically: false,
+                autoCompactThreshold: null,
+                updatedAt: MESSAGE_CREATED_AT,
+              },
+            ],
+          ])
+        }
+        timelineEntries={[{ ...assistantEntry, message: { ...assistantEntry.message, turnId } }]}
+      />,
+    );
+
+    expect(markup).toContain("↑ 12.4k");
+    expect(markup).toContain("↓ 3.8k");
+    expect(markup).toContain("8.1k reasoning");
+    expect(markup).toContain("14 tools");
+  });
+
   it("keeps assistant changed-files headers sticky below the thread header", () => {
     const assistantMessageId = MessageId.make("message-assistant-with-files");
     const turnId = TurnId.make("turn-with-files");

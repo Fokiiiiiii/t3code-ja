@@ -1151,6 +1151,8 @@ const ComposerFooterPrimaryActions = memo(function ComposerFooterPrimaryActions(
   activeContextWindow: ContextWindowSnapshot | null;
   reserveContextWindowMeter: boolean;
   activeThreadModelDisplayName: string | null;
+  selectedProviderUsageLabel: string;
+  selectedProviderUsageLimits: ServerProvider["usageLimits"] | undefined;
   isPreparingWorktree: boolean;
   pendingAction: {
     questionIndex: number;
@@ -1182,6 +1184,15 @@ const ComposerFooterPrimaryActions = memo(function ComposerFooterPrimaryActions(
           usage={props.activeContextWindow}
           modelDisplayName={props.activeThreadModelDisplayName}
           onCompact={props.onCompactContext}
+          quota={
+            props.selectedProviderUsageLimits &&
+            props.selectedProviderUsageLimits.windows.length > 0
+              ? {
+                  label: props.selectedProviderUsageLabel,
+                  windows: props.selectedProviderUsageLimits.windows,
+                }
+              : undefined
+          }
           compactDisabled={props.compactDisabled}
           compactDisabledReason={props.compactDisabledReason}
         />
@@ -6828,6 +6839,12 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
                     }
                     reserveContextWindowMeter={reserveContextWindowMeter}
                     activeThreadModelDisplayName={activeThreadModelDisplayName}
+                    selectedProviderUsageLabel={
+                      selectedProviderStatus?.displayName ??
+                      selectedProviderStatus?.driver ??
+                      "Provider"
+                    }
+                    selectedProviderUsageLimits={selectedProviderStatus?.usageLimits}
                     pendingAction={pendingPrimaryAction}
                     isRunning={phase === "running"}
                     showPlanFollowUpPrompt={
