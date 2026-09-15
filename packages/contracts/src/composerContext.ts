@@ -23,6 +23,7 @@ export const COMPOSER_CONTEXT_KINDS = [
   "element",
   "preview-annotation",
   "review-comment",
+  "thread-reference",
   "mention",
   "skill",
 ] as const;
@@ -201,6 +202,22 @@ export const ReviewCommentContextRecord = Schema.Struct({
 }).check(Schema.makeFilter((record) => record.endIndex >= record.startIndex));
 export type ReviewCommentContextRecord = typeof ReviewCommentContextRecord.Type;
 
+/** A bounded, read-only handoff from another durable T3 thread. */
+export const ThreadReferenceContextRecord = Schema.Struct({
+  ...recordBase,
+  kind: Schema.Literal("thread-reference"),
+  threadId: TrimmedNonEmptyString.check(Schema.isMaxLength(255)),
+  projectTitle: NullableShortString,
+  providerName: NullableShortString,
+  model: NullableShortString,
+  summary: BoundedString(8_000),
+  changedFiles: Schema.Array(TrimmedNonEmptyString.check(Schema.isMaxLength(2_048))).check(
+    Schema.isMaxLength(100),
+  ),
+  checkpointRef: NullableShortString,
+});
+export type ThreadReferenceContextRecord = typeof ThreadReferenceContextRecord.Type;
+
 export const MentionContextRecord = Schema.Struct({
   ...recordBase,
   kind: Schema.Literal("mention"),
@@ -243,6 +260,7 @@ export const KnownComposerContextRecord = Schema.Union([
   ElementContextRecord,
   PreviewAnnotationContextRecord,
   ReviewCommentContextRecord,
+  ThreadReferenceContextRecord,
   MentionContextRecord,
   SkillContextRecord,
 ]);

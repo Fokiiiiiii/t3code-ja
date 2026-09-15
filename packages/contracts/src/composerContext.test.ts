@@ -105,6 +105,18 @@ const knownRecords: Record<(typeof COMPOSER_CONTEXT_KINDS)[number], Record<strin
       isDraft: false,
     },
   },
+  "thread-reference": {
+    ...base,
+    kind: "thread-reference",
+    label: "Authentication refactor",
+    threadId: "thread_1",
+    projectTitle: "T3 Code",
+    providerName: "Codex",
+    model: "gpt-5.6-sol",
+    summary: "Authentication refactor is complete; verify refresh-token rotation.",
+    changedFiles: ["src/auth.ts", "tests/auth.test.ts"],
+    checkpointRef: "refs/t3/checkpoint/thread_1",
+  },
   mention: { ...base, kind: "mention", label: "@src/index.ts", path: "src/index.ts" },
   skill: { ...base, kind: "skill", label: "$pinchtab", name: "pinchtab" },
 };
