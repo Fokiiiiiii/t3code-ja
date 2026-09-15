@@ -4,6 +4,7 @@ import { JA_MESSAGES_CONVERSATION } from "./ja/conversation";
 import { JA_MESSAGES_PROVIDERS } from "./ja/providers";
 import { JA_MESSAGES_SOURCE_CONTROL } from "./ja/sourceControl";
 import { JA_MESSAGES_WORKSPACE } from "./ja/workspace";
+import { JA_MESSAGES_COMPLETION } from "./ja/completion";
 
 export const EN_MESSAGES = {
   "common.cancel": "Cancel",
@@ -4858,6 +4859,7 @@ const JA_MESSAGES = {
   ...JA_MESSAGES_WORKSPACE,
   ...JA_MESSAGES_PROVIDERS,
   ...JA_MESSAGES_SOURCE_CONTROL,
+  ...JA_MESSAGES_COMPLETION,
 } as const satisfies WebMessages;
 
 export const WEB_MESSAGES: Readonly<Record<ResolvedAppLocale, WebMessages>> = {

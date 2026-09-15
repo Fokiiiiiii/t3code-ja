@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import { translateWebMessage } from "./messages";
+import { EN_MESSAGES, translateWebMessage, WEB_MESSAGES } from "./messages";
 
 describe("translateWebMessage", () => {
   it("uses English as the complete baseline catalog", () => {
@@ -15,6 +15,29 @@ describe("translateWebMessage", () => {
         version: "v2.1.272",
       }),
     ).toContain("Claude");
+  });
+
+  it("keeps the Japanese catalog translated except for technical labels", () => {
+    const technicalLabels = new Set([
+      "projectSettings.workspace",
+      "commandPalette.source.gitUrl",
+      "composer.mode.build",
+      "gitDialog.commit.detachedHead",
+      "settings.about.updateTrack.option.nightly",
+      "diagnostics.category.gpu",
+      "composer.stash.title",
+      "providers.add.workspace",
+      "projectAction.icon.lint",
+      "diagnostics.metric.cpu",
+      "composer.mode.plan",
+      "sidebar.status.woke",
+      "sourceControl.writingStyle.conventionalCommits",
+      "connections.tailscale.title",
+    ]);
+    const untranslated = (Object.keys(EN_MESSAGES) as Array<keyof typeof EN_MESSAGES>)
+      .filter((key) => WEB_MESSAGES.ja[key] === EN_MESSAGES[key] && !technicalLabels.has(key))
+      .map((key) => key);
+    expect(untranslated).toEqual([]);
   });
 
   it("interpolates values in Simplified Chinese messages", () => {
