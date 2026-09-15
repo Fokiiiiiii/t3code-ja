@@ -15,6 +15,7 @@ import type {
   PreviewAnnotationPayload,
   ReviewCommentContextRecord,
   TerminalContextRecord,
+  ThreadReferenceContextRecord,
   ThreadId,
 } from "@t3tools/contracts";
 import { upgradeLegacyContextMessage } from "@t3tools/shared/composerContextLegacy";
@@ -122,6 +123,29 @@ export function terminalContextReference(context: TerminalContextDraft): Compose
     kind: "terminal",
     contextId: toKindScopedComposerContextId("terminal", context.id),
     label: formatTerminalContextLabel(context),
+  };
+}
+
+export type ThreadReferenceDraft = Omit<ThreadReferenceContextRecord, "version" | "kind">;
+
+export function threadReferenceContextRecord(
+  reference: ThreadReferenceDraft,
+): ThreadReferenceContextRecord {
+  return {
+    ...reference,
+    version: 1,
+    kind: "thread-reference",
+    label: sanitizeComposerContextLabel(reference.label, "thread-reference"),
+  };
+}
+
+export function threadReferenceContextReference(
+  reference: ThreadReferenceDraft,
+): ComposerContextReference {
+  return {
+    kind: "thread-reference",
+    contextId: reference.contextId,
+    label: reference.label,
   };
 }
 
