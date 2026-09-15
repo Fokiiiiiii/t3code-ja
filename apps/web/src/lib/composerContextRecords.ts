@@ -319,6 +319,7 @@ export function buildMessageContext(input: {
   terminalContexts: ReadonlyArray<TerminalContextDraft>;
   reviewComments: ReadonlyArray<ReviewCommentContext>;
   previewAnnotations: ReadonlyArray<PreviewAnnotationPayload>;
+  threadReferences?: ReadonlyArray<ThreadReferenceDraft>;
   attachments?: ReadonlyArray<BoundComposerAttachment>;
 }): OrchestrationMessageContext | undefined {
   // An annotation's screenshot travels as the image attachment that reuses its id.
@@ -335,6 +336,7 @@ export function buildMessageContext(input: {
         screenshotContextId: screenshotAttachmentIds.has(annotation.id) ? annotation.id : undefined,
       }),
     ),
+    ...(input.threadReferences ?? []).map(threadReferenceContextRecord),
     ...(input.attachments ?? []).map(attachmentContextRecord),
   ];
   return records.length === 0 ? undefined : { version: 1, records };

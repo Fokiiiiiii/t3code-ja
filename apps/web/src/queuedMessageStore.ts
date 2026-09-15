@@ -1,4 +1,4 @@
-import type { PreviewAnnotationPayload } from "@t3tools/contracts";
+import type { PreviewAnnotationPayload, ThreadReferenceContextRecord } from "@t3tools/contracts";
 import { create } from "zustand";
 
 import type { ComposerSubmissionIntent } from "./composer-logic";
@@ -20,6 +20,7 @@ export interface QueuedComposerMessage {
   terminalContexts: TerminalContextDraft[];
   previewAnnotations: PreviewAnnotationPayload[];
   reviewComments: ReviewCommentContext[];
+  threadReferences?: ThreadReferenceContextRecord[];
   submissionIntent: ComposerSubmissionIntent;
   /**
    * The newest completed tool activity at queue time. A different id later

@@ -80,8 +80,14 @@ import {
   DraftId,
 } from "./composerDraftStore";
 import { removeLocalStorageItem, setLocalStorageItem } from "./hooks/useLocalStorage";
-import { insertInlineContextReference } from "./lib/composerContextReferences";
-import { terminalContextReference } from "./lib/composerContextRecords";
+import {
+  insertInlineContextReference,
+  toKindScopedComposerContextId,
+} from "./lib/composerContextReferences";
+import {
+  terminalContextReference,
+  threadReferenceContextRecord,
+} from "./lib/composerContextRecords";
 import {
   INLINE_TERMINAL_CONTEXT_PLACEHOLDER,
   formatTerminalContextReference,
@@ -2966,6 +2972,19 @@ describe("composerDraftStore inline context references", () => {
     createdAt: "2026-01-01T00:00:00.000Z",
   };
   const annotationLink = "[Bigger](t3-context://v1/preview-annotation/preview-annotation_ann-1)";
+  const threadReference = threadReferenceContextRecord({
+    contextId: toKindScopedComposerContextId("thread-reference", "local_thread-auth"),
+    label: "Authentication refactor",
+    threadId: "thread-auth",
+    projectTitle: "T3 Code",
+    providerName: "codex",
+    model: "gpt-5.6-sol",
+    summary: "Refresh-token rotation is pending verification.",
+    changedFiles: ["src/auth.ts"],
+    checkpointRef: "refs/t3/checkpoint/thread-auth",
+  });
+  const threadReferenceLink =
+    "[Authentication refactor](t3-context://v1/thread-reference/thread-reference_local_thread-auth)";
 
   beforeEach(() => {
     resetComposerDraftStore();
@@ -2981,6 +3000,31 @@ describe("composerDraftStore inline context references", () => {
     expect(draftFor(threadId, TEST_ENVIRONMENT_ID)?.prompt).toBe(`look ${reviewLink} `);
     store.removeReviewComment(threadRef, "rc-1");
     expect(draftFor(threadId, TEST_ENVIRONMENT_ID)?.prompt).toBe("look");
+  });
+
+  it("persists a thread reference and keeps its inline chip in sync", () => {
+    const store = useComposerDraftStore.getState();
+    store.setPrompt(threadRef, "Continue from");
+    store.addThreadReference(threadRef, threadReference);
+    expect(draftFor(threadId, TEST_ENVIRONMENT_ID)?.prompt).toBe(
+      `Continue from ${threadReferenceLink} `,
+    );
+    expect(draftFor(threadId, TEST_ENVIRONMENT_ID)?.threadReferences).toEqual([threadReference]);
+
+    const persisted = partializeComposerDraftStoreState(useComposerDraftStore.getState());
+    expect(
+      persisted.draftsByThreadKey[threadKeyFor(threadId, TEST_ENVIRONMENT_ID)]?.threadReferences,
+    ).toEqual([threadReference]);
+    const hydrated = useComposerDraftStore.persist.getOptions().merge!(
+      JSON.parse(JSON.stringify(persisted)),
+      useComposerDraftStore.getInitialState(),
+    );
+    expect(
+      hydrated.draftsByThreadKey[threadKeyFor(threadId, TEST_ENVIRONMENT_ID)]?.threadReferences,
+    ).toEqual([threadReference]);
+
+    store.removeThreadReference(threadRef, threadReference.contextId);
+    expect(draftFor(threadId, TEST_ENVIRONMENT_ID)?.prompt).toBe("Continue from");
   });
 
   it("can add another reference while upserting one backing review record", () => {

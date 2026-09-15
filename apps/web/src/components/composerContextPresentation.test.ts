@@ -1,13 +1,34 @@
 import { ThreadId } from "@t3tools/contracts";
 import { describe, expect, it } from "vite-plus/test";
 
-import { buildMessageContext } from "~/lib/composerContextRecords";
+import { buildMessageContext, threadReferenceContextRecord } from "~/lib/composerContextRecords";
+import { toKindScopedComposerContextId } from "~/lib/composerContextReferences";
 import {
   composerContextRecordsFromDraft,
   uploadedContextRecordFromDraft,
 } from "./composerContextPresentation";
 
 describe("composerContextRecordsFromDraft", () => {
+  it("keeps a thread-reference chip backed by its persisted record", () => {
+    const reference = threadReferenceContextRecord({
+      contextId: toKindScopedComposerContextId("thread-reference", "local_thread-1"),
+      label: "Authentication refactor",
+      threadId: "thread-1",
+      projectTitle: "T3 Code",
+      providerName: "codex",
+      model: "gpt-5.6-sol",
+      summary: "Refresh-token rotation is pending verification.",
+      changedFiles: [],
+      checkpointRef: null,
+    });
+    const record = composerContextRecordsFromDraft({
+      terminalContexts: [],
+      threadReferences: [reference],
+    }).get(reference.contextId);
+
+    expect(record).toEqual({ kind: "thread-reference", record: reference });
+  });
+
   it("recovers the uploaded record when clipboard data points at an attachment already in the draft", () => {
     const file = {
       type: "file" as const,

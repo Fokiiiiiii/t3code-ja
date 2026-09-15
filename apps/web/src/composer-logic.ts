@@ -8,7 +8,12 @@ import {
   type ComposerPromptSegment,
 } from "./composer-editor-mentions";
 
-export type ComposerTriggerKind = "path" | "pull-request" | "slash-command" | "skill";
+export type ComposerTriggerKind =
+  | "path"
+  | "pull-request"
+  | "slash-command"
+  | "skill"
+  | "thread-reference";
 export type ComposerSlashCommand = "model" | "plan" | "default";
 export type ComposerSubmissionIntent = "foreground" | "background";
 
@@ -222,6 +227,20 @@ export function detectComposerTrigger(text: string, cursorInput: number): Compos
         rangeEnd: cursor,
       };
     }
+  }
+
+  // `@thread` owns an optional second token as its search query, then gets
+  // replaced as one range by the selected thread-reference chip.
+  const threadReferenceMatch = /(?:^|\s)@thread(?:\s+(\S*))?$/iu.exec(linePrefix);
+  if (threadReferenceMatch) {
+    const matchStart = linePrefix.length - threadReferenceMatch[0].length;
+    const atOffset = threadReferenceMatch[0].indexOf("@thread");
+    return {
+      kind: "thread-reference",
+      query: threadReferenceMatch[1] ?? "",
+      rangeStart: lineStart + matchStart + atOffset,
+      rangeEnd: cursor,
+    };
   }
 
   const tokenStart = tokenStartForCursor(text, cursor);

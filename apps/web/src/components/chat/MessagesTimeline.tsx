@@ -3021,6 +3021,25 @@ function UserMessageElementDetails({
   );
 }
 
+function UserMessageThreadReferenceDetails({
+  record,
+}: {
+  record: Extract<KnownComposerContextRecord, { kind: "thread-reference" }>;
+}) {
+  const metadata = [record.projectTitle, record.providerName, record.model]
+    .filter((value): value is string => Boolean(value))
+    .join(" · ");
+  return (
+    <div className="space-y-1 rounded-lg border border-border/70 bg-background/70 p-3 text-sm text-foreground">
+      {metadata ? <div className="text-secondary-label text-xs">{metadata}</div> : null}
+      <div className="whitespace-pre-wrap wrap-break-word">{record.summary}</div>
+      {record.changedFiles.length > 0 ? (
+        <div className="text-secondary-label text-xs">{record.changedFiles.join("\n")}</div>
+      ) : null}
+    </div>
+  );
+}
+
 interface UserMessageContextRenderContext {
   reference: ChatMarkdownContextReference;
   annotationImage: ChatImageAttachment | null;
@@ -3281,6 +3300,39 @@ const userMessageContextPresentationRegistry = createContextPresentationRegistry
           </UserMessageContextPopover>
         );
       },
+    },
+    {
+      kind: "thread-reference",
+      canRender: (record) => record.kind === "thread-reference",
+      render: (record, context) =>
+        record.kind === "thread-reference" ? (
+          <UserMessageContextPopover
+            copyMarkdown={context.copyMarkdown}
+            accessibleLabel={`Thread reference, ${record.label}`}
+            chip={
+              <UserMessageContextChip
+                icon={
+                  <MessageCircleIcon
+                    className={cn(
+                      COMPOSER_INLINE_CHIP_ICON_CLASS_NAME,
+                      CONTEXT_INLINE_CHIP_ICON_TONE_CLASS_NAMES["thread-reference"],
+                      "size-3.5",
+                    )}
+                  />
+                }
+                label={record.label}
+                kindLabel="Thread reference"
+                copyMarkdown={context.copyMarkdown}
+                interactive
+                toneClassName={CONTEXT_INLINE_CHIP_TONE_CLASS_NAMES["thread-reference"]}
+              />
+            }
+          >
+            <UserMessageThreadReferenceDetails record={record} />
+          </UserMessageContextPopover>
+        ) : (
+          <UnavailableUserMessageContextChip {...context} />
+        ),
     },
     {
       kind: "preview-annotation",

@@ -37,6 +37,10 @@ const DEFINITIONS = [
     capabilities: { details: "popover", expanded: "none", defaultDraftView: "compact" },
   },
   {
+    kind: "thread-reference",
+    capabilities: { details: "popover", expanded: "none", defaultDraftView: "compact" },
+  },
+  {
     kind: "mention",
     capabilities: { details: "none", expanded: "none", defaultDraftView: "compact" },
   },

@@ -118,6 +118,24 @@ describe("composerSubmissionIntentForEnter", () => {
 });
 
 describe("detectComposerTrigger", () => {
+  it("detects @thread references and keeps the optional search query", () => {
+    const bare = "Continue from @thread";
+    expect(detectComposerTrigger(bare, bare.length)).toEqual({
+      kind: "thread-reference",
+      query: "",
+      rangeStart: "Continue from ".length,
+      rangeEnd: bare.length,
+    });
+
+    const search = "Continue from @thread authentication";
+    expect(detectComposerTrigger(search, search.length)).toEqual({
+      kind: "thread-reference",
+      query: "authentication",
+      rangeStart: "Continue from ".length,
+      rangeEnd: search.length,
+    });
+  });
+
   it("detects @path trigger at cursor", () => {
     const text = "Please check @src/com";
     const trigger = detectComposerTrigger(text, text.length);

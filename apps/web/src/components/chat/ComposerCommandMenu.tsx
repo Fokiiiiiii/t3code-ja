@@ -13,6 +13,7 @@ import {
 import {
   BlocksIcon,
   FolderIcon,
+  MessageCircleIcon,
   PackageIcon,
   SettingsIcon,
   UserRoundIcon,
@@ -27,6 +28,7 @@ import { Command, CommandGroup, CommandItem, CommandList } from "../ui/command";
 import { PierreEntryIcon } from "./PierreEntryIcon";
 import { ComposerBanner } from "./ComposerBanner";
 import { resolvePullRequestState } from "../pullRequest/pullRequestPresentation";
+import type { ThreadReferenceDraft } from "~/lib/composerContextRecords";
 
 export type ComposerCommandItem =
   | {
@@ -64,6 +66,13 @@ export type ComposerCommandItem =
       id: string;
       type: "pull-request";
       pullRequest: PullRequestContextMetadata;
+      label: string;
+      description: string;
+    }
+  | {
+      id: string;
+      type: "thread-reference";
+      reference: ThreadReferenceDraft;
       label: string;
       description: string;
     };
@@ -188,6 +197,9 @@ const ComposerCommandMenuItem = memo(function ComposerCommandMenuItem(props: {
           aria-label={pullRequestPresentation.label}
           className={cn("size-4 shrink-0", pullRequestPresentation.toneClassName)}
         />
+      ) : null}
+      {props.item.type === "thread-reference" ? (
+        <MessageCircleIcon className="size-4 shrink-0 text-secondary-label" />
       ) : null}
       <span className="flex min-w-0 flex-1 items-center gap-2">
         <span className="min-w-0 max-w-[45%] shrink-0 truncate font-sans text-xs font-medium">

@@ -12,6 +12,7 @@ import { upgradeLegacyContextMessage } from "@t3tools/shared/composerContextLega
 import {
   formatInlineContextReference,
   removeInlineContextReference,
+  toKindScopedComposerContextId,
 } from "./composerContextReferences";
 import { describe, expect, it } from "vite-plus/test";
 
@@ -33,6 +34,7 @@ import {
   reviewCommentContextRecord,
   reviewCommentFromRecord,
   terminalContextRecord,
+  threadReferenceContextRecord,
   terminalContextReference,
   terminalContextDraftFromRecord,
   uploadedAttachmentContextRecord,
@@ -73,6 +75,29 @@ const annotation: PreviewAnnotationPayload = {
 };
 
 describe("composerContextRecords", () => {
+  it("sends a bounded thread-reference record", () => {
+    const reference = threadReferenceContextRecord({
+      contextId: toKindScopedComposerContextId("thread-reference", "environment_thread-1"),
+      label: "Authentication refactor",
+      threadId: "thread-1",
+      projectTitle: "T3 Code",
+      providerName: "codex",
+      model: "gpt-5.6-sol",
+      summary: "Refresh-token rotation is pending verification.",
+      changedFiles: ["src/auth.ts"],
+      checkpointRef: "refs/t3/checkpoint/thread-1",
+    });
+    const context = buildMessageContext({
+      terminalContexts: [],
+      reviewComments: [],
+      previewAnnotations: [],
+      threadReferences: [reference],
+    });
+
+    expect(context?.records).toEqual([reference]);
+    expect(decodeMessageContext(context).records[0]).toEqual(reference);
+  });
+
   it("copies only ready or persisted server-side attachment IDs", () => {
     const environmentId = EnvironmentId.make("env");
     const image = {
