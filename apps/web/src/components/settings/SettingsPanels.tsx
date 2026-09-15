@@ -170,6 +170,7 @@ import {
 import { searchableSetting } from "./settingsSearch";
 import { ProjectFavicon } from "../ProjectFavicon";
 import { PanelAnimationsPreview } from "./PanelAnimationsPreview";
+import { useI18n } from "../../i18n/WebI18nProvider";
 
 const ENVIRONMENT_IDENTIFICATION_LABELS: Record<EnvironmentIdentificationMode, string> = {
   artwork: "Artwork",
@@ -1134,6 +1135,7 @@ export function AppearanceSettingsPanel() {
   const [isImportThemeOpen, setIsImportThemeOpen] = useState(false);
   const settings = useScopedSettings();
   const updateSettings = useUpdateScopedSettings();
+  const { appLocale, t, setAppLocale } = useI18n();
   const environmentStageLabel = useEnvironmentStageLabel();
   const showEnvironmentIdentification =
     resolveEnvironmentIdentificationPillLabel(environmentStageLabel) !== null;
@@ -1160,6 +1162,45 @@ export function AppearanceSettingsPanel() {
 
   return (
     <SettingsPageContainer>
+      <SettingsSection id="language" title={t("settings.language.title")}>
+        <SettingsRow
+          {...searchableSetting("language")}
+          title={t("settings.language.label")}
+          description={t("settings.language.description")}
+          control={
+            <Select
+              value={appLocale}
+              onValueChange={(value) => {
+                if (value === "system" || value === "en" || value === "ja" || value === "zh-CN") {
+                  setAppLocale(value);
+                }
+              }}
+            >
+              <SelectTrigger
+                size="sm"
+                className="w-full sm:w-48"
+                aria-label={t("settings.language.label")}
+              >
+                <SelectValue>
+                  {appLocale === "system"
+                    ? t("settings.language.system")
+                    : appLocale === "ja"
+                      ? t("settings.language.japanese")
+                      : appLocale === "zh-CN"
+                        ? t("settings.language.chineseSimplified")
+                        : t("settings.language.english")}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectPopup align="end" alignItemWithTrigger={false}>
+                <SelectItem value="system">{t("settings.language.system")}</SelectItem>
+                <SelectItem value="en">{t("settings.language.english")}</SelectItem>
+                <SelectItem value="ja">{t("settings.language.japanese")}</SelectItem>
+                <SelectItem value="zh-CN">{t("settings.language.chineseSimplified")}</SelectItem>
+              </SelectPopup>
+            </Select>
+          }
+        />
+      </SettingsSection>
       <SettingsSection id="appearance" title="Colors & themes" variant="plain" hideTitle>
         <div id={searchableSetting("theme").id}>
           <ThemeLibrary

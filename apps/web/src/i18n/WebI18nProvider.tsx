@@ -37,6 +37,9 @@ const WebI18nContext = createContext<WebI18nContextValue>({
   t: translateEnglish,
 });
 
+const ORIGINAL_TEXT_BY_NODE = new WeakMap<Text, string>();
+const ORIGINAL_ATTRIBUTE_BY_ELEMENT = new WeakMap<Element, Map<string, string>>();
+
 function readRuntimeLocales(): ReadonlyArray<string> {
   const desktopLocale =
     typeof window === "undefined" ? null : (window.desktopBridge?.getSystemLocale?.() ?? null);
@@ -52,9 +55,20 @@ function readRuntimeLocales(): ReadonlyArray<string> {
 }
 
 function localizeDom(locale: ResolvedAppLocale): void {
-  if (locale !== "ja" || typeof document === "undefined") return;
+  if (typeof document === "undefined") return;
+  const body = document.body;
+  if (
+    !body ||
+    typeof document.createTreeWalker !== "function" ||
+    typeof body.querySelectorAll !== "function"
+  ) {
+    return;
+  }
 
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const walker = document.createTreeWalker(
+    body,
+    typeof NodeFilter === "undefined" ? 4 : NodeFilter.SHOW_TEXT,
+  );
   const textNodes: Text[] = [];
   let current = walker.nextNode();
   while (current !== null) {
@@ -66,25 +80,33 @@ function localizeDom(locale: ResolvedAppLocale): void {
     const parent = textNode.parentElement;
     if (!parent || /^(CODE|PRE|INPUT|TEXTAREA|SCRIPT|STYLE)$/u.test(parent.tagName)) continue;
     if (parent.isContentEditable) continue;
-    const source = textNode.nodeValue?.trim();
+    const current = textNode.nodeValue ?? "";
+    const source = ORIGINAL_TEXT_BY_NODE.get(textNode) ?? current.trim();
     if (!source) continue;
-    const translated = translateWebSource(locale, source);
-    if (translated === source) continue;
-    const start = textNode.nodeValue?.indexOf(source) ?? -1;
+    ORIGINAL_TEXT_BY_NODE.set(textNode, source);
+    const translated = locale === "en" ? source : translateWebSource(locale, source);
+    const start = current.indexOf(locale === "en" ? (textNode.nodeValue?.trim() ?? "") : source);
     if (start >= 0) {
-      textNode.nodeValue = `${textNode.nodeValue?.slice(0, start) ?? ""}${translated}${textNode.nodeValue?.slice(start + source.length) ?? ""}`;
+      const currentSource = current.slice(start, start + (textNode.nodeValue?.trim().length ?? 0));
+      if (currentSource !== translated) {
+        textNode.nodeValue = `${current.slice(0, start)}${translated}${current.slice(start + currentSource.length)}`;
+      }
     }
   }
 
-  for (const element of document.body.querySelectorAll<HTMLElement>(
+  for (const element of body.querySelectorAll<HTMLElement>(
     "[aria-label], [title], [placeholder]",
   )) {
     if (element.isContentEditable) continue;
     for (const attribute of ["aria-label", "title", "placeholder"] as const) {
-      const source = element.getAttribute(attribute);
-      if (!source) continue;
-      const translated = translateWebSource(locale, source);
-      if (translated !== source) element.setAttribute(attribute, translated);
+      const current = element.getAttribute(attribute);
+      if (!current) continue;
+      const originals = ORIGINAL_ATTRIBUTE_BY_ELEMENT.get(element) ?? new Map<string, string>();
+      const source = originals.get(attribute) ?? current;
+      originals.set(attribute, source);
+      ORIGINAL_ATTRIBUTE_BY_ELEMENT.set(element, originals);
+      const translated = locale === "en" ? source : translateWebSource(locale, source);
+      if (current !== translated) element.setAttribute(attribute, translated);
     }
   }
 }
@@ -122,7 +144,7 @@ export function WebI18nProvider({ children }: { readonly children: ReactNode }) 
     if (typeof document === "undefined") return;
     document.documentElement.lang = locale;
     localizeDom(locale);
-    if (locale !== "ja" || typeof MutationObserver === "undefined") return;
+    if (locale === "en" || typeof MutationObserver === "undefined") return;
     const observer = new MutationObserver(() => localizeDom(locale));
     observer.observe(document.body, {
       subtree: true,

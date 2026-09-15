@@ -67,13 +67,29 @@ export const resolveClaudeSdkExecutablePath = Effect.fn("resolveClaudeSdkExecuta
 
     const resolveExecutable = yield* SpawnExecutableResolution;
     const isFile = yield* ClaudeExecutableFileCheck;
-    const resolved = resolveExecutable(binaryPath, platform, environment) ?? binaryPath;
-    const extension = NodePath.win32.extname(resolved).toLowerCase();
+    const resolved = resolveExecutable(binaryPath, platform, environment);
+    if (resolved === undefined && binaryPath.trim().toLowerCase() === "claude") {
+      const appData = environment.APPDATA?.trim();
+      const userProfile = environment.USERPROFILE?.trim();
+      const npmDirectory = appData
+        ? NodePath.win32.join(appData, "npm")
+        : userProfile
+          ? NodePath.win32.join(userProfile, "AppData", "Roaming", "npm")
+          : null;
+      if (npmDirectory !== null) {
+        for (const entrySegments of NPM_PACKAGE_ENTRY_CANDIDATES) {
+          const candidate = NodePath.win32.join(npmDirectory, ...entrySegments);
+          if (isFile(candidate)) return candidate;
+        }
+      }
+    }
+    const resolvedPath = resolved ?? binaryPath;
+    const extension = NodePath.win32.extname(resolvedPath).toLowerCase();
     if (!WINDOWS_SHIM_EXTENSIONS.has(extension)) {
-      return resolved;
+      return resolvedPath;
     }
 
-    const shimDirectory = NodePath.win32.dirname(resolved);
+    const shimDirectory = NodePath.win32.dirname(resolvedPath);
     for (const entrySegments of NPM_PACKAGE_ENTRY_CANDIDATES) {
       const candidate = NodePath.win32.join(shimDirectory, ...entrySegments);
       if (isFile(candidate)) {

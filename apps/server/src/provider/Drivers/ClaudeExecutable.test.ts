@@ -121,4 +121,19 @@ describe("resolveClaudeSdkExecutablePath", () => {
       ).toBe("claude");
     }),
   );
+
+  it.effect("finds the native npm package when the desktop PATH is missing", () =>
+    Effect.gen(function* () {
+      expect(
+        yield* resolveClaudeSdkExecutablePath("claude", {
+          APPDATA: "C:\\Users\\dev\\AppData\\Roaming",
+        }).pipe(
+          withWindowsResolution({
+            resolvedCommand: undefined,
+            existingFiles: [NPM_PACKAGE_EXE],
+          }),
+        ),
+      ).toBe(NPM_PACKAGE_EXE);
+    }),
+  );
 });

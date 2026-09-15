@@ -406,14 +406,18 @@ const runClaudeCommand = Effect.fn("runClaudeCommand")(function* (
   environment?: NodeJS.ProcessEnv,
 ) {
   const claudeEnvironment = yield* makeClaudeEnvironment(claudeSettings, environment);
-  const spawnCommand = yield* resolveSpawnCommand(claudeSettings.binaryPath, args, {
+  const executablePath = yield* resolveClaudeSdkExecutablePath(
+    claudeSettings.binaryPath,
+    claudeEnvironment,
+  );
+  const spawnCommand = yield* resolveSpawnCommand(executablePath, args, {
     env: claudeEnvironment,
   });
   const command = ChildProcess.make(spawnCommand.command, spawnCommand.args, {
     env: claudeEnvironment,
     shell: spawnCommand.shell,
   });
-  return yield* spawnAndCollect(claudeSettings.binaryPath, command);
+  return yield* spawnAndCollect(executablePath, command);
 });
 
 export const checkClaudeProviderStatus = Effect.fn("checkClaudeProviderStatus")(function* (
