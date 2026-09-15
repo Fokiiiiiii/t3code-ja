@@ -5,6 +5,9 @@ import {
   type TextProps as RNTextProps,
 } from "react-native";
 
+import { Children } from "react";
+
+import { useMobileI18n } from "../i18n/MobileI18nProvider";
 import { cn } from "../lib/cn";
 
 export type AppTextProps = RNTextProps & { readonly className?: string };
@@ -14,7 +17,15 @@ export type AppTextProps = RNTextProps & { readonly className?: string };
  * Uses Uniwind className — no manual style parsing.
  */
 export function AppText({ className, ...props }: AppTextProps) {
-  return <RNText className={cn("font-sans text-foreground", className)} {...props} />;
+  const { t } = useMobileI18n();
+  const children = Children.map(props.children, (child) =>
+    typeof child === "string" ? t(child) : child,
+  );
+  return (
+    <RNText className={cn("font-sans text-foreground", className)} {...props}>
+      {children}
+    </RNText>
+  );
 }
 
 export type AppTextInputProps = Omit<RNTextInputProps, "placeholderTextColor"> & {
@@ -27,6 +38,7 @@ export type AppTextInputProps = Omit<RNTextInputProps, "placeholderTextColor"> &
  * Uses Uniwind className — no manual style parsing.
  */
 export function AppTextInput({ className, ref, ...props }: AppTextInputProps) {
+  const { t } = useMobileI18n();
   return (
     <RNTextInput
       ref={ref}
@@ -38,6 +50,7 @@ export function AppTextInput({ className, ref, ...props }: AppTextInputProps) {
       selectionColorClassName="accent-foreground-secondary"
       cursorColorClassName="accent-foreground-secondary"
       {...props}
+      placeholder={props.placeholder ? t(props.placeholder) : props.placeholder}
     />
   );
 }

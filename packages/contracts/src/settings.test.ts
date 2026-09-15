@@ -6,6 +6,7 @@ import {
   ClientSettingsSchema,
   ClientSettingsPatch,
   ClaudeSettings,
+  DEFAULT_APP_LOCALE_PREFERENCE,
   DEFAULT_SERVER_SETTINGS,
   resolveProviderInstanceEnabled,
   ServerSettings,
@@ -16,6 +17,25 @@ const decodeClientSettings = Schema.decodeUnknownSync(ClientSettingsSchema);
 const decodeClientSettingsPatch = Schema.decodeUnknownSync(ClientSettingsPatch);
 const encodeClientSettings = Schema.encodeSync(ClientSettingsSchema);
 const decodeServerSettings = Schema.decodeUnknownSync(ServerSettings);
+
+describe("ClientSettings app locale", () => {
+  it("defaults to the system locale", () => {
+    expect(decodeClientSettings({}).appLocale).toBe(DEFAULT_APP_LOCALE_PREFERENCE);
+  });
+
+  it.each(["system", "en", "zh-CN", "ja"] as const)(
+    "accepts a supported app locale preference: %s",
+    (appLocale) => {
+      expect(decodeClientSettings({ appLocale }).appLocale).toBe(appLocale);
+      expect(decodeClientSettingsPatch({ appLocale }).appLocale).toBe(appLocale);
+    },
+  );
+
+  it.each(["zh-TW", "fr", "", null])("rejects an unsupported app locale: %s", (appLocale) => {
+    expect(() => decodeClientSettings({ appLocale })).toThrow();
+    expect(() => decodeClientSettingsPatch({ appLocale })).toThrow();
+  });
+});
 const decodeServerSettingsPatch = Schema.decodeUnknownSync(ServerSettingsPatch);
 const encodeServerSettings = Schema.encodeSync(ServerSettings);
 const decodeClaudeSettings = Schema.decodeUnknownSync(ClaudeSettings);

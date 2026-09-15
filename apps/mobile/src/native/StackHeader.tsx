@@ -16,6 +16,7 @@ import {
   type ReactNode,
 } from "react";
 import type { ColorValue } from "react-native";
+import { useMobileI18n } from "../i18n/MobileI18nProvider";
 
 export {
   nativeHeaderScrollEdgeEffects,
@@ -153,10 +154,23 @@ export function NativeStackScreenOptions(props: {
   readonly name?: string;
 }) {
   const navigation = useNativeStackNavigation();
+  const { t } = useMobileI18n();
   const lastAppliedOptionsSignatureRef = useRef<string | undefined>(undefined);
   const latestOptionFunctionsRef = useRef(new Map<string, (...args: unknown[]) => unknown>());
   const optionFunctionWrappersRef = useRef(new Map<string, (...args: unknown[]) => unknown>());
-  const normalizedOptions = useMemo(() => normalizeScreenOptions(props.options), [props.options]);
+  const localizedOptions = useMemo(() => {
+    if (!props.options) return props.options;
+    const options = { ...props.options };
+    if (typeof options.title === "string") options.title = t(options.title);
+    if (typeof options.headerBackTitle === "string") {
+      options.headerBackTitle = t(options.headerBackTitle);
+    }
+    return options;
+  }, [props.options, t]);
+  const normalizedOptions = useMemo(
+    () => normalizeScreenOptions(localizedOptions),
+    [localizedOptions],
+  );
   const stableOptions = normalizedOptions
     ? (stabilizeOptionFunctions(
         normalizedOptions,
@@ -197,13 +211,13 @@ export function NativeStackScreenOptions(props: {
   return null;
 }
 
-function labelFromChildren(children: ReactNode): string {
+function labelFromChildren(children: ReactNode, t: (text: string) => string): string {
   const parts: string[] = [];
   Children.forEach(children, (child) => {
     if (typeof child === "string" || typeof child === "number") {
       parts.push(String(child));
     } else if (isValidElement<{ children?: ReactNode }>(child)) {
-      parts.push(labelFromChildren(child.props.children));
+      parts.push(labelFromChildren(child.props.children, t));
     }
   });
   return parts.join("");
@@ -235,14 +249,16 @@ function elementTypeName(element: ReactElement): string | undefined {
 
 function convertMenuAction(
   element: ReactElement<ToolbarElementProps>,
+  t: (text: string) => string,
 ): NativeStackHeaderItemMenu["menu"]["items"][number] | null {
   const typeName = elementTypeName(element);
   if (typeName === "NativeHeaderToolbarMenuAction") {
-    const label = labelFromChildren(element.props.children);
+    const label = t(labelFromChildren(element.props.children, t));
     return {
       type: "action",
       label,
-      description: typeof element.props.subtitle === "string" ? element.props.subtitle : undefined,
+      description:
+        typeof element.props.subtitle === "string" ? t(element.props.subtitle) : undefined,
       disabled: Boolean(element.props.disabled),
       icon: iconFromProp(element.props.icon),
       onPress:
@@ -263,34 +279,40 @@ function convertMenuAction(
       type: "submenu",
       label:
         typeof element.props.title === "string"
-          ? element.props.title
-          : labelFromChildren(element.props.children),
+          ? t(element.props.title)
+          : t(labelFromChildren(element.props.children, t)),
       icon: iconFromProp(element.props.icon),
       inline: Boolean(element.props.inline),
-      items: collectMenuItems(element.props.children),
+      items: collectMenuItems(element.props.children, t),
     };
   }
 
   return null;
 }
 
-function collectMenuItems(children: ReactNode): NativeStackHeaderItemMenu["menu"]["items"] {
+function collectMenuItems(
+  children: ReactNode,
+  t: (text: string) => string,
+): NativeStackHeaderItemMenu["menu"]["items"] {
   const items: NativeStackHeaderItemMenu["menu"]["items"] = [];
   Children.forEach(children, (child) => {
     if (!isValidElement<ToolbarElementProps>(child)) {
       return;
     }
-    const item = convertMenuAction(child);
+    const item = convertMenuAction(child, t);
     if (item) {
       items.push(item);
       return;
     }
-    items.push(...collectMenuItems(child.props.children));
+    items.push(...collectMenuItems(child.props.children, t));
   });
   return items;
 }
 
-function convertToolbarChild(child: ReactNode): NativeStackHeaderItem | null {
+function convertToolbarChild(
+  child: ReactNode,
+  t: (text: string) => string,
+): NativeStackHeaderItem | null {
   if (!isValidElement<ToolbarElementProps>(child)) {
     return null;
   }
@@ -299,10 +321,10 @@ function convertToolbarChild(child: ReactNode): NativeStackHeaderItem | null {
   if (typeName === "NativeHeaderToolbarButton") {
     return {
       type: "button",
-      label: typeof child.props.label === "string" ? child.props.label : "",
+      label: typeof child.props.label === "string" ? t(child.props.label) : "",
       accessibilityLabel:
         typeof child.props.accessibilityLabel === "string"
-          ? child.props.accessibilityLabel
+          ? t(child.props.accessibilityLabel)
           : undefined,
       disabled: Boolean(child.props.disabled),
       icon: iconFromProp(child.props.icon),
@@ -319,16 +341,16 @@ function convertToolbarChild(child: ReactNode): NativeStackHeaderItem | null {
   if (typeName === "NativeHeaderToolbarMenu") {
     return {
       type: "menu",
-      label: typeof child.props.title === "string" ? child.props.title : "",
+      label: typeof child.props.title === "string" ? t(child.props.title) : "",
       accessibilityLabel:
         typeof child.props.accessibilityLabel === "string"
-          ? child.props.accessibilityLabel
+          ? t(child.props.accessibilityLabel)
           : undefined,
       disabled: Boolean(child.props.disabled),
       icon: iconFromProp(child.props.icon),
       menu: {
-        title: typeof child.props.title === "string" ? child.props.title : undefined,
-        items: collectMenuItems(child.props.children),
+        title: typeof child.props.title === "string" ? t(child.props.title) : undefined,
+        items: collectMenuItems(child.props.children, t),
       },
       sharesBackground: !child.props.separateBackground,
       tintColor: child.props.tintColor as ColorValue | undefined,
@@ -347,10 +369,13 @@ function convertToolbarChild(child: ReactNode): NativeStackHeaderItem | null {
   return null;
 }
 
-function collectToolbarItems(children: ReactNode): NativeStackHeaderItem[] {
+function collectToolbarItems(
+  children: ReactNode,
+  t: (text: string) => string,
+): NativeStackHeaderItem[] {
   const items: NativeStackHeaderItem[] = [];
   Children.forEach(children, (child) => {
-    const item = convertToolbarChild(child);
+    const item = convertToolbarChild(child, t);
     if (item) {
       if (item.type === "spacing") {
         // Native inserts spacing items at `index`, treating a missing index
@@ -368,7 +393,8 @@ function NativeHeaderToolbarRoot(props: {
   readonly children?: ReactNode;
 }) {
   const navigation = useNativeStackNavigation();
-  const items = useMemo(() => collectToolbarItems(props.children), [props.children]);
+  const { t } = useMobileI18n();
+  const items = useMemo(() => collectToolbarItems(props.children, t), [props.children, t]);
 
   // Swap toolbar owners before paint so split and compact headers cannot clear each other.
   useLayoutEffect(() => {

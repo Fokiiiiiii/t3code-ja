@@ -36,7 +36,7 @@ Tip: Use `npx t3@latest --help` for the full CLI reference.
 
 ### Desktop app
 
-Install the latest version of the desktop app from [GitHub Releases](https://github.com/pingdotgg/t3code/releases), or from your favorite package registry:
+Install the latest version of the desktop app from [GitHub Releases](https://github.com/Fokiiiiiii/t3code-ja/releases), or from your favorite package registry:
 
 #### Windows (`winget`)
 

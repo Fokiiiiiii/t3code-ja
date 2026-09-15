@@ -107,6 +107,10 @@
       "types": "./src/backgroundActivitySettings.ts",
       "import": "./src/backgroundActivitySettings.ts"
     },
+    "./appLocale": {
+      "types": "./src/appLocale.ts",
+      "import": "./src/appLocale.ts"
+    },
     "./String": {
       "types": "./src/String.ts",
       "import": "./src/String.ts"

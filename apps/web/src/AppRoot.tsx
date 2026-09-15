@@ -5,6 +5,7 @@ import { PreviewAutomationHosts } from "./components/preview/PreviewAutomationHo
 import { QuitHoldOverlay } from "./components/QuitHoldOverlay";
 import { AppAtomRegistryProvider } from "./rpc/atomRegistry";
 import type { AppRouter } from "./router";
+import { WebI18nProvider } from "./i18n/WebI18nProvider";
 
 /**
  * Owns renderer-wide providers. The Electron browser host intentionally sits
@@ -14,10 +15,12 @@ import type { AppRouter } from "./router";
 export function AppRoot({ router }: { readonly router: AppRouter }) {
   return (
     <AppAtomRegistryProvider>
-      <RouterProvider router={router} />
-      <PreviewAutomationHosts />
-      <ElectronBrowserHost />
-      <QuitHoldOverlay />
+      <WebI18nProvider>
+        <RouterProvider router={router} />
+        <PreviewAutomationHosts />
+        <ElectronBrowserHost />
+        <QuitHoldOverlay />
+      </WebI18nProvider>
     </AppAtomRegistryProvider>
   );
 }

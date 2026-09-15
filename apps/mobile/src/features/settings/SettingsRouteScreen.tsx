@@ -60,6 +60,7 @@ import { SettingsSection } from "./components/SettingsSection";
 import { SettingsSwitchRow } from "./components/SettingsSwitchRow";
 import { resolveAgentAwarenessPlatformPresentation } from "./SettingsRouteScreen.logic";
 import { planAutoSettleSettingsSync, type AutoSettleSettings } from "./autoSettleSettingsSync";
+import { useMobileI18n } from "../../i18n/MobileI18nProvider";
 
 type NotificationStatus = "checking" | "enabled" | "disabled" | "unsupported";
 type LiveActivityStatus = "checking" | "enabled" | "disabled" | "signed-out" | "linking";
@@ -79,6 +80,7 @@ function useDeviceRegistered(): boolean {
 
 export function SettingsRouteScreen() {
   const navigation = useNavigation();
+  const { t } = useMobileI18n();
 
   return (
     <>
@@ -87,11 +89,12 @@ export function SettingsRouteScreen() {
         <>
           {/* Android renders its own in-screen header instead of the native bar. */}
           <NativeStackScreenOptions options={{ headerShown: false }} />
-          <AndroidScreenHeader title="Settings" onBack={() => navigation.goBack()} />
+          <AndroidScreenHeader title={t("Settings")} onBack={() => navigation.goBack()} />
         </>
       ) : (
         <NativeStackScreenOptions
           options={{
+            title: t("Settings"),
             unstable_headerRightItems:
               Platform.OS === "ios"
                 ? () => [
@@ -597,6 +600,7 @@ function ConfiguredSettingsRouteScreen() {
 function GeneralSettingsSection() {
   return (
     <SettingsSection title="General">
+      <MobileLanguageRow />
       <SettingsRow icon="folder" label="Project Grouping" target="SettingsProjectGrouping" />
       {Platform.OS === "ios" ? (
         <SettingsRow icon="keyboard" label="Keyboard" target="SettingsKeyboard" />
@@ -604,6 +608,39 @@ function GeneralSettingsSection() {
       <AutoSettleSettingsRows />
       <SettingsRow icon="chart.bar.xaxis" label="Usage" target="SettingsUsage" />
     </SettingsSection>
+  );
+}
+
+function MobileLanguageRow() {
+  const { appLocale, locale, setAppLocale, t } = useMobileI18n();
+  const currentLabel =
+    appLocale === "system"
+      ? t("Follow system")
+      : appLocale === "ja"
+        ? t("Japanese")
+        : appLocale === "zh-CN"
+          ? t("Simplified Chinese")
+          : t("English");
+
+  return (
+    <SettingsRow
+      icon={{ ios: "globe", android: "public" }}
+      label="Language"
+      value={appLocale === "system" ? `${currentLabel} (${locale})` : currentLabel}
+      onPress={() =>
+        Alert.alert(
+          t("Language"),
+          t("T3 Code uses your device language when this is set to Follow system."),
+          [
+            { text: t("Follow system"), onPress: () => setAppLocale("system") },
+            { text: t("Japanese"), onPress: () => setAppLocale("ja") },
+            { text: t("English"), onPress: () => setAppLocale("en") },
+            { text: t("Simplified Chinese"), onPress: () => setAppLocale("zh-CN") },
+            { text: t("Cancel"), style: "cancel" },
+          ],
+        )
+      }
+    />
   );
 }
 

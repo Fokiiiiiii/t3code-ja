@@ -4,6 +4,7 @@ import { View } from "react-native";
 import { SymbolView } from "../../../components/AppSymbol";
 import { AppText as Text } from "../../../components/AppText";
 import { ThemedSwitch } from "../../../components/ThemedSwitch";
+import { useMobileI18n } from "../../../i18n/MobileI18nProvider";
 
 type SymbolName = ComponentProps<typeof SymbolView>["name"];
 
@@ -15,6 +16,7 @@ export function SettingsSwitchRow(props: {
   readonly value: boolean;
   readonly onValueChange: (value: boolean) => void;
 }) {
+  const { t } = useMobileI18n();
   return (
     <View
       className={
@@ -37,7 +39,7 @@ export function SettingsSwitchRow(props: {
         ) : null}
       </View>
       <ThemedSwitch
-        accessibilityLabel={props.label}
+        accessibilityLabel={t(props.label)}
         disabled={props.disabled}
         onValueChange={props.onValueChange}
         value={props.value}

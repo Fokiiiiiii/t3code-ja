@@ -1,4 +1,4 @@
-import { MenuView } from "@react-native-menu/menu";
+import { MenuView, type MenuAction } from "@react-native-menu/menu";
 import * as Haptics from "expo-haptics";
 import {
   cloneElement,
@@ -19,6 +19,7 @@ import {
 } from "react-native";
 import { withUniwind } from "uniwind";
 import { useAppearancePreferences } from "../features/settings/appearance/AppearancePreferencesProvider";
+import { useMobileI18n } from "../i18n/MobileI18nProvider";
 
 import { cn } from "../lib/cn";
 import { withMenuActionIconColors } from "../lib/menu-action-colors";
@@ -53,6 +54,18 @@ const ThemedMenuView = withUniwind(
     },
   },
 );
+
+function localizeMenuActions(
+  actions: readonly MenuAction[],
+  t: (text: string) => string,
+): MenuAction[] {
+  return actions.map((action) => ({
+    ...action,
+    title: t(action.title),
+    subtitle: action.subtitle ? t(action.subtitle) : action.subtitle,
+    subactions: action.subactions ? localizeMenuActions(action.subactions, t) : undefined,
+  }));
+}
 
 export function ControlPill(props: {
   readonly icon?: ComponentProps<typeof SymbolView>["name"];
@@ -158,7 +171,10 @@ export function ControlPillMenu(
     },
 ) {
   const { themeAppearance } = useAppearancePreferences();
+  const { t } = useMobileI18n();
   const isDarkMode = themeAppearance === "dark";
+  const localizedActions = useMemo(() => localizeMenuActions(props.actions, t), [props.actions, t]);
+  const localizedTitle = typeof props.title === "string" ? t(props.title) : props.title;
   const menuPress = useRef({ isPreparing: false, isOpen: false, suppressPress: false });
   const pendingPress = useRef<(() => void) | null>(null);
 
@@ -170,9 +186,9 @@ export function ControlPillMenu(
       const child = props.children as ReactElement<{ onLongPress?: () => void }>;
       return (
         <AndroidAnchoredMenu
-          actions={props.actions}
+          actions={localizedActions}
           className={props.className}
-          title={props.title}
+          title={localizedTitle}
           style={props.style}
           onPressAction={props.onPressAction}
         >
@@ -189,9 +205,9 @@ export function ControlPillMenu(
     }
     return (
       <AndroidAnchoredMenu
-        actions={props.actions}
+        actions={localizedActions}
         className={props.className}
-        title={props.title}
+        title={localizedTitle}
         style={props.style}
         onPressAction={props.onPressAction}
       >

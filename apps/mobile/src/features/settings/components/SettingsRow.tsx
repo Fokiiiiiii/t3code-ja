@@ -5,6 +5,7 @@ import { Pressable, View } from "react-native";
 import { SymbolView } from "../../../components/AppSymbol";
 
 import { AppText as Text } from "../../../components/AppText";
+import { useMobileI18n } from "../../../i18n/MobileI18nProvider";
 import type { SettingsLegalDocumentTarget, SettingsSheetTarget } from "./settings-sheet-targets";
 
 type SymbolName = ComponentProps<typeof SymbolView>["name"];
@@ -19,6 +20,7 @@ export function SettingsRow(props: {
   readonly onPress?: () => void;
 }) {
   const navigation = useNavigation();
+  const { t } = useMobileI18n();
   const content = (
     <View
       className={
@@ -62,7 +64,7 @@ export function SettingsRow(props: {
   if (target) {
     return (
       <Pressable
-        accessibilityLabel={props.label}
+        accessibilityLabel={t(props.label)}
         accessibilityRole="button"
         disabled={props.disabled}
         onPress={() =>
@@ -81,7 +83,7 @@ export function SettingsRow(props: {
   if (fullScreenTarget) {
     return (
       <Pressable
-        accessibilityLabel={props.label}
+        accessibilityLabel={t(props.label)}
         accessibilityRole="button"
         disabled={props.disabled}
         onPress={() => navigation.navigate(fullScreenTarget)}
