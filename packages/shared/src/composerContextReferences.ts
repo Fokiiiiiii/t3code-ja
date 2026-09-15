@@ -229,6 +229,17 @@ function formatComposerContextProviderPayload(record: KnownComposerContextRecord
       }
       return lines.join("\n");
     }
+    case "thread-reference": {
+      const lines = [`threadId: ${record.threadId}`];
+      if (record.projectTitle) lines.push(`project: ${record.projectTitle}`);
+      if (record.providerName) lines.push(`provider: ${record.providerName}`);
+      if (record.model) lines.push(`model: ${record.model}`);
+      if (record.summary.trim()) lines.push("summary:", indent(record.summary.trim()));
+      if (record.changedFiles.length > 0)
+        lines.push("changed files:", ...record.changedFiles.map((path) => `- ${path}`));
+      if (record.checkpointRef) lines.push(`checkpoint: ${record.checkpointRef}`);
+      return lines.join("\n");
+    }
     case "mention":
       return `path: ${record.path}`;
     case "skill":
