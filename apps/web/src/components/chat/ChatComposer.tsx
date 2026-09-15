@@ -1854,11 +1854,15 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
     () =>
       activeThread?.session || (activeThread?.messages.length ?? 0) > 0
         ? requestedProviderEntry
-        : (resolveQuotaFailoverProvider(requestedProviderEntry, providerInstanceEntries) ??
-          requestedProviderEntry),
+        : (resolveQuotaFailoverProvider(
+            requestedProviderEntry,
+            providerInstanceEntries,
+            activeProjectDefaultModelSelection?.model,
+          ) ?? requestedProviderEntry),
     [
       activeThread?.messages.length,
       activeThread?.session,
+      activeProjectDefaultModelSelection?.model,
       providerInstanceEntries,
       requestedProviderEntry,
     ],

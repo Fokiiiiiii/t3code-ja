@@ -68,6 +68,7 @@ export function providerSupportsManualCompaction(
 export function resolveQuotaFailoverProvider(
   selected: ProviderInstanceEntry | null | undefined,
   entries: ReadonlyArray<ProviderInstanceEntry>,
+  requiredModel?: string | null,
 ): ProviderInstanceEntry | null {
   if (!selected || !selected.snapshot.usageLimits) return null;
   const selectedWindows = selected.snapshot.usageLimits.windows;
@@ -77,6 +78,7 @@ export function resolveQuotaFailoverProvider(
     if (entry.instanceId === selected.instanceId || entry.driverKind !== selected.driverKind)
       return false;
     if (!entry.enabled || !entry.isAvailable || !entry.snapshot.usageLimits) return false;
+    if (requiredModel && !entry.models.some((model) => model.slug === requiredModel)) return false;
     return entry.snapshot.usageLimits.windows.every((window) => window.usedPercent < 100);
   });
   if (candidates.length === 0) return null;
