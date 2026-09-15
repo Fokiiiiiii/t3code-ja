@@ -29,6 +29,8 @@ import { PierreEntryIcon } from "./PierreEntryIcon";
 import { ComposerBanner } from "./ComposerBanner";
 import { resolvePullRequestState } from "../pullRequest/pullRequestPresentation";
 import type { ThreadReferenceDraft } from "~/lib/composerContextRecords";
+import { useI18n } from "~/i18n/WebI18nProvider";
+import { translateWebSource } from "~/i18n/messages";
 
 export type ComposerCommandItem =
   | {
@@ -159,6 +161,9 @@ const ComposerCommandMenuItem = memo(function ComposerCommandMenuItem(props: {
   onHighlight: (itemId: string | null) => void;
   onSelect: (item: ComposerCommandItem) => void;
 }) {
+  const { locale } = useI18n();
+  const localizedLabel = translateWebSource(locale, props.item.label);
+  const localizedDescription = translateWebSource(locale, props.item.description);
   const skillSourceKind =
     props.item.type === "skill" ? resolveProviderSkillSourceKind(props.item.skill) : null;
   const isSlashSkill =
@@ -209,11 +214,11 @@ const ComposerCommandMenuItem = memo(function ComposerCommandMenuItem(props: {
               {formatProviderSkillDisplayName(isSlashSkill)}
             </>
           ) : (
-            props.item.label
+            localizedLabel
           )}
         </span>
         <span className="min-w-0 max-w-[48ch] flex-1 truncate text-left text-secondary-label text-xs">
-          {props.item.description}
+          {localizedDescription}
         </span>
         {skillSourceKind ? (
           <SkillSourceBadge
