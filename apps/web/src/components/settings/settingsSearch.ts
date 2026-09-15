@@ -123,7 +123,7 @@ export const SETTINGS_SEARCH_ITEMS = [
     id: "language",
     title: "Language",
     to: "/settings/appearance",
-    searchTerms: ["日本語 English 中文 locale translation interface"],
+    searchTerms: ["日本語 English locale translation interface"],
   },
   {
     id: "color-scheme",

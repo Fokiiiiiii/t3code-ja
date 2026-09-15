@@ -55,7 +55,6 @@ export const JA_MESSAGES_COMMON = {
   "settings.language.label": "アプリの言語",
   "settings.language.system": "システムに合わせる",
   "settings.language.english": "英語",
-  "settings.language.chineseSimplified": "簡体字中国語",
   "settings.language.japanese": "日本語",
   "settings.item.colorScheme": "配色",
   "settings.item.themes": "テーマ",
