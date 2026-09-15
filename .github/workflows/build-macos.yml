@@ -17,7 +17,7 @@ jobs:
             runner: macos-15
             rust_target: aarch64-apple-darwin
           - arch: x64
-            runner: macos-15-large
+            runner: macos-15
             rust_target: x86_64-apple-darwin
     runs-on: ${{ matrix.runner }}
     steps:
