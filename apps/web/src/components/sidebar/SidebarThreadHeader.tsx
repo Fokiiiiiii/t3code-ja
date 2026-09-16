@@ -24,6 +24,8 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { SidebarMenuButton } from "../ui/sidebar";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 export interface SidebarThreadHeaderProps {
   /** Lands on the search field so a popup can anchor to its width. */
@@ -69,14 +71,16 @@ export function SidebarThreadHeader({
   activeSearchResultIndex,
   onClearSearch,
 }: SidebarThreadHeaderProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const resultsVisible = isSearching && searchResultCount > 0;
   // Results shrink as the query narrows, so the active index can outrun the
   // list; pointing aria-activedescendant at a removed option strands the
   // screen reader on nothing.
   const activeResultExists = resultsVisible && activeSearchResultIndex < searchResultCount;
   const newThreadLabel = newThreadShortcutLabel
-    ? `New thread (${newThreadShortcutLabel})`
-    : "New thread";
+    ? `${localize("New thread")} (${newThreadShortcutLabel})`
+    : localize("New thread");
 
   return (
     <div className="flex items-center gap-1">
@@ -93,8 +97,8 @@ export function SidebarThreadHeader({
           value={searchQuery}
           onChange={(event) => onSearchQueryChange(event.currentTarget.value)}
           onKeyDown={onSearchKeyDown}
-          placeholder="Search"
-          aria-label="Search threads"
+          placeholder={localize("Search")}
+          aria-label={localize("Search threads")}
           role="combobox"
           aria-autocomplete="list"
           aria-expanded={resultsVisible}
@@ -112,7 +116,7 @@ export function SidebarThreadHeader({
             size="icon-micro"
             variant="ghost"
             className="shrink-0 text-sidebar-muted-foreground hover:bg-sidebar-control-surface hover:text-sidebar-foreground"
-            aria-label="Clear thread search"
+            aria-label={localize("Clear thread search")}
             onClick={() => {
               onClearSearch();
               searchInputRef.current?.focus();
@@ -128,19 +132,19 @@ export function SidebarThreadHeader({
         {hasProjects ? (
           <>
             {projectScope}
-            <SidebarHeaderIconButton label="New project" onClick={onNewProject}>
+            <SidebarHeaderIconButton label={localize("New project")} onClick={onNewProject}>
               <FolderPlusIcon />
             </SidebarHeaderIconButton>
           </>
         ) : null}
         <SidebarHeaderIconButton
-          label="New thread"
+          label={localize("New thread")}
           tooltip={
             showNewThreadInProjectHint ? (
               <span className="flex flex-col gap-0.5">
                 <span>{newThreadLabel}</span>
                 <span className="text-muted-foreground">
-                  New thread in current project: Shift+click
+                  {localize("New thread in current project: Shift+click")}
                   {newThreadInProjectShortcutLabel ? ` (${newThreadInProjectShortcutLabel})` : ""}
                 </span>
               </span>

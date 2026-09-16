@@ -4932,6 +4932,9 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
     "対応プロバイダーは通常操作を承認し、それ以外では確認します。",
   "Allow commands and edits without prompts.": "確認なしでコマンドと編集を許可します。",
   "Search settings": "設定を検索",
+  "Clear thread search": "タスク検索をクリア",
+  "New thread in current project: Shift+click":
+    "現在のプロジェクトで新しいタスクを作成：Shift+クリック",
   Search: "検索",
   "Clear settings search": "設定検索をクリア",
   "No settings found": "設定が見つかりません",
@@ -4954,6 +4957,10 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Where new threads start, unless overridden by the project or t3.json.":
     "プロジェクトまたは t3.json で上書きしない限り、新しいタスクを開始する場所です。",
   Organization: "組織",
+  "What should we build in": "何を作りますか",
+  "Choose a project": "プロジェクトを選択",
+  "to start": "を選択して開始",
+  "Add a project to start": "プロジェクトを追加して開始",
   Behavior: "動作",
   "Thread notifications": "タスク通知",
   "System alerts when a thread finishes, fails, or needs input or approval. Applies to this device while T3 Code is open.":
