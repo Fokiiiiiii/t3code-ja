@@ -54,6 +54,8 @@ import {
   visibleResourceTelemetryProcesses,
 } from "./ResourceTelemetryDiagnostics.logic";
 import { SettingsSection, useRelativeTimeTick } from "./settingsLayout";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const HISTORY_WINDOWS = [
   { label: "5m", windowMs: 5 * 60_000, bucketMs: 15_000 },
@@ -189,6 +191,7 @@ function SourceStatusBadge({
       }
     | undefined;
 }) {
+  const { locale } = useI18n();
   const tone = presentation?.tone ?? sourceStatusTone(status);
   return (
     <span
@@ -211,23 +214,34 @@ function SourceStatusBadge({
           tone === "danger" && "bg-destructive",
         )}
       />
-      {label} {presentation?.label ?? status}
+      {translateWebSource(locale, label)}{" "}
+      {translateWebSource(locale, presentation?.label ?? status)}
     </span>
   );
 }
 
 function LastSampleLabel({ sampledAt }: { sampledAt: DateTime.Utc | null }) {
+  const { locale } = useI18n();
   useRelativeTimeTick();
   if (!sampledAt) {
-    return <span className="text-[11px] text-muted-foreground/55">Waiting for sample</span>;
+    return (
+      <span className="text-[11px] text-muted-foreground/55">
+        {translateWebSource(locale, "Waiting for sample")}
+      </span>
+    );
   }
   const relative = formatRelativeTime(DateTime.formatIso(sampledAt));
   if (!relative) {
-    return <span className="text-[11px] text-muted-foreground/55">Waiting for sample</span>;
+    return (
+      <span className="text-[11px] text-muted-foreground/55">
+        {translateWebSource(locale, "Waiting for sample")}
+      </span>
+    );
   }
   return (
     <span className="text-[11px] text-muted-foreground/60">
-      Updated <span className="font-mono tabular-nums">{relative.value}</span>
+      {translateWebSource(locale, "Updated")}{" "}
+      <span className="font-mono tabular-nums">{relative.value}</span>
       {relative.suffix ? ` ${relative.suffix}` : ""}
     </span>
   );
@@ -246,13 +260,14 @@ function IconStat({
   detail?: string | undefined;
   tone?: "default" | "warning" | "danger";
 }) {
+  const { locale } = useI18n();
   return (
     <div className="group min-w-0 px-4 py-4 sm:px-5">
       <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.11em] text-muted-foreground/70">
         <span className="text-muted-foreground/55 transition-colors group-hover:text-foreground/65">
           {icon}
         </span>
-        <span className="truncate">{label}</span>
+        <span className="truncate">{translateWebSource(locale, label)}</span>
       </div>
       <div
         className={cn(
@@ -279,15 +294,17 @@ function AggregateCard({
   accentClass: string;
   aggregate: ResourceTelemetryAggregate;
 }) {
+  const { locale } = useI18n();
   return (
     <div className="relative overflow-hidden border-t border-border/60 px-4 py-4 first:border-t-0 md:border-t-0 md:border-l md:first:border-l-0 sm:px-5">
       <span className={cn("absolute inset-x-5 top-0 h-0.5 rounded-full opacity-75", accentClass)} />
       <div className="flex items-center justify-between gap-3">
         <div className="text-[10px] font-semibold uppercase tracking-[0.11em] text-muted-foreground/75">
-          {label}
+          {translateWebSource(locale, label)}
         </div>
         <div className="rounded-md bg-muted/55 px-1.5 py-0.5 font-mono text-[9px] tabular-nums text-muted-foreground/70">
-          {aggregate.processCount} {aggregate.processCount === 1 ? "process" : "processes"}
+          {aggregate.processCount}{" "}
+          {translateWebSource(locale, aggregate.processCount === 1 ? "process" : "processes")}
         </div>
       </div>
       <div className="mt-3.5 grid grid-cols-2 gap-x-4 gap-y-2.5">
@@ -301,10 +318,11 @@ function AggregateCard({
 }
 
 function MetricPair({ label, value }: { label: string; value: string }) {
+  const { locale } = useI18n();
   return (
     <div className="min-w-0">
       <div className="text-[9px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/45">
-        {label}
+        {translateWebSource(locale, label)}
       </div>
       <div className="truncate font-mono text-xs font-medium tabular-nums text-foreground/90">
         {value}
@@ -314,13 +332,16 @@ function MetricPair({ label, value }: { label: string; value: string }) {
 }
 
 function HealthSource({ label, health }: { label: string; health: ResourceTelemetrySourceHealth }) {
+  const { locale } = useI18n();
   const expectedInBrowser =
     health.status === "unavailable" &&
     Option.exists(health.lastError, (error) => error.includes("'web' mode"));
   return (
     <div className="flex items-start justify-between gap-4 border-t border-border/50 py-3 first:border-t-0">
       <div className="min-w-0">
-        <div className="text-[13px] font-medium text-foreground">{label}</div>
+        <div className="text-[13px] font-medium text-foreground">
+          {translateWebSource(locale, label)}
+        </div>
         <div className="mt-1 text-[11px] leading-relaxed text-muted-foreground/65">
           {expectedInBrowser
             ? "Available when this page runs inside the desktop app."
@@ -355,9 +376,12 @@ function DetailRow({
   value: ReactNode;
   valueClassName?: string | undefined;
 }) {
+  const { locale } = useI18n();
   return (
     <div className="flex items-center justify-between gap-4 border-t border-border/50 py-2.5 first:border-t-0">
-      <span className="text-[11px] text-muted-foreground/75">{label}</span>
+      <span className="text-[11px] text-muted-foreground/75">
+        {translateWebSource(locale, label)}
+      </span>
       <span
         className={cn(
           "min-w-0 truncate text-right font-mono text-[11px] tabular-nums text-foreground/85",
