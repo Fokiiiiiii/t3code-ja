@@ -4200,7 +4200,9 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
           type: "warning",
           title: localize("Restored prompt may reappear in the stash"),
           description: localize(
-            "Browser storage rejected the update, so this entry could still be there after a reload.",
+            localize(
+              "Browser storage rejected the update, so this entry could still be there after a reload.",
+            ),
           ),
           data: { hideCopyButton: true },
         });
@@ -4474,7 +4476,9 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
           type: "warning",
           title: localize("Stash entry may come back"),
           description: localize(
-            "Browser storage rejected the delete, so this prompt could reappear after a reload.",
+            localize(
+              "Browser storage rejected the delete, so this prompt could reappear after a reload.",
+            ),
           ),
           data: { hideCopyButton: true },
         });
@@ -4589,7 +4593,9 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
           type: "error",
           title: localize("Could not stash this prompt"),
           description: localize(
-            "Browser storage rejected the write, so the composer was left as-is. Free up site data and try again.",
+            localize(
+              "Browser storage rejected the write, so the composer was left as-is. Free up site data and try again.",
+            ),
           ),
           data: { hideCopyButton: true },
         });
@@ -4603,7 +4609,9 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
           type: "warning",
           title: localize("Stashed prompt will not survive a reload"),
           description: localize(
-            "Browser storage is unavailable, so this stash is kept in memory only for this session.",
+            localize(
+              "Browser storage is unavailable, so this stash is kept in memory only for this session.",
+            ),
           ),
           data: { hideCopyButton: true },
         });
@@ -4691,7 +4699,9 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
             type: "warning",
             title: localize("Stashed images were not saved"),
             description: localize(
-              "The prompt was stashed, but browser storage rejected its images. They will be missing if you reload.",
+              localize(
+                "The prompt was stashed, but browser storage rejected its images. They will be missing if you reload.",
+              ),
             ),
             data: { hideCopyButton: true },
           });
@@ -4703,7 +4713,13 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
         toastManager.add({
           type: "warning",
           title: localize("Stashed images did not attach"),
-          description: `That prompt was restored or deleted before ${kept.length} image${kept.length === 1 ? "" : "s"} finished saving. Re-attach ${kept.length === 1 ? "it" : "them"} if you still need ${kept.length === 1 ? "it" : "them"}.`,
+          description: localize(
+            kept.length === 1
+              ? "That prompt was restored or deleted before 1 image finished saving. Re-attach it if you still need it."
+              : localize(
+                  "That prompt was restored or deleted before {count} images finished saving. Re-attach them if you still need them.",
+                ).replace("{count}", String(kept.length)),
+          ),
           data: { hideCopyButton: true },
         });
       }

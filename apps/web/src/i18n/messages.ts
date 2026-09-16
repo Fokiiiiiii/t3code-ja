@@ -5331,6 +5331,20 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Plan mode — click to return to normal build mode":
     "プランモード（クリックで通常のビルドモードに戻る）",
   "Default mode — click to enter plan mode": "通常モード（クリックでプランモードに切り替え）",
+  "Browser storage rejected the update, so this entry could still be there after a reload.":
+    "ブラウザーストレージが更新を拒否したため、再読み込み後もこの項目が残る可能性があります。",
+  "Browser storage rejected the delete, so this prompt could reappear after a reload.":
+    "ブラウザーストレージが削除を拒否したため、再読み込み後にこのプロンプトが再表示される可能性があります。",
+  "Browser storage rejected the write, so the composer was left as-is. Free up site data and try again.":
+    "ブラウザーストレージが書き込みを拒否したため、入力欄は変更されていません。サイトデータを整理して再試行してください。",
+  "Browser storage is unavailable, so this stash is kept in memory only for this session.":
+    "ブラウザーストレージを利用できないため、この退避内容は今回のセッション中だけメモリに保持されます。",
+  "The prompt was stashed, but browser storage rejected its images. They will be missing if you reload.":
+    "プロンプトは退避しましたが、ブラウザーストレージが画像を拒否しました。再読み込みすると画像がなくなります。",
+  "That prompt was restored or deleted before 1 image finished saving. Re-attach it if you still need it.":
+    "そのプロンプトは画像1枚の保存完了前に復元または削除されました。必要なら再度添付してください。",
+  "That prompt was restored or deleted before {count} images finished saving. Re-attach them if you still need them.":
+    "そのプロンプトは画像 {count} 枚の保存完了前に復元または削除されました。必要なら再度添付してください。",
   "Token by token is a worse experience": "トークン単位の表示は使い勝手が悪くなります",
   "Token streaming repaints the message on every delta. It is slower, harder to read, and costs more CPU on every connected device. This mode stays only for backwards compatibility. Use paragraph streaming instead.":
     "トークンストリーミングは更新のたびにメッセージを再描画します。遅く読みにくいうえ、接続中のすべてのデバイスで CPU 使用量が増えます。このモードは後方互換性のためだけに残しています。段落単位のストリーミングを使用してください。",
