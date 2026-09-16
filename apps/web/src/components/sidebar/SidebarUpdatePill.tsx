@@ -30,6 +30,8 @@ import {
   shouldShowDesktopUpdateCheckIcon,
 } from "./DesktopUpdateStatusIcon";
 import { SidebarUpdateReleaseNotes } from "./SidebarUpdateReleaseNotes";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 type SidebarUpdatePopoverChangeDetails = Parameters<
   NonNullable<ComponentProps<typeof Popover>["onOpenChange"]>
@@ -113,6 +115,8 @@ export function SidebarUpdatePill() {
 }
 
 function SidebarUpdateControl() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const state = useDesktopUpdateState();
   const [isActionPending, setIsActionPending] = useState(false);
   const [checkAnimationKey, setCheckAnimationKey] = useState(0);
@@ -145,11 +149,11 @@ function SidebarUpdateControl() {
   });
   const tooltip = showUpdateDetails
     ? state
-      ? getDesktopUpdateButtonTooltip(state)
-      : "Update available"
+      ? localize(getDesktopUpdateButtonTooltip(state))
+      : localize("Update available")
     : showCheckIcon
-      ? "Checking for updates…"
-      : "Check for updates";
+      ? localize("Checking for updates…")
+      : localize("Check for updates");
   const disabled = showCheckIcon
     ? true
     : showUpdateDetails
@@ -193,7 +197,7 @@ function SidebarUpdateControl() {
           toastManager.add(
             stackedThreadToast({
               type: "error",
-              title: "Could not download update",
+              title: localize("Could not download update"),
               description: actionError,
             }),
           );
@@ -202,8 +206,9 @@ function SidebarUpdateControl() {
           toastManager.add(
             stackedThreadToast({
               type: "error",
-              title: "Could not start update download",
-              description: error instanceof Error ? error.message : "An unexpected error occurred.",
+              title: localize("Could not start update download"),
+              description:
+                error instanceof Error ? error.message : localize("An unexpected error occurred."),
             }),
           );
         })
@@ -222,8 +227,9 @@ function SidebarUpdateControl() {
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Could not confirm update",
-            description: error instanceof Error ? error.message : "Update confirmation failed.",
+            title: localize("Could not confirm update"),
+            description:
+              error instanceof Error ? error.message : localize("Update confirmation failed."),
           }),
         );
         return;
@@ -241,7 +247,7 @@ function SidebarUpdateControl() {
           toastManager.add(
             stackedThreadToast({
               type: "error",
-              title: "Could not install update",
+              title: localize("Could not install update"),
               description: actionError,
             }),
           );
@@ -250,8 +256,9 @@ function SidebarUpdateControl() {
           toastManager.add(
             stackedThreadToast({
               type: "error",
-              title: "Could not install update",
-              description: error instanceof Error ? error.message : "An unexpected error occurred.",
+              title: localize("Could not install update"),
+              description:
+                error instanceof Error ? error.message : localize("An unexpected error occurred."),
             }),
           );
         })
@@ -270,9 +277,10 @@ function SidebarUpdateControl() {
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Could not check for updates",
+            title: localize("Could not check for updates"),
             description:
-              result.state.message ?? "Automatic updates are not available in this build.",
+              result.state.message ??
+              localize("Automatic updates are not available in this build."),
           }),
         );
       })
@@ -280,8 +288,8 @@ function SidebarUpdateControl() {
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Could not check for updates",
-            description: error instanceof Error ? error.message : "Update check failed.",
+            title: localize("Could not check for updates"),
+            description: error instanceof Error ? error.message : localize("Update check failed."),
           }),
         );
       })
@@ -392,7 +400,7 @@ function SidebarUpdateControl() {
         {showReleaseNotesPopover && state ? (
           <PopoverPopup
             align="center"
-            aria-label="Nightly update release notes"
+            aria-label={localize("Nightly update release notes")}
             className="max-w-none text-balance shadow-xl shadow-black/25"
             initialFocus={false}
             onKeyDownCapture={(event) => {
