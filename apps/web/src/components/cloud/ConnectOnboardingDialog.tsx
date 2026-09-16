@@ -19,6 +19,8 @@ import { Dialog } from "../ui/dialog";
 import { Switch } from "../ui/switch";
 import { toastManager } from "../ui/toast";
 import { WizardSteps, WizardPopup, WizardHeader, WizardPanel, WizardFooter } from "../ui/wizard";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 /**
  * Post-sign-in onboarding wizard for T3 Connect. Opens on every in-session
@@ -38,6 +40,8 @@ export function ConnectOnboardingDialog() {
 type OnboardingStep = "publish" | "devices";
 
 function ConfiguredConnectOnboardingDialog() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   // Mirrors ManagedRelayAuthProvider: a pending Clerk session must not read as
   // signed-out, or its later activation would look like a fresh sign-in.
   const { isLoaded, isSignedIn, userId } = useAuth({ treatPendingAsSignedOut: false });
@@ -191,10 +195,10 @@ function ConfiguredConnectOnboardingDialog() {
     if (!ok) return;
     toastManager.add({
       type: "success",
-      title: "T3 Connect enabled",
+      title: localize("T3 Connect enabled"),
       description: exposeEnvironment
-        ? "This environment is available to your other devices through T3 Connect."
-        : "This environment publishes agent activity to your mobile clients.",
+        ? localize("This environment is available to your other devices through T3 Connect.")
+        : localize("This environment publishes agent activity to your mobile clients."),
     });
     setStep("devices");
   };
@@ -210,17 +214,18 @@ function ConfiguredConnectOnboardingDialog() {
     >
       <WizardPopup>
         <WizardHeader
-          title="Set up T3 Connect"
+          title={localize("Set up T3 Connect")}
           description={
             <>
-              Mesh your devices together — publish this environment and connect the rest, all in one
-              place.
+              {localize(
+                "Mesh your devices together — publish this environment and connect the rest, all in one place.",
+              )}
             </>
           }
         >
           {steps.length > 1 ? (
             <WizardSteps
-              steps={steps.map((id) => STEP_LABELS[id])}
+              steps={steps.map((id) => localize(STEP_LABELS[id]))}
               currentStep={steps.indexOf(step)}
               isStepDisabled={() => isApplying}
               onStepChange={(index) => {
@@ -251,25 +256,25 @@ function ConfiguredConnectOnboardingDialog() {
                 checked={dontShowAgain}
                 onCheckedChange={(checked) => setDontShowAgain(checked === true)}
               />
-              Don&apos;t show this again
+              {localize("Don't show this again")}
             </label>
           }
         >
           {step === "publish" ? (
             <>
               <Button variant="ghost" disabled={isApplying} onClick={() => setStep("devices")}>
-                Not now
+                {localize("Not now")}
               </Button>
               <Button
                 disabled={isApplying || (controller.linkState.isPending && linkStateData === null)}
                 onClick={() => void applyPublishSelection()}
               >
-                {isApplying ? "Enabling…" : "Continue"}
+                {isApplying ? localize("Enabling…") : localize("Continue")}
               </Button>
             </>
           ) : (
             <Button disabled={isApplying} onClick={complete}>
-              Done
+              {localize("Done")}
             </Button>
           )}
         </WizardFooter>
@@ -334,14 +339,16 @@ function OnboardingToggleRow({
   readonly disabled: boolean;
   readonly onCheckedChange: (enabled: boolean) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <div className="flex items-start justify-between gap-4 border-t border-border/60 px-4 py-3 first:border-t-0">
       <div className="min-w-0">
-        <p className="text-sm font-medium">{title}</p>
-        <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+        <p className="text-sm font-medium">{localize(title)}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{localize(description)}</p>
       </div>
       <Switch
-        aria-label={title}
+        aria-label={localize(title)}
         checked={checked}
         disabled={disabled}
         onCheckedChange={onCheckedChange}
@@ -351,6 +358,7 @@ function OnboardingToggleRow({
 }
 
 function DevicesStep() {
+  const { locale } = useI18n();
   const { environments } = useEnvironments();
   const primaryEnvironment = usePrimaryEnvironment();
   const savedEnvironments = environments.filter(
@@ -365,8 +373,10 @@ function DevicesStep() {
         showSavedEnvironments
         empty={
           <p className="px-4 py-6 text-center text-sm text-muted-foreground">
-            No other environments are published to your account yet. Publish one from another device
-            and it will show up here.
+            {translateWebSource(
+              locale,
+              "No other environments are published to your account yet. Publish one from another device and it will show up here.",
+            )}
           </p>
         }
       />

@@ -1,6 +1,8 @@
 import { Smartphone } from "lucide-react";
 
 import { Spinner } from "~/components/ui/spinner";
+import { useI18n } from "~/i18n/WebI18nProvider";
+import { translateWebSource } from "~/i18n/messages";
 
 export function DeviceLoadingView(props: {
   readonly name: string;
@@ -9,6 +11,8 @@ export function DeviceLoadingView(props: {
   readonly message: string;
   readonly error?: boolean;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <div
       role={props.error ? "alert" : "status"}
@@ -26,13 +30,15 @@ export function DeviceLoadingView(props: {
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           {!props.error ? <Spinner className="size-3" /> : null}
-          <span>{props.message}</span>
+          <span>{localize(props.message)}</span>
         </div>
         {!props.error ? (
           <div
             className="flex w-24 gap-1"
             aria-label={
-              props.stage === "opening" ? "Step 1 of 2: open device" : "Step 2 of 2: connect video"
+              props.stage === "opening"
+                ? localize("Step 1 of 2: open device")
+                : localize("Step 2 of 2: connect video")
             }
           >
             <span className="h-1 flex-1 rounded-full bg-foreground/60" />

@@ -26,6 +26,8 @@ import { Skeleton } from "../ui/skeleton";
 import { toastManager } from "../ui/toast";
 import { Tooltip, TooltipTrigger, TooltipPopup } from "../ui/tooltip";
 import { presentSavedCloudEnvironmentConnection } from "./cloudEnvironmentConnectionPresentation";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const EMPTY_DISCOVERY_REFRESH_INTERVAL_MS = 5_000;
 
@@ -76,6 +78,8 @@ export function CloudEnvironmentConnectRows({
     readonly onChange: (environmentId: EnvironmentId, selected: boolean) => void;
   };
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const environmentsState = useRelayEnvironmentDiscovery();
   const registerEnvironment = useAtomCommand(environmentCatalog.register, {
     reportFailure: false,
@@ -129,8 +133,8 @@ export function CloudEnvironmentConnectRows({
     if (result._tag === "Success") {
       toastManager.add({
         type: "success",
-        title: "Environment added",
-        description: `Connecting to ${environment.label} through T3 Connect.`,
+        title: localize("Environment added"),
+        description: `${localize("Connecting to")} ${environment.label} ${localize("through T3 Connect.")}`,
       });
       return true;
     }
@@ -139,17 +143,19 @@ export function CloudEnvironmentConnectRows({
     }
     const cause = squashAtomCommandFailure(result);
     const message =
-      cause instanceof Error ? cause.message : "Could not connect the T3 Connect environment.";
+      cause instanceof Error
+        ? cause.message
+        : localize("Could not connect the T3 Connect environment.");
     const traceId = findErrorTraceId(cause);
     console.error("[t3-connect] Could not connect environment", { message, traceId, cause });
     toastManager.add({
       type: "error",
-      title: "Could not connect environment",
+      title: localize("Could not connect environment"),
       description: message,
       data: traceId
         ? {
             secondaryActionProps: {
-              children: "Copy trace ID",
+              children: localize("Copy trace ID"),
               onClick: () => void navigator.clipboard?.writeText(traceId),
             },
           }
@@ -322,15 +328,15 @@ export function CloudEnvironmentConnectRows({
               )}
             >
               {connectingEnvironmentIds.has(environment.environmentId)
-                ? "Connecting…"
+                ? localize("Connecting…")
                 : (savedConnection?.buttonLabel ??
                   (availability === "online"
-                    ? "Available"
+                    ? localize("Available")
                     : availability === "offline"
-                      ? "Offline"
+                      ? localize("Offline")
                       : availability === "error"
-                        ? "Unavailable"
-                        : "Checking…"))}
+                        ? localize("Unavailable")
+                        : localize("Checking…")))}
             </TooltipTrigger>
             <TooltipPopup className="max-w-80 break-words">{statusText}</TooltipPopup>
           </Tooltip>
@@ -354,12 +360,13 @@ export function CloudEnvironmentConnectRows({
                   savedConnection
                     ? savedConnection.statusText
                     : availability === "online"
-                      ? "Relay online"
+                      ? localize("Relay online")
                       : availability === "offline"
-                        ? "Relay offline"
+                        ? localize("Relay offline")
                         : availability === "checking"
-                          ? "Checking relay status"
-                          : (Option.getOrNull(error)?.message ?? "Relay status unavailable")
+                          ? localize("Checking relay status")
+                          : (Option.getOrNull(error)?.message ??
+                            localize("Relay status unavailable"))
                 }
               />
               <p className="truncate text-sm font-medium">{environment.label}</p>
@@ -387,7 +394,9 @@ export function CloudEnvironmentConnectRows({
               disabled={connectingEnvironmentIds.size > 0}
               onClick={() => void connectEnvironment(environment)}
             >
-              {connectingEnvironmentIds.has(environment.environmentId) ? "Adding…" : "Add"}
+              {connectingEnvironmentIds.has(environment.environmentId)
+                ? localize("Adding…")
+                : localize("Add")}
             </Button>
           )}
         </div>

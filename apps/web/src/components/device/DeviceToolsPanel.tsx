@@ -112,6 +112,8 @@ export function DeviceToolsPanel(props: {
   readonly onClose: () => void;
   readonly className?: string;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { environmentId, device } = props;
   const readDetail = useAtomCommand(deviceEnvironment.detail, { reportFailure: false });
   const runAction = useAtomCommand(deviceEnvironment.action, { reportFailure: false });
@@ -273,8 +275,8 @@ export function DeviceToolsPanel(props: {
                     }
                   }}
                 >
-                  <Toggle value="clear">Clear</Toggle>
-                  <Toggle value="tinted">Tinted</Toggle>
+                  <Toggle value="clear">{localize("Clear")}</Toggle>
+                  <Toggle value="tinted">{localize("Tinted")}</Toggle>
                 </ToggleGroup>
               </Row>
               <Row label="Color filter">
@@ -292,7 +294,7 @@ export function DeviceToolsPanel(props: {
               <ChoiceSelect
                 ariaLabel="Orientation"
                 value={null}
-                placeholder="Rotate to…"
+                placeholder={localize("Rotate to…")}
                 options={ORIENTATIONS}
                 disabled={disabled}
                 onChange={(value) => act({ type: "setOrientation", value })}
@@ -346,7 +348,7 @@ export function DeviceToolsPanel(props: {
 
         <Section title="Accessibility">
           <SwitchRow
-            label="Overlay element frames"
+            label={localize("Overlay element frames")}
             checked={props.axOverlay}
             disabled={props.access === null}
             onChange={(value) => {
@@ -376,8 +378,8 @@ export function DeviceToolsPanel(props: {
         {isIos ? (
           <Section title="Push notification">
             <SubmitRow
-              placeholder="Alert text"
-              action="Send"
+              placeholder={localize("Alert text")}
+              action={localize("Send")}
               disabled={disabled || !foregroundApp}
               onSubmit={(payload) =>
                 foregroundApp
@@ -386,7 +388,7 @@ export function DeviceToolsPanel(props: {
               }
             />
             {!foregroundApp ? (
-              <p className="text-xs text-muted-foreground">Open an app first.</p>
+              <p className="text-xs text-muted-foreground">{localize("Open an app first.")}</p>
             ) : null}
           </Section>
         ) : null}

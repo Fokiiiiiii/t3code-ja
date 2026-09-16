@@ -3,6 +3,8 @@ import type { EnvironmentId, EnvironmentMachineKind } from "@t3tools/contracts";
 import type { SidebarProjectSnapshot } from "~/sidebarProjectGrouping";
 import { EnvironmentMachineIcon } from "./EnvironmentMachineIcon";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 
 /**
  * Machine icon for a project picker row whose group has a member on another
@@ -17,11 +19,16 @@ export function ProjectEnvironmentBadge(props: {
   readonly primaryEnvironmentId: EnvironmentId | null;
   readonly machineByEnvironmentId: ReadonlyMap<EnvironmentId, EnvironmentMachineKind>;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   // Member order follows registration order and can differ between sessions,
   // so sort by label to keep the icon and tooltip stable.
   const remoteMembers = props.group.memberProjects
     .filter((member) => member.environmentId !== props.primaryEnvironmentId)
-    .map((member) => ({ ...member, environmentLabel: member.environmentLabel ?? "Remote" }))
+    .map((member) => ({
+      ...member,
+      environmentLabel: member.environmentLabel ?? localize("Remote"),
+    }))
     .sort((a, b) => a.environmentLabel.localeCompare(b.environmentLabel));
   const first = remoteMembers[0];
   if (!first) return null;
@@ -30,7 +37,7 @@ export function ProjectEnvironmentBadge(props: {
     .filter((label, index, all) => all.indexOf(label) === index)
     .join(", ");
   const alsoHere = remoteMembers.length < props.group.memberProjects.length;
-  const description = `${alsoHere ? "Also on" : "On"} ${labels}`;
+  const description = `${localize(alsoHere ? "Also on" : "On environment")} ${labels}`;
   return (
     <Tooltip>
       <TooltipTrigger

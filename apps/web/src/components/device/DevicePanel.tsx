@@ -190,13 +190,13 @@ export function DevicePanel(props: {
       <div className="flex h-9 shrink-0 items-center gap-1.5 border-b px-2">
         <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
           {props.surface.target
-            ? `${state.hosts.find((host) => host.id === props.surface.target?.hostId)?.label ?? "Device host"} · ${activeDevice?.version ?? props.surface.target.platform}`
-            : (pendingDevice?.name ?? "Choose a device")}
+            ? `${state.hosts.find((host) => host.id === props.surface.target?.hostId)?.label ?? localize("Device host")} · ${activeDevice?.version ?? props.surface.target.platform}`
+            : (pendingDevice?.name ?? localize("Choose a device"))}
         </span>
         {activeDevice ? (
           <>
             <DeviceButton
-              label="Home"
+              label={localize("Home")}
               onClick={() => handle?.pressButton("home")}
               disabled={!handle?.inputConnected}
             >
@@ -205,7 +205,7 @@ export function DevicePanel(props: {
             {activeDevice.platform === "android" ? (
               <>
                 <DeviceButton
-                  label="Back"
+                  label={localize("Back")}
                   onClick={() => handle?.pressButton("back")}
                   disabled={!handle?.inputConnected}
                 >
@@ -288,7 +288,7 @@ export function DevicePanel(props: {
                 environmentId={environmentId}
                 platform={activeDevice.platform}
                 deviceName={activeDevice.name}
-                deviceDescription={`${state.hosts.find((host) => host.id === activeDevice.hostId)?.label ?? "Device host"} · ${activeDevice.version}`}
+                deviceDescription={`${state.hosts.find((host) => host.id === activeDevice.hostId)?.label ?? localize("Device host")} · ${activeDevice.version}`}
                 deviceId={activeDevice.id}
                 hostId={activeDevice.hostId}
                 visible={props.visible}
@@ -311,10 +311,10 @@ export function DevicePanel(props: {
           </>
         ) : pendingDevice || hostBusy || !loaded ? (
           <DeviceLoadingView
-            name={pendingDevice?.name ?? "Devices"}
+            name={pendingDevice?.name ?? localize("Devices")}
             description={
               pendingDevice
-                ? `${state.hosts.find((host) => host.id === pendingDevice.hostId)?.label ?? "Device host"} · ${pendingDevice.version}`
+                ? `${state.hosts.find((host) => host.id === pendingDevice.hostId)?.label ?? localize("Device host")} · ${pendingDevice.version}`
                 : ""
             }
             stage="opening"
@@ -388,8 +388,9 @@ export function DevicePanel(props: {
               !state.devices.some((device) => device.platform === "android") &&
               !unavailablePlatforms.some((platform) => platform.platform === "android") ? (
                 <p className="max-w-sm text-xs">
-                  No Android virtual devices found. Create one in Android Studio's Device Manager,
-                  then refresh.
+                  {localize(
+                    "No Android virtual devices found. Create one in Android Studio's Device Manager, then refresh.",
+                  )}
                 </p>
               ) : null}
               {loaded && !hostBusy ? (
