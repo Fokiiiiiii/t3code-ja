@@ -5103,6 +5103,13 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "New thread in": "新しいタスクを作成：",
   "Thread title": "タスク名",
   "Thread actions for": "タスクの操作：",
+  Close: "閉じる",
+  Navigate: "移動",
+  "You:": "あなた：",
+  "Agent:": "エージェント：",
+  "No matching actions.": "一致する操作がありません。",
+  "No matching commands, projects, or threads.":
+    "一致するコマンド、プロジェクト、タスクがありません。",
   "Open file in preferred editor": "優先エディターでファイルを開く",
   "From t3.json": "t3.json から",
   Import: "インポート",
