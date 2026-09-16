@@ -40,6 +40,8 @@ import {
   useScopedSettingSource,
   useUpdateScopedSettings,
 } from "./useScopedSettings";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 /**
  * Rows for the settings a project may override. The same rows edit
@@ -47,6 +49,8 @@ import {
  * project or checkout scope; the scoped hooks route the write.
  */
 export function ProjectDefaultsSettings({ category }: { category: ProjectSettingsCategory }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { scope, target, targets, connectedEnvironments } = useSettingsScope();
   const settings = useScopedSettings();
   const updateSettings = useUpdateScopedSettings();
@@ -166,7 +170,7 @@ export function ProjectDefaultsSettings({ category }: { category: ProjectSetting
               unavailable || mixedModel || modelSource === "project"
                 ? undefined
                 : settings.defaultModelSelection === null
-                  ? "Automatic"
+                  ? localize("Automatic")
                   : undefined
             }
             resetAction={
@@ -219,7 +223,9 @@ export function ProjectDefaultsSettings({ category }: { category: ProjectSetting
                   ) : null}
                 </div>
               ) : (
-                <span className="text-sm text-muted-foreground">No providers available</span>
+                <span className="text-sm text-muted-foreground">
+                  {localize("No providers available")}
+                </span>
               )
             }
           />
@@ -258,8 +264,8 @@ export function ProjectDefaultsSettings({ category }: { category: ProjectSetting
                   )}
                   <SelectValue>
                     {mixedPermissions
-                      ? "Mixed"
-                      : runtimeModeConfig[settings.defaultRuntimeMode].label}
+                      ? localize("Mixed")
+                      : localize(runtimeModeConfig[settings.defaultRuntimeMode].label)}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectPopup align="end" alignItemWithTrigger={false}>
@@ -271,10 +277,10 @@ export function ProjectDefaultsSettings({ category }: { category: ProjectSetting
                         <div className="grid gap-0.5">
                           <span className="inline-flex items-center gap-1.5 font-medium">
                             <Icon className="size-3.5 shrink-0 text-muted-foreground" />
-                            {option.label}
+                            {localize(option.label)}
                           </span>
                           <span className="text-xs leading-4 text-muted-foreground">
-                            {option.description}
+                            {localize(option.description)}
                           </span>
                         </div>
                       </SelectItem>
@@ -322,16 +328,18 @@ export function ProjectDefaultsSettings({ category }: { category: ProjectSetting
                   <SelectValue>
                     {(value: string | null) =>
                       value === "local" || value === "worktree"
-                        ? resolveEnvModeLabel(value)
+                        ? localize(resolveEnvModeLabel(value))
                         : unavailable
-                          ? "Unavailable"
-                          : "Mixed"
+                          ? localize("Unavailable")
+                          : localize("Mixed")
                     }
                   </SelectValue>
                 </SelectTrigger>
                 <SelectPopup align="end" alignItemWithTrigger={false}>
-                  <SelectItem value="local">{resolveEnvModeLabel("local")}</SelectItem>
-                  <SelectItem value="worktree">{resolveEnvModeLabel("worktree")}</SelectItem>
+                  <SelectItem value="local">{localize(resolveEnvModeLabel("local"))}</SelectItem>
+                  <SelectItem value="worktree">
+                    {localize(resolveEnvModeLabel("worktree"))}
+                  </SelectItem>
                 </SelectPopup>
               </Select>
             }
