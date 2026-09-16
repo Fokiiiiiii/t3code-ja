@@ -49,6 +49,8 @@ import {
 import { cn, isMacPlatform, isWindowsPlatform } from "~/lib/utils";
 import { shellEnvironment } from "~/state/shell";
 import { useAtomCommand } from "~/state/use-atom-command";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 type OpenInOption = {
   label: string;
@@ -197,6 +199,8 @@ export const OpenInPicker = memo(function OpenInPicker({
   compact?: boolean;
   enableShortcut?: boolean;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const openInEditorMutation = useAtomCommand(shellEnvironment.openInEditor, "open in editor");
   const remote = useRemoteOpenState(environmentId);
   const remoteCapableEditors = useRemoteCapableEditors();
@@ -275,9 +279,9 @@ export const OpenInPicker = memo(function OpenInPicker({
   }, [enableShortcut, keybindings, openInCwd, openInEditor, preferredEditor]);
 
   return (
-    <Group aria-label="Open in editor">
+    <Group aria-label={localize("Open in editor")}>
       <Button
-        aria-label={compact ? "Open file in preferred editor" : undefined}
+        aria-label={compact ? localize("Open file in preferred editor") : undefined}
         className="ps-[8.5px]"
         size="xs"
         variant="outline"
@@ -297,22 +301,28 @@ export const OpenInPicker = memo(function OpenInPicker({
               : "sr-only @3xl/header-actions:not-sr-only @3xl/header-actions:ml-0.5"
           }
         >
-          Open
+          {localize("Open")}
         </span>
       </Button>
       <GroupSeparator {...(!compact ? { className: "hidden @3xl/header-actions:block" } : {})} />
       <Menu>
         <MenuTrigger
-          render={<Button aria-label="Choose editor" size="icon-xs" variant="outline" />}
+          render={
+            <Button aria-label={localize("Choose editor")} size="icon-xs" variant="outline" />
+          }
         >
           <ChevronDownIcon aria-hidden="true" className="size-4" />
         </MenuTrigger>
         <MenuPopup align="end">
           {remote.mode === "remote-unavailable" ? (
-            <MenuItem disabled>No SSH route to {environmentLabel}</MenuItem>
+            <MenuItem disabled>
+              {localize("No SSH route to")} {environmentLabel}
+            </MenuItem>
           ) : (
             <>
-              {options.length === 0 && <MenuItem disabled>No installed editors found</MenuItem>}
+              {options.length === 0 && (
+                <MenuItem disabled>{localize("No installed editors found")}</MenuItem>
+              )}
               {options.map(({ label, Icon, value, kind }) => (
                 <MenuItem key={value} onClick={() => openInEditor(value)}>
                   <Icon aria-hidden="true" className={getOpenInIconClass(kind)} />
@@ -323,7 +333,9 @@ export const OpenInPicker = memo(function OpenInPicker({
                 </MenuItem>
               ))}
               {remote.mode === "remote-links" && !remoteHintSeen && (
-                <MenuItem disabled>Opens over SSH. Needs your key on {environmentLabel}</MenuItem>
+                <MenuItem disabled>
+                  {localize("Opens over SSH. Needs your key on")} {environmentLabel}
+                </MenuItem>
               )}
             </>
           )}

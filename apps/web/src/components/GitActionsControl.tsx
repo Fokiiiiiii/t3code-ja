@@ -48,6 +48,8 @@ import {
 } from "~/components/Icons";
 import { RadioGroup } from "~/components/ui/radio-group";
 import { Spinner } from "~/components/ui/spinner";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 import { toggleVariants } from "~/components/ui/toggle";
 import { cn } from "~/lib/utils";
 import {
@@ -949,6 +951,8 @@ export default function GitActionsControl({
   draftId,
   onOpenPullRequest,
 }: GitActionsControlProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const updateThreadMetadata = useAtomCommand(
     threadEnvironment.updateMetadata,
     "thread branch metadata update",
@@ -1661,11 +1665,11 @@ export default function GitActionsControl({
         >
           <GitBranchPlusIcon className="size-3.5" aria-hidden />
           <span className="ml-0.5">
-            {initAction.isPending ? "Initializing..." : "Initialize Git"}
+            {initAction.isPending ? localize("Initializing...") : localize("Initialize Git")}
           </span>
         </Button>
       ) : (
-        <Group aria-label="Git actions" className="shrink-0">
+        <Group aria-label={localize("Git actions")} className="shrink-0">
           {quickActionDisabledReason ? (
             <Popover>
               <PopoverTrigger
@@ -1714,7 +1718,13 @@ export default function GitActionsControl({
             }}
           >
             <MenuTrigger
-              render={<Button aria-label="Git action options" size="icon-xs" variant="outline" />}
+              render={
+                <Button
+                  aria-label={localize("Git action options")}
+                  size="icon-xs"
+                  variant="outline"
+                />
+              }
               disabled={isGitActionRunning}
             >
               <ChevronDownIcon aria-hidden="true" className="size-4" />

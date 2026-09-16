@@ -34,6 +34,8 @@ import {
   MenuTrigger,
 } from "./ui/menu";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 
 export type { NewProjectScriptInput, ProjectScriptActionResult };
 
@@ -64,6 +66,8 @@ export default function ProjectScriptsControl({
   onUpdateScript,
   onDeleteScript,
 }: ProjectScriptsControlProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [actionsMenuOpen, setActionsMenuOpen] = useState({
     scripts: false,
     imports: false,
@@ -135,7 +139,7 @@ export default function ProjectScriptsControl({
     <>
       {primaryScript && <MenuSeparator />}
       <MenuGroup>
-        <MenuGroupLabel>From t3.json</MenuGroupLabel>
+        <MenuGroupLabel>{localize("From t3.json")}</MenuGroupLabel>
         {importableScripts.map((fileScript) => (
           <MenuItem
             key={`${fileScript.name} ${fileScript.command}`}
@@ -145,7 +149,7 @@ export default function ProjectScriptsControl({
             <ScriptIcon icon={fileScript.icon ?? "play"} className="size-4" />
             <span className="truncate">{fileScript.name}</span>
             <MenuShortcut className="ms-auto">
-              <DownloadIcon className="size-3.5" aria-label="Import" />
+              <DownloadIcon className="size-3.5" aria-label={localize("Import")} />
             </MenuShortcut>
           </MenuItem>
         ))}
@@ -156,7 +160,7 @@ export default function ProjectScriptsControl({
   return (
     <>
       {primaryScript ? (
-        <Group aria-label="Project scripts">
+        <Group aria-label={localize("Project scripts")}>
           <Tooltip>
             <TooltipTrigger
               render={
@@ -164,7 +168,7 @@ export default function ProjectScriptsControl({
                   size="xs"
                   variant="outline"
                   className="w-7 px-0 sm:w-6 @3xl/header-actions:w-auto! @3xl/header-actions:px-[calc(--spacing(2)-1px)]"
-                  aria-label={`Run ${primaryScript.name}`}
+                  aria-label={`${localize("Run")} ${primaryScript.name}`}
                   // The tooltip wrapper replaces data-slot="button", so themed
                   // toolbar styling needs its own hook.
                   data-toolbar-control=""
@@ -177,7 +181,9 @@ export default function ProjectScriptsControl({
                 {primaryScript.name}
               </span>
             </TooltipTrigger>
-            <TooltipPopup side="top">Run {primaryScript.name}</TooltipPopup>
+            <TooltipPopup side="top">
+              {localize("Run")} {primaryScript.name}
+            </TooltipPopup>
           </Tooltip>
           <GroupSeparator className="hidden @3xl/header-actions:block" />
           <Menu
@@ -186,7 +192,9 @@ export default function ProjectScriptsControl({
             onOpenChange={(open) => setActionsMenuOpen({ scripts: open, imports: false })}
           >
             <MenuTrigger
-              render={<Button size="icon-xs" variant="outline" aria-label="Script actions" />}
+              render={
+                <Button size="icon-xs" variant="outline" aria-label={localize("Script actions")} />
+              }
             >
               <ChevronDownIcon className="size-4" />
             </MenuTrigger>
@@ -217,7 +225,7 @@ export default function ProjectScriptsControl({
                         variant="ghost"
                         size="icon-xs"
                         className="absolute right-0 top-1/2 size-6 -translate-y-1/2 opacity-0 pointer-events-none transition-opacity group-hover:opacity-100 group-hover:pointer-events-auto group-focus-visible:opacity-100 group-focus-visible:pointer-events-auto"
-                        aria-label={`Edit ${script.name}`}
+                        aria-label={`${localize("Edit")} ${script.name}`}
                         onPointerDown={(event) => {
                           event.preventDefault();
                           event.stopPropagation();
@@ -248,10 +256,12 @@ export default function ProjectScriptsControl({
           open={actionsMenuOpen.imports}
           onOpenChange={(open) => setActionsMenuOpen({ scripts: false, imports: open })}
         >
-          <MenuTrigger render={<Button size="xs" variant="outline" aria-label="Project actions" />}>
+          <MenuTrigger
+            render={<Button size="xs" variant="outline" aria-label={localize("Project actions")} />}
+          >
             <PlusIcon className="size-3.5" />
             <span className="sr-only @3xl/header-actions:not-sr-only @3xl/header-actions:ml-0.5">
-              Add action
+              {localize("Add action")}
             </span>
             <ChevronDownIcon className="size-3.5" />
           </MenuTrigger>
@@ -271,7 +281,7 @@ export default function ProjectScriptsControl({
                 size="xs"
                 variant="outline"
                 className="w-7 px-0 sm:w-6 @3xl/header-actions:w-auto! @3xl/header-actions:px-[calc(--spacing(2)-1px)]"
-                aria-label="Add action"
+                aria-label={localize("Add action")}
                 // The tooltip wrapper replaces data-slot="button", so themed
                 // toolbar styling needs its own hook.
                 data-toolbar-control=""
@@ -281,10 +291,10 @@ export default function ProjectScriptsControl({
           >
             <PlusIcon className="size-3.5" />
             <span className="sr-only @3xl/header-actions:not-sr-only @3xl/header-actions:ml-0.5">
-              Add action
+              {localize("Add action")}
             </span>
           </TooltipTrigger>
-          <TooltipPopup side="top">Add action</TooltipPopup>
+          <TooltipPopup side="top">{localize("Add action")}</TooltipPopup>
         </Tooltip>
       )}
 
