@@ -4897,6 +4897,41 @@ const WEB_MESSAGE_TEMPLATES = (
   });
 
 const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
+  "Go to threads": "タスク一覧へ移動",
+  "Search settings": "設定を検索",
+  Search: "検索",
+  "Clear settings search": "設定検索をクリア",
+  "No settings found": "設定が見つかりません",
+  General: "一般",
+  Appearance: "外観",
+  Keybindings: "キーバインド",
+  SnapShots: "スナップショット",
+  Providers: "プロバイダー",
+  Integrations: "連携",
+  "Source Control": "ソース管理",
+  Connections: "接続",
+  Archive: "アーカイブ",
+  "Check for updates": "アップデートを確認",
+  "Settings breadcrumb": "設定のパンくずリスト",
+  "Default model for new threads. Projects can override it.":
+    "新しいタスクの既定モデルです。プロジェクトごとに上書きできます。",
+  "Default permissions for new threads. Projects can override them.":
+    "新しいタスクの既定権限です。プロジェクトごとに上書きできます。",
+  "Where new threads start, unless overridden by the project or t3.json.":
+    "プロジェクトまたは t3.json で上書きしない限り、新しいタスクを開始する場所です。",
+  Organization: "組織",
+  Behavior: "動作",
+  "Thread notifications": "タスク通知",
+  "System alerts when a thread finishes, fails, or needs input or approval. Applies to this device while T3 Code is open.":
+    "タスクの完了・失敗・入力待ち・承認待ちをシステム通知で知らせます。T3 Code の起動中、このデバイスに適用されます。",
+  "In-app notifications": "アプリ内通知",
+  "Show a toast when another thread finishes, fails, or needs input or approval while this app has focus.":
+    "このアプリが前面にあるとき、別のタスクの完了・失敗・入力待ち・承認待ちをトーストで知らせます。",
+  "Timestamp format": "時刻表示形式",
+  "System default": "システムの既定",
+  "Response streaming": "応答のストリーミング",
+  "Show finished paragraphs": "完成した段落を表示",
+  "Hide whitespace changes by default": "空白だけの変更を既定で隠す",
   "Background Activity": "バックグラウンド動作",
   "Pull request merged": "プルリクエストをマージしました",
   "Marked ready for review": "レビュー可能に変更しました",

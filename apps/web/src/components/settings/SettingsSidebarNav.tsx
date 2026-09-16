@@ -48,6 +48,8 @@ import {
 } from "./settingsSearch";
 import { useAvailableSettingsSearchItems } from "./useAvailableSettingsSearchItems";
 import { validateSettingsScopeSearch } from "./settingsScope";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const SnapShotIcon = createLucideIcon("snap-shot", [
   [
@@ -104,6 +106,7 @@ function SettingsSectionIcon({ to }: { to: SettingsPath }) {
 
 export function SettingsSidebarNav({ pathname }: { pathname: string }) {
   const navigate = useNavigate();
+  const { locale } = useI18n();
   const currentHash = useLocation({ select: (location) => location.hash });
   const currentSearch = useLocation({ select: (location) => location.search });
   const scopeSearch = useMemo(() => validateSettingsScopeSearch(currentSearch), [currentSearch]);
@@ -118,6 +121,7 @@ export function SettingsSidebarNav({ pathname }: { pathname: string }) {
   const results = useMemo(() => searchSettings(query, searchableItems), [query, searchableItems]);
   const isSearching = query.trim().length > 0;
   const hasResults = results.length > 0;
+  const localize = useCallback((value: string) => translateWebSource(locale, value), [locale]);
 
   useEffect(() => {
     setActiveResultIndex((index) => Math.min(index, Math.max(results.length - 1, 0)));
@@ -246,8 +250,8 @@ export function SettingsSidebarNav({ pathname }: { pathname: string }) {
                 setActiveResultIndex(0);
               }}
               onKeyDown={handleSearchKeyDown}
-              placeholder="Search"
-              aria-label="Search settings"
+              placeholder={localize("Search")}
+              aria-label={localize("Search settings")}
               role="combobox"
               aria-autocomplete="list"
               aria-expanded={isSearching && hasResults}
@@ -282,7 +286,7 @@ export function SettingsSidebarNav({ pathname }: { pathname: string }) {
               role="status"
               className="px-2 py-6 text-center text-xs text-sidebar-muted-foreground"
             >
-              No settings found
+              {localize("No settings found")}
             </p>
           ) : null}
           {isSearching ? (
@@ -308,10 +312,10 @@ export function SettingsSidebarNav({ pathname }: { pathname: string }) {
                     <SettingsSectionIcon to={item.to} />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-medium text-sidebar-foreground">
-                        {item.title}
+                        {localize(item.title)}
                       </span>
                       <span className="block truncate text-[11px] text-sidebar-muted-foreground/75">
-                        {SETTINGS_SECTION_LABELS[item.to]}
+                        {localize(SETTINGS_SECTION_LABELS[item.to])}
                       </span>
                     </span>
                   </SidebarMenuButton>
@@ -333,7 +337,7 @@ export function SettingsSidebarNav({ pathname }: { pathname: string }) {
                       onClick={() => handleSectionClick(item.to)}
                     >
                       <Icon />
-                      <span className="truncate">{item.label}</span>
+                      <span className="truncate">{localize(item.label)}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
