@@ -5882,6 +5882,11 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Script not found.": "スクリプトが見つかりません。",
   "Could not delete action": "操作を削除できませんでした",
   "An unexpected error occurred.": "予期しないエラーが発生しました。",
+  "Edit from here?": "ここから編集しますか？",
+  "Rewind chat to before this message. Your prompt and attachments return to the composer.":
+    "このメッセージより前に会話を巻き戻します。プロンプトと添付ファイルは入力欄に戻ります。",
+  "Revert files too": "ファイルも戻す",
+  "Revert and keep changes": "戻して変更を保持",
   "The composer is not ready": "入力欄の準備ができていません",
   "Try citing the selection after the connection or pending input is resolved.":
     "接続または入力待ちが解決してから、選択範囲を引用してください。",
