@@ -7,6 +7,8 @@ import {
 } from "./ContextWindowMeter.logic";
 import { Minimize2Icon } from "lucide-react";
 import { composerFloatingLayerProps } from "./composerEventScope";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 function formatPercentage(value: number | null): string | null {
   if (value === null || !Number.isFinite(value)) {
@@ -42,6 +44,8 @@ export function ContextWindowMeter(props: {
   compactDisabledReason?: string | null | undefined;
   quota?: ContextWindowQuotaSummary | null | undefined;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { usage, modelDisplayName, onCompact, compactDisabled, compactDisabledReason, quota } =
     props;
   const usedPercentage = formatPercentage(usage.usedPercentage);
@@ -54,10 +58,10 @@ export function ContextWindowMeter(props: {
   const isOverloaded = normalizedPercentage > 90;
   const hygiene = resolveContextHygieneState(usage.usedPercentage);
   const turnMetrics = [
-    { label: "Input", value: usage.lastInputTokens },
-    { label: "Output", value: usage.lastOutputTokens },
-    { label: "Reasoning", value: usage.lastReasoningOutputTokens },
-    { label: "Cache read", value: usage.lastCachedInputTokens },
+    { label: localize("Input tokens"), value: usage.lastInputTokens },
+    { label: localize("Output tokens"), value: usage.lastOutputTokens },
+    { label: localize("Reasoning tokens"), value: usage.lastReasoningOutputTokens },
+    { label: localize("Cache read tokens"), value: usage.lastCachedInputTokens },
   ].filter((metric): metric is { label: string; value: number } => metric.value != null);
   const turnDuration = formatDuration(usage.durationMs ?? null);
   const usageColor = isOverloaded
@@ -77,8 +81,8 @@ export function ContextWindowMeter(props: {
             className="h-7 gap-1 rounded-full px-1.5 hover:text-muted-foreground data-pressed:text-muted-foreground"
             aria-label={
               usage.maxTokens !== null && usedPercentage
-                ? `Context window ${usedPercentage} used`
-                : `Context window ${formatContextWindowTokens(usage.usedTokens)} tokens used`
+                ? `${localize("Context window")} ${usedPercentage} ${localize("used")}`
+                : `${localize("Context window")} ${formatContextWindowTokens(usage.usedTokens)} ${localize("tokens used")}`
             }
           >
             <span className="relative flex size-5 items-center justify-center">
@@ -160,19 +164,19 @@ export function ContextWindowMeter(props: {
             </div>
           ) : null}
           <div className="grid grid-cols-2 gap-x-3 gap-y-1 border-y border-border/60 py-2 text-[11px] leading-4">
-            <span className="text-secondary-label">Current context</span>
+            <span className="text-secondary-label">{localize("Current context")}</span>
             <span className="text-right font-medium tabular-nums text-secondary-label">
               {formatContextWindowTokens(usage.usedTokens)}
             </span>
-            <span className="text-secondary-label">Context capacity</span>
+            <span className="text-secondary-label">{localize("Context capacity")}</span>
             <span className="text-right font-medium tabular-nums text-secondary-label">
               {usage.maxTokens === null
-                ? "Unknown"
+                ? localize("Unknown")
                 : formatContextWindowTokens(usage.maxTokens ?? null)}
             </span>
             {showTotalProcessed ? (
               <>
-                <span className="text-secondary-label">Total processed</span>
+                <span className="text-secondary-label">{localize("Total processed")}</span>
                 <span className="text-right font-medium tabular-nums text-secondary-label">
                   {formatContextWindowTokens(totalProcessedTokens ?? null)}
                 </span>
@@ -181,7 +185,7 @@ export function ContextWindowMeter(props: {
           </div>
           {turnMetrics.length > 0 || usage.toolUses != null || turnDuration !== null ? (
             <div className="flex flex-col gap-1 text-[11px] leading-4">
-              <span className="font-medium text-muted-foreground">This turn</span>
+              <span className="font-medium text-muted-foreground">{localize("This turn")}</span>
               <div className="grid grid-cols-2 gap-x-3 gap-y-1">
                 {turnMetrics.map((metric) => (
                   <>
@@ -198,7 +202,7 @@ export function ContextWindowMeter(props: {
                 ))}
                 {usage.toolUses != null ? (
                   <>
-                    <span className="text-secondary-label">Tool calls</span>
+                    <span className="text-secondary-label">{localize("Tool calls")}</span>
                     <span className="text-right font-medium tabular-nums text-secondary-label">
                       {usage.toolUses}
                     </span>
@@ -206,7 +210,7 @@ export function ContextWindowMeter(props: {
                 ) : null}
                 {turnDuration !== null ? (
                   <>
-                    <span className="text-secondary-label">Duration</span>
+                    <span className="text-secondary-label">{localize("Duration")}</span>
                     <span className="text-right font-medium tabular-nums text-secondary-label">
                       {turnDuration}
                     </span>
@@ -217,7 +221,9 @@ export function ContextWindowMeter(props: {
           ) : null}
           {quota && quota.windows.length > 0 ? (
             <div className="flex flex-col gap-1 text-[11px] leading-4">
-              <span className="font-medium text-muted-foreground">{quota.label} quota</span>
+              <span className="font-medium text-muted-foreground">
+                {localize(quota.label)} {localize("quota")}
+              </span>
               {quota.windows.slice(0, 2).map((window) => (
                 <div
                   key={window.label}
@@ -225,7 +231,8 @@ export function ContextWindowMeter(props: {
                 >
                   <span>{window.label}</span>
                   <span className="font-medium tabular-nums">
-                    {Math.max(0, Math.min(100, Math.round(100 - window.usedPercent)))}% left
+                    {Math.max(0, Math.min(100, Math.round(100 - window.usedPercent)))}%{" "}
+                    {localize("left")}
                   </span>
                 </div>
               ))}
@@ -233,19 +240,25 @@ export function ContextWindowMeter(props: {
           ) : null}
           <div className="rounded-md bg-muted/45 px-2.5 py-2 text-[11px] leading-4">
             <div className="flex items-center justify-between gap-3">
-              <span className="font-medium text-muted-foreground">Session health</span>
+              <span className="font-medium text-muted-foreground">
+                {localize("Session health")}
+              </span>
               <span className="font-medium text-secondary-label">{hygiene.label}</span>
             </div>
             <p className="mt-0.5 text-secondary-label">{hygiene.description}</p>
             {hygiene.level !== "healthy" ? (
               <div className="mt-2 grid grid-cols-2 gap-2 border-t border-border/50 pt-2 text-[10px]">
                 <div>
-                  <div className="font-medium text-muted-foreground">Preserved</div>
-                  <div className="text-secondary-label">Task, decisions, changed files</div>
+                  <div className="font-medium text-muted-foreground">{localize("Preserved")}</div>
+                  <div className="text-secondary-label">
+                    {localize("Task, decisions, changed files")}
+                  </div>
                 </div>
                 <div>
-                  <div className="font-medium text-muted-foreground">Discardable</div>
-                  <div className="text-secondary-label">Old tool output, repeated logs</div>
+                  <div className="font-medium text-muted-foreground">{localize("Discardable")}</div>
+                  <div className="text-secondary-label">
+                    {localize("Old tool output, repeated logs")}
+                  </div>
                 </div>
               </div>
             ) : null}

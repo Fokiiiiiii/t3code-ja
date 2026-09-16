@@ -3,6 +3,8 @@ import { memo } from "react";
 
 import { Toggle } from "../ui/toggle";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 interface PanelLayoutControlsProps {
   showTerminalControl?: boolean;
@@ -32,6 +34,8 @@ export const PanelLayoutControls = memo(function PanelLayoutControls({
   onToggleTerminal,
   onToggleRightPanel,
 }: PanelLayoutControlsProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <div
       className="flex h-full shrink-0 items-center gap-1 [-webkit-app-region:no-drag]"
@@ -44,7 +48,7 @@ export const PanelLayoutControls = memo(function PanelLayoutControls({
               className="shrink-0 [-webkit-app-region:no-drag]"
               pressed={terminalOpen}
               onPressedChange={onToggleTerminal}
-              aria-label="Toggle terminal drawer"
+              aria-label={localize("Toggle terminal drawer")}
               variant="ghost"
               size="sm"
               disabled={!terminalAvailable}
@@ -54,8 +58,8 @@ export const PanelLayoutControls = memo(function PanelLayoutControls({
           </TooltipTrigger>
           <TooltipPopup side="bottom">
             {terminalAvailable
-              ? `Toggle terminal drawer${terminalShortcutLabel ? ` (${terminalShortcutLabel})` : ""}`
-              : "Terminal drawer is unavailable"}
+              ? `${localize("Toggle terminal drawer")}${terminalShortcutLabel ? ` (${terminalShortcutLabel})` : ""}`
+              : localize("Terminal drawer is unavailable")}
           </TooltipPopup>
         </Tooltip>
       ) : null}
@@ -67,8 +71,8 @@ export const PanelLayoutControls = memo(function PanelLayoutControls({
             onPressedChange={onToggleRightPanel}
             aria-label={
               liveAgentCount > 0
-                ? `Toggle right panel, ${liveAgentCount} ${liveAgentCount === 1 ? "agent" : "agents"} working`
-                : "Toggle right panel"
+                ? `${localize("Toggle right panel")}, ${liveAgentCount} ${localize(liveAgentCount === 1 ? "agent" : "agents")} ${localize("working")}`
+                : localize("Toggle right panel")
             }
             variant="ghost"
             size="sm"
@@ -87,12 +91,12 @@ export const PanelLayoutControls = memo(function PanelLayoutControls({
         </TooltipTrigger>
         <TooltipPopup side="bottom">
           {rightPanelAvailable
-            ? `Toggle right panel${rightPanelShortcutLabel ? ` (${rightPanelShortcutLabel})` : ""}${
+            ? `${localize("Toggle right panel")}${rightPanelShortcutLabel ? ` (${rightPanelShortcutLabel})` : ""}${
                 liveAgentCount > 0
-                  ? ` · ${liveAgentCount} ${liveAgentCount === 1 ? "agent" : "agents"} working`
+                  ? ` · ${liveAgentCount} ${localize(liveAgentCount === 1 ? "agent" : "agents")} ${localize("working")}`
                   : ""
               }`
-            : rightPanelUnavailableLabel}
+            : localize(rightPanelUnavailableLabel)}
         </TooltipPopup>
       </Tooltip>
     </div>
@@ -106,7 +110,8 @@ export const RightPanelMaximizeControl = memo(function RightPanelMaximizeControl
   maximized: boolean;
   onToggle: () => void;
 }) {
-  const label = maximized ? "Restore panel size" : "Maximize panel";
+  const { locale } = useI18n();
+  const label = translateWebSource(locale, maximized ? "Restore panel size" : "Maximize panel");
   return (
     <Tooltip>
       <TooltipTrigger

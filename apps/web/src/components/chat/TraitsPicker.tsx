@@ -40,6 +40,8 @@ import {
 } from "./ComposerControl";
 import { useComposerMenuProps } from "./composerEventScope";
 import { useComposerMenuState } from "./useComposerMenuState";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 type ProviderOptions = ReadonlyArray<ProviderOptionSelection>;
 
@@ -557,6 +559,8 @@ export const TraitsPicker = memo(function TraitsPicker({
     size?: ComposerControlSize;
     hidden?: boolean;
   }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const composerFloatingLayerProps = useComposerMenuProps();
   const [isMenuOpen, setIsMenuOpen] = useComposerMenuState(hidden);
   const { descriptors, primarySelectDescriptor, ultrathinkPromptControlled } =
@@ -603,7 +607,7 @@ export const TraitsPicker = memo(function TraitsPicker({
               : "text-foreground",
         )}
       />
-      <span className="sr-only">Fast mode on</span>
+      <span className="sr-only">{localize("Fast mode on")}</span>
     </>
   ) : null;
 

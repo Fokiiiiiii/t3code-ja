@@ -24,6 +24,8 @@ import LegacyThreadSidebar from "./LegacySidebar";
 import ThreadSidebar from "./Sidebar";
 import { SettingsSidebarNav } from "./settings/SettingsSidebarNav";
 import { SidebarChromeHeader } from "./sidebar/SidebarChrome";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 import {
   resolveSidebarStageFocusRingOffsetClass,
   useSidebarStageBackdropVariant,
@@ -70,6 +72,8 @@ function readInitialThreadSidebarWidth(): number {
 }
 
 function SidebarControl() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const keybindings = useAtomValue(primaryServerKeybindingsAtom);
   const { toggleSidebar } = useSidebar();
   const isSidebarVisible = useSidebarVisibility();
@@ -121,12 +125,13 @@ function SidebarControl() {
                   stageBackdropVariant &&
                   resolveSidebarStageFocusRingOffsetClass(stageBackdropVariant),
               )}
-              aria-label="Toggle main sidebar"
+              aria-label={localize("Toggle main sidebar")}
             />
           }
         />
         <TooltipPopup side="bottom">
-          Toggle main sidebar{shortcutLabel ? ` (${shortcutLabel})` : ""}
+          {localize("Toggle main sidebar")}
+          {shortcutLabel ? ` (${shortcutLabel})` : ""}
         </TooltipPopup>
       </Tooltip>
     </div>
