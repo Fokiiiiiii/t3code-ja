@@ -1,6 +1,8 @@
 import { memo } from "react";
 import { type PendingApproval } from "../../session-logic";
 import { cn } from "~/lib/utils";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 interface ComposerPendingApprovalPanelProps {
   approval: PendingApproval;
@@ -13,22 +15,24 @@ export const ComposerPendingApprovalPanel = memo(function ComposerPendingApprova
   pendingCount,
   className,
 }: ComposerPendingApprovalPanelProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const fallbackLabel =
     approval.requestKind === "mcp-elicitation"
-      ? "App access approval"
+      ? localize("App access approval")
       : approval.requestKind === "command"
-        ? "Command approval"
+        ? localize("Command approval")
         : approval.requestKind === "file-read"
-          ? "File read approval"
-          : "File change approval";
+          ? localize("File read approval")
+          : localize("File change approval");
   const detailAriaLabel =
     approval.requestKind === "mcp-elicitation"
-      ? "App access request"
+      ? localize("App access request")
       : approval.requestKind === "command"
-        ? "Command"
+        ? localize("Command")
         : approval.requestKind === "file-read"
-          ? "File to read"
-          : "File change";
+          ? localize("File to read")
+          : localize("File change");
 
   return (
     <span

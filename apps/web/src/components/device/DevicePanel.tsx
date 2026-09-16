@@ -35,6 +35,8 @@ import { DeviceLoadingView } from "./DeviceLoadingView";
 import { DeviceSetup } from "./DeviceSetup";
 import { DeviceToolsPanel } from "./DeviceToolsPanel";
 import { PreviewPanelShell, type PreviewPanelMode } from "../preview/PreviewPanelShell";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const platformLabel = (platform: DevicePlatform) =>
   platform === "ios" ? "iOS Simulators" : "Android Emulators";
@@ -50,6 +52,8 @@ export function DevicePanel(props: {
   readonly visible: boolean;
   readonly onDismissSetup: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { environmentId, threadId } = props.threadRef;
   const { state, loaded } = useDeviceState(environmentId);
   const list = useAtomCommand(deviceEnvironment.list, { reportFailure: false });
@@ -208,7 +212,7 @@ export function DevicePanel(props: {
                   <ChevronLeft />
                 </DeviceButton>
                 <DeviceButton
-                  label="Recents"
+                  label={localize("Recents")}
                   onClick={() => handle?.pressButton("recents")}
                   disabled={!handle?.inputConnected}
                 >
@@ -217,7 +221,7 @@ export function DevicePanel(props: {
               </>
             ) : (
               <DeviceButton
-                label="Rotate"
+                label={localize("Rotate")}
                 onClick={() => handle?.rotate()}
                 disabled={!handle?.inputConnected}
               >
@@ -225,7 +229,7 @@ export function DevicePanel(props: {
               </DeviceButton>
             )}
             <Toggle
-              aria-label="Tools"
+              aria-label={localize("Tools")}
               variant="ghost"
               size="xs"
               pressed={toolsOpen}
@@ -233,13 +237,13 @@ export function DevicePanel(props: {
             >
               <SlidersHorizontal />
             </Toggle>
-            <DeviceButton label="Float device over chat" onClick={floatActive}>
+            <DeviceButton label={localize("Float device over chat")} onClick={floatActive}>
               <PictureInPicture2 />
             </DeviceButton>
-            <DeviceButton label="Power off" onClick={() => closeActive(true)}>
+            <DeviceButton label={localize("Power off")} onClick={() => closeActive(true)}>
               <Power />
             </DeviceButton>
-            <DeviceButton label="Close" onClick={() => closeActive(false)}>
+            <DeviceButton label={localize("Close")} onClick={() => closeActive(false)}>
               <X />
             </DeviceButton>
           </>
@@ -255,7 +259,8 @@ export function DevicePanel(props: {
       ) : null}
       {bootingDevices.length > 0 ? (
         <div role="status" className="border-b px-3 py-2 text-xs text-muted-foreground">
-          Starting {bootingDevices.map((device) => device.name).join(", ")}… This can take a minute.
+          {localize("Starting devices")} {bootingDevices.map((device) => device.name).join(", ")}…{" "}
+          {localize("This can take a minute.")}
         </div>
       ) : null}
       {operationError ? (
@@ -267,7 +272,7 @@ export function DevicePanel(props: {
           <Button
             size="icon-xs"
             variant="ghost"
-            aria-label="Dismiss device error"
+            aria-label={localize("Dismiss device error")}
             onClick={() => setOperationError(null)}
           >
             <X className="size-3" />
@@ -316,11 +321,11 @@ export function DevicePanel(props: {
             message={
               pendingDevice
                 ? pendingDevice.booted
-                  ? "Opening device…"
-                  : "Starting device…"
+                  ? localize("Opening device…")
+                  : localize("Starting device…")
                 : state.hostStatus === "installing"
-                  ? "Installing device support…"
-                  : "Finding devices…"
+                  ? localize("Installing device support…")
+                  : localize("Finding devices…")
             }
           />
         ) : (
@@ -336,8 +341,8 @@ export function DevicePanel(props: {
                   <Smartphone className="size-6 opacity-60" />
                   <p className="max-w-sm">
                     {state.hostStatus === "failed"
-                      ? (state.hostStatusDetail ?? "The device hub failed to start.")
-                      : "No simulators or emulators were found on this environment."}
+                      ? (state.hostStatusDetail ?? localize("The device hub failed to start."))
+                      : localize("No simulators or emulators were found on this environment.")}
                   </p>
                 </>
               ) : null}
@@ -347,7 +352,7 @@ export function DevicePanel(props: {
                     <section key={group.platform} className="space-y-3">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Smartphone className="size-4 shrink-0" />
-                        <h3 className="font-medium">{platformLabel(group.platform)}</h3>
+                        <h3 className="font-medium">{localize(platformLabel(group.platform))}</h3>
                       </div>
                       <DiscoveryList>
                         {group.devices.map((device) => (
@@ -359,16 +364,16 @@ export function DevicePanel(props: {
                               </span>
                             }
                             title={device.name}
-                            description={`${state.hosts.find((host) => host.id === device.hostId)?.label} · ${device.version} · ${device.booted ? "Running" : "Stopped"}`}
+                            description={`${state.hosts.find((host) => host.id === device.hostId)?.label} · ${device.version} · ${localize(device.booted ? "Running" : "Stopped")}`}
                             disabled={pendingDeviceKey !== null}
-                            aria-label={`${device.booted ? "Open" : "Start"} ${device.name}`}
+                            aria-label={`${localize(device.booted ? "Open" : "Start")} ${device.name}`}
                             onClick={() => void selectDevice(deviceKey(device))}
                             action={
                               pendingDeviceKey === deviceKey(device) ? (
                                 <Spinner className="size-3" />
                               ) : (
                                 <span className="text-xs text-muted-foreground">
-                                  {device.booted ? "Open" : "Start"}
+                                  {localize(device.booted ? "Open" : "Start")}
                                 </span>
                               )
                             }
@@ -394,7 +399,7 @@ export function DevicePanel(props: {
                   size="sm"
                   onClick={() => void list({ environmentId, input: {} })}
                 >
-                  Refresh devices
+                  {localize("Refresh devices")}
                 </Button>
               ) : null}
             </div>

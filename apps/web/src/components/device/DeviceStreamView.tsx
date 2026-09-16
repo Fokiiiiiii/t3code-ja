@@ -12,6 +12,8 @@ import {
   type DeviceStreamClient,
   type DeviceStreamStatus,
 } from "./deviceStream";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const AX_POLL_INTERVAL_MS = 2_000;
 
@@ -41,6 +43,8 @@ export function DeviceStreamView(props: {
   readonly onHandle?: (handle: DeviceStreamHandle | null) => void;
   readonly onScreen?: (screen: DeviceScreenSize | null) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const access = useDeviceHubAccess(props.environmentId, props.hostId);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const clientRef = useRef<DeviceStreamClient | null>(null);
@@ -233,7 +237,7 @@ export function DeviceStreamView(props: {
       className="relative flex size-full items-center justify-center overflow-hidden bg-black/90 outline-none"
       tabIndex={0}
       role="application"
-      aria-label={`${props.platform === "ios" ? "iOS Simulator" : "Android Emulator"} screen`}
+      aria-label={`${localize(props.platform === "ios" ? "iOS Simulator" : "Android Emulator")} ${localize("screen")}`}
       onKeyDown={(event) => {
         if (event.metaKey && !["r", "R"].includes(event.key)) return;
         event.preventDefault();
@@ -312,17 +316,22 @@ export function DeviceStreamView(props: {
       {status === "streaming" && !inputState.connected ? (
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center p-2">
           <span className="rounded-md bg-background/85 px-2 py-1 text-xs text-muted-foreground">
-            Input disconnected{inputState.detail ? ` (${inputState.detail})` : ""}, reconnecting…
+            {localize("Input disconnected")}
+            {inputState.detail ? ` (${inputState.detail})` : ""}, {localize("reconnecting…")}
           </span>
         </div>
       ) : null}
       {status !== "streaming" ? (
         <div className="pointer-events-none absolute inset-0">
           <DeviceLoadingView
-            name={props.deviceName ?? "Device"}
+            name={props.deviceName ?? localize("Device")}
             description={props.deviceDescription ?? ""}
             stage="stream"
-            message={status === "error" ? (detail ?? "Stream failed.") : "Connecting video…"}
+            message={
+              status === "error"
+                ? (detail ?? localize("Stream failed."))
+                : localize("Connecting video…")
+            }
             error={status === "error"}
           />
         </div>
