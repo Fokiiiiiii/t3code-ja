@@ -4945,6 +4945,7 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   Connections: "接続",
   Archive: "アーカイブ",
   "Check for updates": "アップデートを確認",
+  "Restore device defaults": "デバイスの既定値に戻す",
   "Settings breadcrumb": "設定のパンくずリスト",
   "Default model for new threads. Projects can override it.":
     "新しいタスクの既定モデルです。プロジェクトごとに上書きできます。",
