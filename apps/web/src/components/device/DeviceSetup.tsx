@@ -10,6 +10,8 @@ import { Switch } from "~/components/ui/switch";
 import { deviceEnvironment } from "~/state/device";
 import { useAtomCommand } from "~/state/use-atom-command";
 import { cn } from "~/lib/utils";
+import { useI18n } from "~/i18n/WebI18nProvider";
+import { translateWebSource } from "~/i18n/messages";
 
 const platformName = (platform: DevicePlatform) => (platform === "ios" ? "iOS" : "Android");
 
@@ -54,6 +56,8 @@ export function DeviceSetup(props: {
   readonly state: DeviceServiceState;
   readonly onComplete?: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const configure = useAtomCommand(deviceEnvironment.configure);
   const list = useAtomCommand(deviceEnvironment.list, { reportFailure: false });
   const [pending, setPending] = useState<"hub" | "check" | "agent" | "complete" | null>(null);
@@ -77,11 +81,13 @@ export function DeviceSetup(props: {
   return (
     <>
       <WizardHeader
-        title="Set up devices"
-        description="Review what runs on this environment before using simulators and emulators."
+        title={localize("Set up devices")}
+        description={localize(
+          "Review what runs on this environment before using simulators and emulators.",
+        )}
       >
         <WizardSteps
-          steps={["Device hub", "Simulators", "Agent access"]}
+          steps={[localize("Device hub"), localize("Simulators"), localize("Agent access")]}
           currentStep={step}
           onStepChange={setStep}
           isStepDisabled={(requested) => busy || pending !== null || requested > step}
@@ -91,13 +97,13 @@ export function DeviceSetup(props: {
       <WizardPanel>
         {step === 0 ? (
           <section className="space-y-3 text-sm">
-            <h3 className="font-medium">Enable the device hub</h3>
+            <h3 className="font-medium">{localize("Enable the device hub")}</h3>
             <div className="flex items-start justify-between gap-4">
-              <p className="text-muted-foreground">{deviceHubDescription}</p>
+              <p className="text-muted-foreground">{localize(deviceHubDescription)}</p>
               <Switch
                 checked={enabled}
                 disabled={busy || pending !== null}
-                aria-label="Enable device hub"
+                aria-label={localize("Enable device hub")}
                 onCheckedChange={(checked) =>
                   void update("hub", {
                     enabled: Boolean(checked),
@@ -115,7 +121,7 @@ export function DeviceSetup(props: {
 
         {step === 1 ? (
           <section className="space-y-3 text-sm">
-            <h3 className="font-medium">Check simulator support</h3>
+            <h3 className="font-medium">{localize("Check simulator support")}</h3>
             <DevicePlatformSetup
               state={props.state}
               checking={pending === "check"}
@@ -132,13 +138,13 @@ export function DeviceSetup(props: {
 
         {step === 2 ? (
           <section className="space-y-3 text-sm">
-            <h3 className="font-medium">Allow agent control</h3>
+            <h3 className="font-medium">{localize("Allow agent control")}</h3>
             <div className="flex items-start justify-between gap-4">
-              <p className="text-muted-foreground">{agentDeviceDescription}</p>
+              <p className="text-muted-foreground">{localize(agentDeviceDescription)}</p>
               <Switch
                 checked={props.state.agentAccessEnabled}
                 disabled={!enabled || busy || pending !== null}
-                aria-label="Allow agents to control devices"
+                aria-label={localize("Allow agents to control devices")}
                 onCheckedChange={(checked) =>
                   void update("agent", { agentAccessEnabled: Boolean(checked) })
                 }
@@ -146,7 +152,9 @@ export function DeviceSetup(props: {
             </div>
             <AgentDeviceSetupStatus state={props.state} pending={pending === "agent"} />
             <p className="text-xs text-muted-foreground">
-              Leave this off to keep manual device controls without giving agents access.
+              {localize(
+                "Leave this off to keep manual device controls without giving agents access.",
+              )}
             </p>
           </section>
         ) : null}
@@ -159,14 +167,14 @@ export function DeviceSetup(props: {
 
       <WizardFooter>
         {step === 0 ? (
-          <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
+          <DialogClose render={<Button variant="outline" />}>{localize("Cancel")}</DialogClose>
         ) : (
           <Button
             variant="outline"
             disabled={busy || pending !== null}
             onClick={() => setStep(step - 1)}
           >
-            Back
+            {localize("Back")}
           </Button>
         )}
         {step < 2 ? (
@@ -174,14 +182,14 @@ export function DeviceSetup(props: {
             disabled={props.state.hostStatus !== "ready" || pending !== null}
             onClick={() => setStep(step + 1)}
           >
-            Continue
+            {localize("Continue")}
           </Button>
         ) : (
           <Button
             disabled={props.state.hostStatus !== "ready" || pending !== null}
             onClick={() => void update("complete", { onboardingCompleted: true })}
           >
-            {pending === "complete" ? "Saving…" : "Done"}
+            {pending === "complete" ? localize("Saving…") : localize("Done")}
           </Button>
         )}
       </WizardFooter>
@@ -198,6 +206,8 @@ export function DeviceHubSetupStatus({
   readonly pending: boolean;
   readonly compact?: boolean;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   if (!pending && state.hostStatus !== "ready") return null;
   return (
     <p role="status" className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -205,16 +215,16 @@ export function DeviceHubSetupStatus({
       {pending
         ? state.hostStatus === "installing"
           ? compact
-            ? "Installing…"
-            : "Installing device hub…"
+            ? localize("Installing…")
+            : localize("Installing device hub…")
           : state.hostStatus === "starting"
             ? compact
-              ? "Starting…"
-              : "Starting device hub…"
+              ? localize("Starting…")
+              : localize("Starting device hub…")
             : compact
-              ? "Updating…"
-              : "Updating device hub…"
-        : "Device hub is ready."}
+              ? localize("Updating…")
+              : localize("Updating device hub…")
+        : localize("Device hub is ready.")}
     </p>
   );
 }
@@ -225,16 +235,20 @@ function DevicePlatformSetup(props: {
   readonly disabled: boolean;
   readonly onCheck: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <div className="space-y-3">
       <PlatformStatus platform="iOS" status={platformSetupStatus(props.state, "ios")} />
       <PlatformStatus platform="Android" status={platformSetupStatus(props.state, "android")} />
       <p className="text-xs text-muted-foreground">
-        You can use either platform. Fixing a missing platform does not block the other one.
+        {localize(
+          "You can use either platform. Fixing a missing platform does not block the other one.",
+        )}
       </p>
       <Button size="compact" variant="outline" disabled={props.disabled} onClick={props.onCheck}>
         {props.checking ? <Spinner className="size-3" /> : null}
-        {props.checking ? "Checking…" : "Check again"}
+        {props.checking ? localize("Checking…") : localize("Check again")}
       </Button>
     </div>
   );
@@ -245,19 +259,21 @@ export function AgentDeviceSetupStatus(props: {
   readonly pending: boolean;
   readonly compact?: boolean;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   if (props.pending) {
     const label =
       props.state.hostStatus === "installing"
         ? props.compact
-          ? "Installing…"
-          : "Installing agent tools…"
+          ? localize("Installing…")
+          : localize("Installing agent tools…")
         : props.state.hostStatus === "starting"
           ? props.compact
-            ? "Starting…"
-            : "Starting agent tools…"
+            ? localize("Starting…")
+            : localize("Starting agent tools…")
           : props.compact
-            ? "Updating…"
-            : "Updating agent access…";
+            ? localize("Updating…")
+            : localize("Updating agent access…");
     return (
       <p role="status" className="flex items-center gap-2 text-xs text-muted-foreground">
         <Spinner className="size-3" />
@@ -273,7 +289,7 @@ export function AgentDeviceSetupStatus(props: {
     return (
       <p role="status" className="flex items-center gap-2 text-xs text-muted-foreground">
         <Check className="size-3 text-success" />
-        Agent tools are ready.
+        {localize("Agent tools are ready.")}
       </p>
     );
   }
@@ -285,6 +301,8 @@ export function PlatformStatus(props: {
   readonly status: { readonly ready: boolean; readonly message: string };
   readonly compact?: boolean;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const Icon = props.status.ready ? Check : CircleAlert;
   return (
     <div
@@ -299,7 +317,7 @@ export function PlatformStatus(props: {
       <div className={cn(props.compact && props.status.ready && "flex items-center gap-2")}>
         <p className="font-medium">{props.platform}</p>
         <p className="text-xs text-muted-foreground">
-          {props.compact && props.status.ready ? "Ready" : props.status.message}
+          {props.compact && props.status.ready ? localize("Ready") : localize(props.status.message)}
         </p>
       </div>
     </div>

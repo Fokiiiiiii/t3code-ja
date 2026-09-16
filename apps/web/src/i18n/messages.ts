@@ -5098,6 +5098,7 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Search projects...": "プロジェクトを検索…",
   "Error occurred": "エラーが発生しました",
   "Thread title cannot be empty": "タスク名を空にすることはできません",
+  "Failed to rename thread": "タスク名の変更に失敗しました",
   "Project settings": "プロジェクト設定",
   "Thread breadcrumb": "タスクのパンくずリスト",
   "New thread in": "新しいタスクを作成：",
@@ -5643,6 +5644,43 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Check for Updates": "アップデートを確認",
   "Downloading…": "ダウンロード中…",
   "Installing…": "インストール中…",
+  "Set up devices": "デバイスを設定",
+  "Review what runs on this environment before using simulators and emulators.":
+    "シミュレーターやエミュレーターを使う前に、この環境で動作するものを確認します。",
+  "Device hub": "デバイスハブ",
+  Simulators: "シミュレーター",
+  "Agent access": "エージェントアクセス",
+  "Enable the device hub": "デバイスハブを有効にする",
+  "Enable device hub": "デバイスハブを有効にする",
+  "Check simulator support": "シミュレーターの対応状況を確認",
+  "Allow agent control": "エージェントの操作を許可",
+  "Allow agents to control devices": "エージェントによるデバイス操作を許可",
+  "Leave this off to keep manual device controls without giving agents access.":
+    "エージェントにアクセスを許可せず、手動のデバイス操作だけを使うにはオフのままにします。",
+  "Installing device hub…": "デバイスハブをインストール中…",
+  "Starting device hub…": "デバイスハブを起動中…",
+  "Updating device hub…": "デバイスハブを更新中…",
+  "Device hub is ready.": "デバイスハブの準備ができました。",
+  "You can use either platform. Fixing a missing platform does not block the other one.":
+    "どちらのプラットフォームも使用できます。一方のプラットフォームが使えなくても、もう一方は利用できます。",
+  "Check again": "もう一度確認",
+  "Installing agent tools…": "エージェントツールをインストール中…",
+  "Starting agent tools…": "エージェントツールを起動中…",
+  "Updating agent access…": "エージェントアクセスを更新中…",
+  "Agent tools are ready.": "エージェントツールの準備ができました。",
+  Ready: "準備完了",
+  "Enable this environment to open simulators and emulators, whether they run here or on a remote device host.":
+    "この環境でシミュレーターやエミュレーターを開けるようにします。ローカルまたはリモートのデバイスホストで動作するものが対象です。",
+  "Allow new agent sessions in this environment to start and control local and remote devices, with required tools set up automatically.":
+    "この環境の新しいエージェントセッションがローカルまたはリモートのデバイスを起動・操作できるようにし、必要なツールを自動設定します。",
+  "iOS support was not detected.": "iOS の対応が検出されませんでした。",
+  "Android support was not detected.": "Android の対応が検出されませんでした。",
+  "Xcode is installed, but no iOS Simulator is available. Install a runtime in Xcode Settings → Components.":
+    "Xcode はインストールされていますが、iOS シミュレーターがありません。Xcode の設定 → Components でランタイムをインストールしてください。",
+  "The Android SDK is installed, but no virtual device exists. Create one in Android Studio → Device Manager.":
+    "Android SDK はインストールされていますが、仮想デバイスがありません。Android Studio → Device Manager で作成してください。",
+  "Xcode and iOS Simulator are available.": "Xcode と iOS シミュレーターを利用できます。",
+  "The Android SDK and Emulator are available.": "Android SDK とエミュレーターを利用できます。",
   "Up to date": "最新です",
   "Could not check for updates": "アップデートを確認できませんでした",
   "Automatic updates are not available in this build.":
