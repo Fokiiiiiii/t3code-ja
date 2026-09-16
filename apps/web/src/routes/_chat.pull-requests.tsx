@@ -88,6 +88,8 @@ import {
 import { assignProjectsToEnvironments } from "../components/pullRequest/pullRequestProjectAssignment.logic";
 import { pullRequestFilterProjects } from "../components/pullRequest/pullRequestProjectFilter.logic";
 import { environmentMachineIcon } from "../components/EnvironmentMachineIcon";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 import { PullRequestDetailPanel } from "../components/pullRequest/PullRequestDetailPanel";
 import {
   PullRequestFiltersMenu,
@@ -303,6 +305,8 @@ export const Route = createFileRoute("/_chat/pull-requests")({
 });
 
 function PullRequestsRouteView() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const search = Route.useSearch();
   const sort = search.sort ?? "ready";
   const statsPolicy: PullRequestStatsPolicy =
@@ -1698,9 +1702,11 @@ function PullRequestsRouteView() {
 
       {listQuery.error && entries.length > 0 ? (
         <div className="flex items-center justify-between gap-3 rounded-lg border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-xs">
-          <span>{listQuery.error} Showing the last pull requests loaded.</span>
+          <span>
+            {listQuery.error} {localize("Showing the last pull requests loaded.")}
+          </span>
           <Button size="xs" variant="outline" onClick={() => listQuery.refresh()}>
-            Retry
+            {localize("Retry")}
           </Button>
         </div>
       ) : null}
@@ -1709,7 +1715,7 @@ function PullRequestsRouteView() {
           {loadingMore ? (
             <span className="flex items-center gap-2">
               <Spinner aria-hidden className="size-3.5" />
-              {sentCursors === null ? "Updating pull requests" : "Loading more"}
+              {sentCursors === null ? localize("Updating pull requests") : localize("Loading more")}
             </span>
           ) : canContinue || pageSize < MAX_PAGE_SIZE ? (
             <Button
@@ -1718,10 +1724,10 @@ function PullRequestsRouteView() {
               onClick={loadMore}
               disabled={listQuery.isPending || showingCarried}
             >
-              Load more pull requests
+              {localize("Load more pull requests")}
             </Button>
           ) : (
-            <span>Narrow your search to find more pull requests.</span>
+            <span>{localize("Narrow your search to find more pull requests.")}</span>
           )}
         </div>
       ) : null}
@@ -2073,13 +2079,19 @@ function CompactFilterMenu<Value extends string>({
   onChange: (value: Value) => void;
   className?: string;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const current = options.find((option) => option.value === value) ?? options[0];
   if (!current) return null;
   return (
     <Menu>
       <MenuTrigger
-        aria-label={triggerLabel || iconOnly ? `${label}: ${current.label}` : label}
-        title={iconOnly ? `${label}: ${current.label}` : undefined}
+        aria-label={
+          triggerLabel || iconOnly
+            ? `${localize(label)}: ${localize(current.label)}`
+            : localize(label)
+        }
+        title={iconOnly ? `${localize(label)}: ${localize(current.label)}` : undefined}
         render={
           outlined ? <Button variant="outline" size={iconOnly ? "icon" : "default"} /> : undefined
         }
@@ -2097,11 +2109,11 @@ function CompactFilterMenu<Value extends string>({
         ) : triggerLabel ? (
           <>
             {triggerIcon}
-            <span>{triggerLabel}</span>
+            <span>{localize(triggerLabel)}</span>
           </>
         ) : (
           <>
-            <span className="truncate">{current.label}</span>
+            <span className="truncate">{localize(current.label)}</span>
             <ChevronDownIcon aria-hidden className="size-3 shrink-0 text-muted-foreground/70" />
           </>
         )}
@@ -2118,7 +2130,7 @@ function CompactFilterMenu<Value extends string>({
               >
                 <span className="flex min-w-0 items-center gap-2">
                   <PullRequestFilterOptionIcon option={option} />
-                  {option.label}
+                  {localize(option.label)}
                 </span>
               </MenuRadioItem>
             );
@@ -2128,7 +2140,7 @@ function CompactFilterMenu<Value extends string>({
               <Tooltip key={option.value}>
                 <TooltipTrigger render={item} />
                 <TooltipPopup side="right" className="max-w-64 break-words">
-                  {option.unavailable}
+                  {localize(option.unavailable)}
                 </TooltipPopup>
               </Tooltip>
             );
@@ -2165,6 +2177,8 @@ function ExpandableSearch({
    */
   onFocusWithin?: (focused: boolean) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const containerRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (!open) return;
@@ -2197,7 +2211,7 @@ function ExpandableSearch({
     <Button
       size="icon-sm"
       variant="ghost"
-      aria-label="Search pull requests"
+      aria-label={localize("Search pull requests")}
       onClick={() => onOpenChange(true)}
     >
       <SearchIcon className="size-4" />
@@ -2252,6 +2266,8 @@ function PullRequestsColumn({
   listBody: ReactNode;
   scrollRef: RefObject<HTMLDivElement | null>;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const markerRef = useRef<HTMLDivElement | null>(null);
   const [condensed, setCondensed] = useState(false);
   useEffect(() => {
@@ -2325,11 +2341,14 @@ function PullRequestsColumn({
       >
         {titlebarControls}
         {condensed ? (
-          <WorkspaceBreadcrumb ariaLabel="Pull request scope" className="overflow-hidden">
+          <WorkspaceBreadcrumb
+            ariaLabel={localize("Pull request scope")}
+            className="overflow-hidden"
+          >
             {/* An expanded search owns the scarce horizontal space. The page title stays
                 available to readers while the live filters remain available in both states. */}
             <WorkspaceBreadcrumbItem current className={cn(searchExpanded && "sr-only")}>
-              <h1 className="truncate">Pull Requests</h1>
+              <h1 className="truncate">{localize("Pull Requests")}</h1>
             </WorkspaceBreadcrumbItem>
             {searchExpanded ? null : <WorkspaceBreadcrumbSeparator />}
             <WorkspaceBreadcrumbItem className="shrink gap-1.5">
@@ -2357,9 +2376,9 @@ function PullRequestsColumn({
             </WorkspaceBreadcrumbItem>
           </WorkspaceBreadcrumb>
         ) : (
-          <WorkspaceBreadcrumb ariaLabel="Pull requests breadcrumb">
+          <WorkspaceBreadcrumb ariaLabel={localize("Pull requests breadcrumb")}>
             <WorkspaceBreadcrumbItem current>
-              <h1 className="truncate">Pull Requests</h1>
+              <h1 className="truncate">{localize("Pull Requests")}</h1>
             </WorkspaceBreadcrumbItem>
           </WorkspaceBreadcrumb>
         )}
@@ -2431,11 +2450,12 @@ function PullRequestRefreshControl({
   refreshing: boolean;
   onRefresh: () => void;
 }) {
+  const { locale } = useI18n();
   return (
     <Button
       size={compact ? "icon-sm" : "icon"}
       variant={compact ? "ghost" : "outline"}
-      aria-label="Refresh pull requests"
+      aria-label={translateWebSource(locale, "Refresh pull requests")}
       onClick={onRefresh}
       disabled={refreshing}
     >
