@@ -71,6 +71,8 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 import type {
   Components,
   ExtraProps as ReactMarkdownExtraProps,
@@ -694,13 +696,15 @@ function readInitialWordWrapSetting(): boolean {
 }
 
 function MarkdownTable({ children, ...props }: React.ComponentProps<"table">) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const tableRef = useRef<HTMLTableElement | null>(null);
   const [expanded, setExpanded] = useState(readInitialWordWrapSetting);
   const [copied, setCopied] = useState(false);
   const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const expandLabel = expanded ? "Collapse table cells" : "Expand table cells";
-  const copyLabel = copied ? "Copied" : "Copy table";
+  const expandLabel = localize(expanded ? "Collapse table cells" : "Expand table cells");
+  const copyLabel = localize(copied ? "Copied" : "Copy table");
 
   function toggleExpanded() {
     const table = tableRef.current;
@@ -814,8 +818,10 @@ function MarkdownTable({ children, ...props }: React.ComponentProps<"table">) {
             <TooltipPopup side="top">{copyLabel}</TooltipPopup>
           </Tooltip>
           <MenuPopup align="end">
-            <MenuItem onClick={() => handleCopy("markdown")}>Copy as Markdown</MenuItem>
-            <MenuItem onClick={() => handleCopy("csv")}>Copy as CSV</MenuItem>
+            <MenuItem onClick={() => handleCopy("markdown")}>
+              {localize("Copy as Markdown")}
+            </MenuItem>
+            <MenuItem onClick={() => handleCopy("csv")}>{localize("Copy as CSV")}</MenuItem>
           </MenuPopup>
         </Menu>
       </div>
@@ -827,6 +833,8 @@ function MarkdownDetails({
   children,
   open = false,
 }: Pick<React.ComponentProps<"details">, "children" | "open">) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [isOpen, setIsOpen] = useState(open);
   const childNodes = Children.toArray(children);
   const summaryIndex = childNodes.findIndex(
@@ -836,7 +844,7 @@ function MarkdownDetails({
   const summary =
     isValidElement<{ children?: ReactNode }>(summaryNode) && summaryNode.props.children
       ? summaryNode.props.children
-      : "Details";
+      : localize("Details");
   const content = childNodes.filter((_, index) => index !== summaryIndex);
 
   return (
@@ -920,11 +928,13 @@ function MarkdownCodeBlock({
   theme: "light" | "dark";
   children: ReactNode;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [copied, setCopied] = useState(false);
   const [wrapped, setWrapped] = useState(readInitialWordWrapSetting);
   const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const wrapLabel = wrapped ? "Disable line wrap" : "Wrap lines";
-  const copyLabel = copied ? "Copied" : "Copy code";
+  const wrapLabel = localize(wrapped ? "Disable line wrap" : "Wrap lines");
+  const copyLabel = localize(copied ? "Copied" : "Copy code");
 
   const handleCopy = useCallback(() => {
     if (typeof navigator === "undefined" || navigator.clipboard == null) {
@@ -978,7 +988,11 @@ function MarkdownCodeBlock({
             theme={theme}
           />
         </span>
-        <span className="flex items-center gap-0.5" role="toolbar" aria-label="Code block actions">
+        <span
+          className="flex items-center gap-0.5"
+          role="toolbar"
+          aria-label={localize("Code block actions")}
+        >
           <Tooltip>
             <TooltipTrigger
               render={
@@ -1357,7 +1371,9 @@ function ChatMarkdownMediaUnavailableLabel(props: {
   readonly alt: string;
   readonly kind?: "image" | "video" | undefined;
 }) {
-  const label = props.kind === "video" ? "Video unavailable" : "Image unavailable";
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
+  const label = localize(props.kind === "video" ? "Video unavailable" : "Image unavailable");
   return (
     <span className="inline-flex items-center gap-1.5">
       <TriangleAlertIcon aria-hidden className="size-3.5 shrink-0" />
@@ -1427,6 +1443,7 @@ function ChatMarkdownImage(props: {
   readonly originalUrl?: string | undefined;
   readonly onImageExpand?: ((preview: ExpandedImagePreview) => void) | undefined;
 }) {
+  const { locale } = useI18n();
   const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const src = props.src ?? loadedSrc;
@@ -1493,7 +1510,7 @@ function ChatMarkdownImage(props: {
         id={props.imageProps?.id}
         data-markdown-copy={props.copyMarkdown}
         role="status"
-        aria-label="Loading image"
+        aria-label={translateWebSource(locale, "Loading image")}
         className={CHAT_MARKDOWN_MEDIA_LAYOUT_CLASS_NAME}
       />
     );
@@ -1511,7 +1528,7 @@ function ChatMarkdownImage(props: {
         style={props.style}
         {...(failed
           ? { role: "alert" as const }
-          : { role: "status" as const, "aria-label": "Loading image" })}
+          : { role: "status" as const, "aria-label": translateWebSource(locale, "Loading image") })}
       >
         {failed ? (
           <span className="flex size-full items-center justify-center p-2 text-center text-xs text-muted-foreground">
