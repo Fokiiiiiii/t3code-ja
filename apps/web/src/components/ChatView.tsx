@@ -215,6 +215,8 @@ import { ThreadPullRequestsPanel } from "./pullRequest/ThreadPullRequestsPanel";
 import { useDeviceState } from "~/state/device";
 import { DeviceSetup } from "./device/DeviceSetup";
 import { Dialog } from "./ui/dialog";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 import { WizardPopup } from "./ui/wizard";
 import {
   deriveAgentPanelModel,
@@ -1447,6 +1449,8 @@ function releaseChatTimelineAnchor<T extends { readonly messageId: MessageId | n
 }
 
 export default function ChatView(props: ChatViewProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const {
     environmentId,
     threadId,
@@ -2636,7 +2640,7 @@ export default function ChatView(props: ChatViewProps) {
           size="xs"
           variant="ghost"
           disabled={disconnectingEnvironment}
-          title="Hide this server's threads. Switch it on again in Connections."
+          title={localize("Hide this server's threads. Switch it on again in Connections.")}
           onClick={() =>
             void handleDisconnectActiveEnvironment(activeEnvironmentUnavailableState.environmentId)
           }
@@ -2675,8 +2679,11 @@ export default function ChatView(props: ChatViewProps) {
               aria-hidden="true"
             />
           ),
-          title: `${unavailableConnection.phase === "connecting" ? "Connecting" : "Reconnecting"} to ${activeEnvironmentUnavailableState.label}`,
-          description: "Finishing an update",
+          title:
+            unavailableConnection.phase === "connecting"
+              ? `${activeEnvironmentUnavailableState.label} に${localize("Connecting")}`
+              : `${activeEnvironmentUnavailableState.label} に${localize("Reconnecting")}`,
+          description: localize("Finishing an update"),
           actions: disconnectAction,
         });
       } else {
@@ -2684,7 +2691,9 @@ export default function ChatView(props: ChatViewProps) {
           id: `environment-unavailable:${activeEnvironmentUnavailableState.environmentId}`,
           variant: unavailableConnection.phase === "error" ? "error" : "warning",
           icon: <WifiOffIcon />,
-          title: `${activeEnvironmentUnavailableState.label} is ${environmentReconnecting ? "reconnecting" : "offline"}`,
+          title: environmentReconnecting
+            ? `${activeEnvironmentUnavailableState.label} は${localize("Reconnecting")}です`
+            : `${activeEnvironmentUnavailableState.label} は${localize("offline")}`,
           actions: (
             <>
               {!environmentReconnecting ? (
@@ -2746,7 +2755,7 @@ export default function ChatView(props: ChatViewProps) {
               </TooltipPopup>
             </Tooltip>
           ) : (
-            "Server update available"
+            localize("Server update available")
           ),
         description:
           !updateInProgress &&
@@ -2767,14 +2776,14 @@ export default function ChatView(props: ChatViewProps) {
             desktopAppUpdate={versionMismatchDesktopAppUpdate}
             threadContinuation={versionMismatchThreadContinuation}
             targetVersion={versionMismatch.clientVersion}
-            label={updateFailed ? "Retry" : "Update"}
+            label={localize(updateFailed ? "Retry" : "Update")}
             variant="ghost"
           />
         ),
         ...(updateInProgress || (!updateFailed && !versionMismatchDismissKey)
           ? {}
           : {
-              dismissLabel: "Dismiss update notice",
+              dismissLabel: localize("Dismiss update notice"),
               onDismiss: () => {
                 if (updateFailed) {
                   dismissServerUpdateFailure(serverUpdateState);
@@ -3135,7 +3144,10 @@ export default function ChatView(props: ChatViewProps) {
       return true;
     }
     setUsageLimitsPanel(null);
-    toastManager.add({ type: "info", title: "Usage limits are unavailable for this provider" });
+    toastManager.add({
+      type: "info",
+      title: localize("Usage limits are unavailable for this provider"),
+    });
     return false;
   }, [
     activeProviderInstanceId,
@@ -3290,7 +3302,7 @@ export default function ChatView(props: ChatViewProps) {
     async (attachment: ChatFileAttachment) => {
       const connection = readPreparedConnection(environmentId);
       if (!connection) {
-        toastManager.add({ type: "error", title: "The environment is not connected." });
+        toastManager.add({ type: "error", title: localize("The environment is not connected.") });
         return;
       }
 
@@ -3308,8 +3320,9 @@ export default function ChatView(props: ChatViewProps) {
       } catch (error) {
         toastManager.add({
           type: "error",
-          title: "Could not download " + attachment.name,
-          description: error instanceof Error ? error.message : "The attachment is unavailable.",
+          title: `${localize("Could not download")} ${attachment.name}`,
+          description:
+            error instanceof Error ? error.message : localize("The attachment is unavailable."),
         });
       }
     },
@@ -3823,9 +3836,10 @@ export default function ChatView(props: ChatViewProps) {
       toastManager.add({
         type: "warning",
         id: "load-balancing-attachments",
-        title: "Keep attachments on this machine",
-        description:
+        title: localize("Keep attachments on this machine"),
+        description: localize(
           "Remove attachments before choosing automatic routing, then attach them on the selected machine.",
+        ),
       });
       return;
     }
@@ -3848,12 +3862,12 @@ export default function ChatView(props: ChatViewProps) {
   ]);
   const autoEnvironmentLabel = automaticEnvironment
     ? draftThread?.loadBalancedEnvironmentId
-      ? "Auto balance"
+      ? localize("Auto balance")
       : loadBalancing.pending
-        ? "Checking machines…"
+        ? localize("Checking machines…")
         : loadBalancing.failed
-          ? "Auto balance unavailable"
-          : "Auto balance"
+          ? localize("Auto balance unavailable")
+          : localize("Auto balance")
     : undefined;
 
   // Handle environment change for draft threads.  When the user picks a
@@ -3944,7 +3958,7 @@ export default function ChatView(props: ChatViewProps) {
       const error = squashAtomCommandFailure(result);
       setThreadError(
         activeThread.id,
-        error instanceof Error ? error.message : "Failed to interrupt the current turn.",
+        error instanceof Error ? error.message : localize("Failed to interrupt the current turn."),
       );
     }
   }, [interruptThreadTurn]);
@@ -3970,8 +3984,8 @@ export default function ChatView(props: ChatViewProps) {
       if (prompt !== null && !composer.insertTextAtEnd(prompt, { ensureLeadingBoundary: true })) {
         toastManager.add({
           type: "error",
-          title: "Unable to add to chat",
-          description: "The composer is busy; try again once it is ready.",
+          title: localize("Unable to add to chat"),
+          description: localize("The composer is busy; try again once it is ready."),
         });
         return;
       }
@@ -4414,15 +4428,16 @@ export default function ChatView(props: ChatViewProps) {
       if (result._tag === "Success") {
         toastManager.add({
           type: "success",
-          title: `Deleted action "${deletedName ?? "Unknown"}"`,
+          title: `${localize("Deleted action")} "${deletedName ?? localize("Unknown")}"`,
         });
       } else if (!isAtomCommandInterrupted(result)) {
         const error = squashAtomCommandFailure(result);
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Could not delete action",
-            description: error instanceof Error ? error.message : "An unexpected error occurred.",
+            title: localize("Could not delete action"),
+            description:
+              error instanceof Error ? error.message : localize("An unexpected error occurred."),
           }),
         );
       }
@@ -4497,7 +4512,7 @@ export default function ChatView(props: ChatViewProps) {
           toastManager.add(
             stackedThreadToast({
               type: "error",
-              title: "Unable to open browser",
+              title: localize("Unable to open browser"),
               description: error.message,
             }),
           );
@@ -5102,8 +5117,8 @@ export default function ChatView(props: ChatViewProps) {
       toastManager.add(
         stackedThreadToast({
           type: "error",
-          title: "Failed to copy path",
-          description: "Clipboard API unavailable.",
+          title: localize("Failed to copy path"),
+          description: localize("Clipboard API unavailable."),
         }),
       );
       return;
@@ -5113,7 +5128,7 @@ export default function ChatView(props: ChatViewProps) {
       () => {
         toastManager.add({
           type: "success",
-          title: "Path copied",
+          title: localize("Path copied"),
           description: relativePath,
         });
       },
@@ -5121,8 +5136,8 @@ export default function ChatView(props: ChatViewProps) {
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Failed to copy path",
-            description: error instanceof Error ? error.message : "An error occurred.",
+            title: localize("Failed to copy path"),
+            description: error instanceof Error ? error.message : localize("An error occurred."),
           }),
         );
       },
@@ -6008,8 +6023,8 @@ export default function ChatView(props: ChatViewProps) {
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Failed to un-settle thread",
-            description: error instanceof Error ? error.message : "An error occurred.",
+            title: localize("Failed to un-settle thread"),
+            description: error instanceof Error ? error.message : localize("An error occurred."),
           }),
         );
       }
@@ -6036,8 +6051,8 @@ export default function ChatView(props: ChatViewProps) {
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Failed to wake thread",
-            description: error instanceof Error ? error.message : "An error occurred.",
+            title: localize("Failed to wake thread"),
+            description: error instanceof Error ? error.message : localize("An error occurred."),
           }),
         );
       }
@@ -6097,7 +6112,7 @@ export default function ChatView(props: ChatViewProps) {
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Failed to switch checkout",
+            title: localize("Failed to switch checkout"),
             description: chatActionErrorMessage(squashAtomCommandFailure(checkoutResult)),
           }),
         );
@@ -6117,7 +6132,7 @@ export default function ChatView(props: ChatViewProps) {
           toastManager.add(
             stackedThreadToast({
               type: "error",
-              title: "Checkout switched, but the thread could not be updated",
+              title: localize("Checkout switched, but the thread could not be updated"),
               description: chatActionErrorMessage(squashAtomCommandFailure(updateResult)),
             }),
           );
@@ -6176,7 +6191,7 @@ export default function ChatView(props: ChatViewProps) {
         const error = squashAtomCommandFailure(result);
         setThreadError(
           activeThread.id,
-          error instanceof Error ? error.message : "Failed to stop background work.",
+          error instanceof Error ? error.message : localize("Failed to stop background work."),
         );
       }
     }
@@ -6199,9 +6214,9 @@ export default function ChatView(props: ChatViewProps) {
       ),
       title: working
         ? liveCount > 0
-          ? `${liveCount} ${liveCount === 1 ? "agent" : "agents"} working`
-          : "Background work"
-        : "Monitoring",
+          ? `${liveCount} ${localize(liveCount === 1 ? "agent" : "agents")} ${localize("working")}`
+          : localize("Background work")
+        : localize("Monitoring"),
       actions: (
         <Button
           size="xs"
@@ -6209,7 +6224,7 @@ export default function ChatView(props: ChatViewProps) {
           disabled={isStoppingBackgroundWork}
           onClick={() => void handleStopBackgroundWork()}
         >
-          {isStoppingBackgroundWork ? "Stopping..." : "Stop"}
+          {isStoppingBackgroundWork ? localize("Stopping...") : localize("Stop")}
         </Button>
       ),
     };
@@ -6231,9 +6246,9 @@ export default function ChatView(props: ChatViewProps) {
       id: `thread-woke:${activeThread?.id ?? "unknown"}`,
       variant: "info",
       icon: <AlarmClockIcon />,
-      title: "Thread woke from snooze",
-      description: "Send a message to continue",
-      dismissLabel: "Dismiss Woke notification",
+      title: localize("Thread woke from snooze"),
+      description: localize("Send a message to continue"),
+      dismissLabel: localize("Dismiss Woke notification"),
       onDismiss: acknowledgeActiveThreadWoke,
     };
   }, [acknowledgeActiveThreadWoke, activeThread?.id, activeThreadWokeVisible]);
@@ -6246,8 +6261,8 @@ export default function ChatView(props: ChatViewProps) {
       id: `thread-${isSnoozed ? "snoozed" : "settled"}:${activeThread?.id ?? "unknown"}`,
       variant: "info",
       icon: isSnoozed ? <AlarmClockIcon /> : <CheckCircle2Icon />,
-      title: `This thread is ${isSnoozed ? "snoozed" : "settled"}`,
-      description: `Send a message to ${isSnoozed ? "wake" : "unsettle"}`,
+      title: `${localize("This thread is")} ${localize(isSnoozed ? "snoozed" : "settled")}`,
+      description: `${localize("Send a message to")} ${localize(isSnoozed ? "wake" : "unsettle")}`,
       actions: (
         <Button
           size="xs"
@@ -6259,11 +6274,11 @@ export default function ChatView(props: ChatViewProps) {
         >
           {isSnoozed
             ? isUnsnoozing
-              ? "Waking..."
-              : "Wake now"
+              ? localize("Waking...")
+              : localize("Wake now")
             : isUnsettling
-              ? "Un-settling..."
-              : "Un-settle"}
+              ? localize("Un-settling...")
+              : localize("Un-settle")}
         </Button>
       ),
     };
@@ -6307,10 +6322,10 @@ export default function ChatView(props: ChatViewProps) {
   const compactDisabled = compactThreadUnavailable;
   const compactDisabledReason = compactDisabled
     ? !activeProject
-      ? "Choose a project before compacting"
+      ? localize("Choose a project before compacting")
       : !manualCompactionProviderAvailable
-        ? "Compaction is unavailable for this provider"
-        : "Compacting is unavailable right now"
+        ? localize("Compaction is unavailable for this provider")
+        : localize("Compacting is unavailable right now")
     : null;
   const resumeCompactionBannerItem = useMemo<ComposerBannerStackItem | null>(() => {
     if (
@@ -6351,7 +6366,7 @@ export default function ChatView(props: ChatViewProps) {
       id: `resume-compaction:${resumeCompactionKey}`,
       variant: "info",
       icon: <Minimize2Icon />,
-      title: "Resume with less context",
+      title: localize("Resume with less context"),
       description: `${formatContextWindowTokens(activeContextWindow.usedTokens)} tokens from earlier`,
       actions: compactDisabledReason ? (
         <Tooltip>
@@ -6361,7 +6376,7 @@ export default function ChatView(props: ChatViewProps) {
       ) : (
         compactAction
       ),
-      dismissLabel: "Keep full history",
+      dismissLabel: localize("Keep full history"),
       onDismiss: dismiss,
     };
   }, [
@@ -6437,7 +6452,9 @@ export default function ChatView(props: ChatViewProps) {
         icon: <GitBranchIcon />,
         title: (
           <span className="flex min-w-0 items-baseline gap-1.5">
-            <span className="shrink-0 font-normal text-muted-foreground">Branch changed — was</span>
+            <span className="shrink-0 font-normal text-muted-foreground">
+              {localize("Branch changed — was")}
+            </span>
             <Tooltip>
               <TooltipTrigger
                 render={
@@ -6460,10 +6477,10 @@ export default function ChatView(props: ChatViewProps) {
             disabled={isRestoringThreadBranch}
             onClick={handleRestoreThreadBranch}
           >
-            {isRestoringThreadBranch ? "Restoring..." : "Restore branch"}
+            {isRestoringThreadBranch ? localize("Restoring...") : localize("Restore branch")}
           </Button>
         ),
-        dismissLabel: "Dismiss branch change notice",
+        dismissLabel: localize("Dismiss branch change notice"),
         onDismiss: () => {
           dismissBranchMismatchForSession(activeBranchMismatchKey);
           setBranchMismatchDismissTick((tick) => tick + 1);
@@ -6636,8 +6653,8 @@ export default function ChatView(props: ChatViewProps) {
           toastManager.add(
             stackedThreadToast({
               type: "error",
-              title: "Failed to settle thread",
-              description: error instanceof Error ? error.message : "An error occurred.",
+              title: localize("Failed to settle thread"),
+              description: error instanceof Error ? error.message : localize("An error occurred."),
             }),
           );
         });
@@ -6656,8 +6673,9 @@ export default function ChatView(props: ChatViewProps) {
             toastManager.add(
               stackedThreadToast({
                 type: "error",
-                title: pinned ? "Failed to unpin thread" : "Failed to pin thread",
-                description: error instanceof Error ? error.message : "An error occurred.",
+                title: localize(pinned ? "Failed to unpin thread" : "Failed to pin thread"),
+                description:
+                  error instanceof Error ? error.message : localize("An error occurred."),
               }),
             );
           },
@@ -6997,7 +7015,7 @@ export default function ChatView(props: ChatViewProps) {
       } catch (error) {
         setThreadError(
           activeThread.id,
-          error instanceof Error ? error.message : "Failed to revert thread state.",
+          error instanceof Error ? error.message : localize("Failed to revert thread state."),
         );
       } finally {
         useComposerDraftStore.setState((store) => {
@@ -7088,7 +7106,7 @@ export default function ChatView(props: ChatViewProps) {
           const error = squashAtomCommandFailure(result);
           setThreadError(
             threadId,
-            error instanceof Error ? error.message : "Failed to compact context.",
+            error instanceof Error ? error.message : localize("Failed to compact context."),
           );
         }
       } else {
@@ -7147,7 +7165,7 @@ export default function ChatView(props: ChatViewProps) {
       toastManager.add(
         stackedThreadToast({
           type: "info",
-          title: "Some attachments stayed queued",
+          title: localize("Some attachments stayed queued"),
           description: `A message holds at most ${PROVIDER_SEND_TURN_MAX_ATTACHMENTS} attachments. Use Send now on the queued row when you want the rest to go.`,
         }),
       );
@@ -7213,8 +7231,10 @@ export default function ChatView(props: ChatViewProps) {
       toastManager.add(
         stackedThreadToast({
           type: "info",
-          title: "Annotation attached to draft",
-          description: "Sending is unavailable right now. Finish the current action, then send.",
+          title: localize("Annotation attached to draft"),
+          description: localize(
+            "Sending is unavailable right now. Finish the current action, then send.",
+          ),
         }),
       );
     };
@@ -7235,11 +7255,13 @@ export default function ChatView(props: ChatViewProps) {
       toastManager.add({
         type: "warning",
         title: loadBalancing.pending
-          ? "Checking machine resources"
-          : "Choose a machine to continue",
+          ? localize("Checking machine resources")
+          : localize("Choose a machine to continue"),
         description: loadBalancing.pending
-          ? "Resource checks are still running. You can choose a machine in the composer."
-          : "No eligible machine has available resources. Choose a machine in the composer to override.",
+          ? localize("Resource checks are still running. You can choose a machine in the composer.")
+          : localize(
+              "No eligible machine has available resources. Choose a machine in the composer to override.",
+            ),
       });
       return;
     }
@@ -7250,8 +7272,8 @@ export default function ChatView(props: ChatViewProps) {
       toastManager.add({
         ...stackedThreadToast({
           type: "warning",
-          title: "Not connected: message not sent",
-          description: "Reconnecting to the environment. Try again once it is connected.",
+          title: localize("Not connected: message not sent"),
+          description: localize("Reconnecting to the environment. Try again once it is connected."),
         }),
         id: `chat-send-environment-unavailable:${toastSlot}`,
       });
@@ -7359,8 +7381,8 @@ export default function ChatView(props: ChatViewProps) {
         toastManager.add(
           stackedThreadToast({
             type: "warning",
-            title: "Start a Codex thread first",
-            description: "Send a message before you submit feedback.",
+            title: localize("Start a Codex thread first"),
+            description: localize("Send a message before you submit feedback."),
           }),
         );
         return;
