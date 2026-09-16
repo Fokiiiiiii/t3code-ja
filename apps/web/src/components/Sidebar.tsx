@@ -133,6 +133,8 @@ import {
 import { environmentServerConfigsAtom, primaryServerKeybindingsAtom } from "../state/server";
 import { vcsEnvironment } from "../state/vcs";
 import { threadEnvironment } from "../state/threads";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 import { useEnvironmentQuery } from "../state/query";
 import { useAtomCommand } from "../state/use-atom-command";
 import {
@@ -340,6 +342,8 @@ function SidebarThreadTooltip({
   terminalStatus: TerminalStatusIndicator | null;
   terminalProcessCount: number;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const driverKind = providerEntry?.driverKind ?? null;
   const supportsMultiplePullRequests = useSupportsMultiplePullRequests(thread.environmentId);
   return (
@@ -419,7 +423,7 @@ function SidebarThreadTooltip({
           {thread.session?.lastError ? (
             <div className="flex min-w-0 items-center gap-2 text-red-600 dark:text-red-400">
               <CircleAlertIcon className="size-3 shrink-0 stroke-current" />
-              <div className="min-w-0 truncate">Error occurred</div>
+              <div className="min-w-0 truncate">{localize("Error occurred")}</div>
             </div>
           ) : null}
         </div>
@@ -444,6 +448,8 @@ function SnoozePopoverButton(props: {
   onSnooze: (preset: Pick<SnoozePreset, "snoozedUntil">) => void;
   timestampFormat: TimestampFormat;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { open, onOpenChange, onSnooze, timestampFormat } = props;
   // Presets resolve at open time so "In 1 hour" is relative to the click,
   // not to when the row mounted.
@@ -460,7 +466,7 @@ function SnoozePopoverButton(props: {
               render={
                 <button
                   type="button"
-                  aria-label="Snooze thread"
+                  aria-label={localize("Snooze thread")}
                   onClick={(event) => event.stopPropagation()}
                   onDoubleClick={(event) => event.stopPropagation()}
                   className="inline-flex h-full cursor-pointer items-center gap-0.5 rounded-md bg-transparent px-1.5 text-xs text-muted-foreground hover:text-foreground"
@@ -471,7 +477,7 @@ function SnoozePopoverButton(props: {
         >
           <ClockIcon className="size-3" />
         </TooltipTrigger>
-        <TooltipPopup>Snooze thread</TooltipPopup>
+        <TooltipPopup>{localize("Snooze thread")}</TooltipPopup>
       </Tooltip>
       <PopoverPopup side="bottom" align="end" className="w-56" viewportClassName="p-1">
         {presets.map((preset) => (
@@ -719,6 +725,8 @@ const SidebarDraftRow = memo(function SidebarDraftRow(props: {
   onNavigate: (draftId: DraftId) => void;
   onDiscard: (draftId: DraftId) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { composer, draftId, onDiscard, onNavigate, session } = props;
   const promptPreview =
     replaceComposerContextReferences(composer.prompt, (occurrence) => occurrence.label)
@@ -735,7 +743,7 @@ const SidebarDraftRow = memo(function SidebarDraftRow(props: {
   const preview =
     promptPreview.length > 0
       ? promptPreview
-      : `${attachmentCount} attachment${attachmentCount === 1 ? "" : "s"}`;
+      : `${attachmentCount} ${localize(attachmentCount === 1 ? "attachment" : "attachments")}`;
   const handleActivate = useCallback(() => onNavigate(draftId), [draftId, onNavigate]);
   const handleKeyDown = useCallback(
     (event: ReactKeyboardEvent) => {
@@ -786,7 +794,7 @@ const SidebarDraftRow = memo(function SidebarDraftRow(props: {
                   render={
                     <button
                       type="button"
-                      aria-label="Discard draft"
+                      aria-label={localize("Discard draft")}
                       onClick={handleDiscard}
                       className="pointer-events-none inline-flex cursor-pointer items-center rounded-md bg-transparent px-1 text-muted-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:pointer-events-auto focus-visible:opacity-100 group-hover/sidebar-row:pointer-events-auto group-hover/sidebar-row:opacity-100"
                     >
@@ -794,7 +802,7 @@ const SidebarDraftRow = memo(function SidebarDraftRow(props: {
                     </button>
                   }
                 />
-                <TooltipPopup side="top">Discard draft</TooltipPopup>
+                <TooltipPopup side="top">{localize("Discard draft")}</TooltipPopup>
               </Tooltip>
             </span>
           </div>
@@ -1025,6 +1033,8 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: {
    */
   onFileDropThreads?: ((threadRef: ScopedThreadRef, files: File[]) => void) | undefined;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const {
     isRenaming,
     onCancelRename,
@@ -1136,7 +1146,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: {
   const topStatus =
     status === "working"
       ? {
-          label: "Working",
+          label: localize("Working"),
           icon: "working" as const,
           // No shimmer: a label that animates forever is noise in a sidebar
           // full of them (and repaints every vsync on high-refresh displays).
@@ -1146,37 +1156,37 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: {
         ? {
             // Monitoring is calm background presence, not active progress
             // (monitoring-pill D6), so it keeps the label at full strength.
-            label: "Monitoring",
+            label: localize("Monitoring"),
             icon: "monitoring" as const,
             className: "text-foreground dark:text-white",
           }
         : status === "approval"
           ? {
-              label: "Approval",
+              label: localize("Approval"),
               icon: "approval" as const,
               className: "text-amber-700 dark:text-amber-300",
             }
           : status === "input"
             ? {
-                label: "Input",
+                label: localize("Input"),
                 icon: "input" as const,
                 className: "text-indigo-600 dark:text-indigo-300",
               }
             : status === "failed"
               ? {
-                  label: "Failed",
+                  label: localize("Failed"),
                   icon: "failed" as const,
                   className: "text-red-700 dark:text-red-300",
                 }
               : isWoke
                 ? {
-                    label: "Woke",
+                    label: localize("Woke"),
                     icon: "woke" as const,
                     className: "text-amber-700 dark:text-amber-300",
                   }
                 : isUnread
                   ? {
-                      label: "Done",
+                      label: localize("Done"),
                       icon: "done" as const,
                       className: "text-emerald-700 dark:text-emerald-300",
                     }
@@ -1655,7 +1665,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: {
                             className="inline-flex cursor-pointer items-center gap-1 rounded-sm text-xs font-medium text-amber-700 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring dark:text-amber-300"
                           >
                             <AlarmClockIcon aria-hidden className="size-3" />
-                            <span role="status">Woke</span>
+                            <span role="status">{localize("Woke")}</span>
                           </button>
                         }
                       />
@@ -2127,6 +2137,8 @@ const SidebarSearchResultRow = memo(function SidebarSearchResultRow(props: {
 });
 
 export default function Sidebar() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const projects = useProjects();
   const projectOrder = useUiStateStore((store) => store.projectOrder);
   const threads = useThreadShells();
@@ -2354,13 +2366,13 @@ export default function Sidebar() {
   // while the popup search filters the same collection.
   const projectScopeItems = useMemo(
     () => [
-      { value: "all", label: "All projects" },
+      { value: "all", label: localize("All projects") },
       ...projectGroups.map((project) => ({
         value: project.projectKey,
         label: project.displayName,
       })),
     ],
-    [projectGroups],
+    [locale, projectGroups],
   );
   // Same-named projects on two machines are only told apart by where they
   // live, so rows on another machine carry its icon once the catalog spans
@@ -4406,8 +4418,8 @@ export default function Sidebar() {
                       <SidebarHeaderIconButton
                         label={
                           scopedProjectGroup
-                            ? `Filter threads by project: ${scopedProjectGroup.displayName}`
-                            : "Filter threads by project"
+                            ? `${localize("Filter threads by project")}: ${scopedProjectGroup.displayName}`
+                            : localize("Filter threads by project")
                         }
                       />
                     }
@@ -4432,8 +4444,8 @@ export default function Sidebar() {
                     className="max-w-[min(18rem,var(--available-width))] overflow-hidden"
                   >
                     <ComboboxSearchInput
-                      aria-label="Search projects"
-                      placeholder="Search projects..."
+                      aria-label={localize("Search projects")}
+                      placeholder={localize("Search projects...")}
                       value={projectScopeMenuState.query}
                       onKeyDown={(event) => {
                         if (
@@ -4459,7 +4471,7 @@ export default function Sidebar() {
                         })
                       }
                     />
-                    <ComboboxEmpty>No matching projects.</ComboboxEmpty>
+                    <ComboboxEmpty>{localize("No matching projects.")}</ComboboxEmpty>
                     <ComboboxList>
                       {(item: (typeof projectScopeItems)[number]) => {
                         const project = projectGroupByScopeKey.get(item.value) ?? null;
@@ -4891,20 +4903,23 @@ export default function Sidebar() {
             <div className="flex flex-col items-center gap-2 px-2 py-6 text-center text-xs text-muted-foreground/60">
               {projects.length === 0 ? (
                 <>
-                  <span>No projects yet</span>
+                  <span>{localize("No projects yet")}</span>
                   <button
                     type="button"
                     onClick={openAddProjectCommandPalette}
                     className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-sidebar-border px-2.5 py-1 text-[11px] font-medium text-sidebar-muted-foreground transition-colors hover:bg-sidebar-row-hover hover:text-sidebar-foreground"
                   >
                     <PlusIcon className="-mx-0.5 size-3" />
-                    Add project
+                    {localize("Add project")}
                   </button>
                 </>
               ) : scopedProjectGroup ? (
-                `No threads in ${scopedProjectGroup.displayName} yet`
+                localize("No threads in {project} yet").replace(
+                  "{project}",
+                  scopedProjectGroup.displayName,
+                )
               ) : (
-                "No threads yet"
+                localize("No threads yet")
               )}
             </div>
           ) : null}
