@@ -8,7 +8,7 @@ export const JA_MESSAGES_SOURCE_CONTROL = {
   "sourceControl.writingStyle.repoConventions": "リポジトリの慣例",
   "sourceControl.writingStyle.repoConventionsDescription":
     "各プロジェクトで、最近の変更説明と変更リクエストのタイトルに合わせます。",
-  "sourceControl.writingStyle.conventionalCommits": "Conventional Commits",
+  "sourceControl.writingStyle.conventionalCommits": "Conventional Commits 形式",
   "sourceControl.writingStyle.conventionalCommitsDescription":
     "変更説明には Conventional Commit の接頭辞を使い、変更リクエストのタイトルと説明は簡潔にします。",
   "sourceControl.writingStyle.custom": "カスタム指示",

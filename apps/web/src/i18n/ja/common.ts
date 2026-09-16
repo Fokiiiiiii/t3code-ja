@@ -217,9 +217,9 @@ export const JA_MESSAGES_COMMON = {
     "Stable は正式リリースを追跡します。Nightly はデスクトップの Nightly チャンネルを追跡し、いつでも Stable に戻せます。",
   "settings.about.updateTrack.description.hosted":
     "ホスト版アプリのリリースチャンネルを切り替えます。",
-  "settings.about.updateTrack.option.stable": "Stable",
-  "settings.about.updateTrack.option.nightly": "Nightly",
-  "settings.about.updateTrack.option.latest": "Latest",
+  "settings.about.updateTrack.option.stable": "安定版",
+  "settings.about.updateTrack.option.nightly": "Nightly 版",
+  "settings.about.updateTrack.option.latest": "最新版",
   "settings.diagnostics.mode.localTrace": "ローカルトレースファイル",
   "settings.diagnostics.mode.terminalOnly": "ターミナルログのみ",
   "settings.diagnostics.modeSentence": "{mode}。",

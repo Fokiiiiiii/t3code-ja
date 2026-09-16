@@ -17,9 +17,9 @@ export const JA_MESSAGES_PROVIDERS = {
     "Stable は正式リリースに追従します。Nightly はデスクトップ版の Nightly チャンネルに追従し、すぐに Stable へ戻すこともできます。",
   "settings.about.updateTrack.description.hosted":
     "ホスト版アプリのリリースチャンネルを切り替えます。",
-  "settings.about.updateTrack.option.stable": "Stable",
-  "settings.about.updateTrack.option.nightly": "Nightly",
-  "settings.about.updateTrack.option.latest": "Latest",
+  "settings.about.updateTrack.option.stable": "安定版",
+  "settings.about.updateTrack.option.nightly": "Nightly 版",
+  "settings.about.updateTrack.option.latest": "最新版",
 
   "diagnostics.section.resourceMonitor": "リソースモニター",
   "diagnostics.section.hostCollection": "ホストと収集",

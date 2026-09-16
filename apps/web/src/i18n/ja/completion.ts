@@ -553,7 +553,7 @@ export const JA_MESSAGES_COMPLETION = {
   "projectAction.icon.choose": "アイコンを選択",
   "projectAction.icon.configure": "設定",
   "projectAction.icon.debug": "デバッグ",
-  "projectAction.icon.lint": "Lint",
+  "projectAction.icon.lint": "Lint（静的解析）",
   "projectAction.icon.play": "再生",
   "projectAction.icon.test": "テスト",
   "projectAction.keybinding.hint": "ショートカットを押してください。{key}で消去できます。",
@@ -683,7 +683,7 @@ export const JA_MESSAGES_COMPLETION = {
   "settings.about.updateTrack.option.nightly": "Nightly",
   "settings.about.updateTrack.option.stable": "安定版",
   "sidebar.status.woke": "起動済み",
-  "sourceControl.writingStyle.conventionalCommits": "Conventional Commits",
+  "sourceControl.writingStyle.conventionalCommits": "Conventional Commits 形式",
   "sshPassword.expired": "期限切れ",
   "sshPassword.expiredDescription":
     "このSSHパスワード入力の期限が切れました。もう一度接続してください。",
