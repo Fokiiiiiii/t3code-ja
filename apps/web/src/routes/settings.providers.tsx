@@ -3,6 +3,8 @@ import { EnvironmentId, ProviderInstanceId } from "@t3tools/contracts";
 
 import { ProviderSettingsPanel } from "../components/settings/ProviderSettingsPanel";
 import { useSettingsScope } from "../components/settings/SettingsScopeContext";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 
 /**
  * Providers are machine state, so the page shows one environment at a time:
@@ -10,14 +12,16 @@ import { useSettingsScope } from "../components/settings/SettingsScopeContext";
  * narrows the candidates to the environments that project is registered on.
  */
 function SettingsProvidersRoute() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const target = Route.useSearch();
   const { environment, scope } = useSettingsScope();
   if (!environment) {
     return (
       <p className="p-8 text-sm text-muted-foreground">
         {scope.kind === "environment"
-          ? `Reconnect ${scope.label} to set up its providers.`
-          : "Connect an environment to set up its providers."}
+          ? `${localize("Reconnect")} ${scope.label} ${localize("to set up its providers.")}`
+          : localize("Connect an environment to set up its providers.")}
       </p>
     );
   }

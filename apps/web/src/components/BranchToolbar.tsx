@@ -58,6 +58,8 @@ import { useComposerMenuProps } from "./chat/composerEventScope";
 import { measureRestingComposerControls } from "./chat/restingComposerControlsMeasurement";
 import { resolveRestingComposerControlsNaturalWidth } from "./composerFooterLayout";
 import { cn } from "~/lib/utils";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 
 export interface BranchToolbarHandle {
   openBranchPicker: () => void;
@@ -120,6 +122,8 @@ const MobileRunContextSelector = memo(function MobileRunContextSelector({
   previousWorktreeLabel,
   onUsePreviousWorktree,
 }: MobileRunContextSelectorProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const composerFloatingLayerProps = useComposerMenuProps();
   const activeEnvironment = useMemo(
     () => availableEnvironments?.find((env) => env.environmentId === environmentId) ?? null,
@@ -132,10 +136,10 @@ const MobileRunContextSelector = memo(function MobileRunContextSelector({
         ? FolderGitIcon
         : FolderIcon;
   const workspaceLabel = envModeLocked
-    ? resolveLockedWorkspaceLabel(activeWorktreePath)
+    ? localize(resolveLockedWorkspaceLabel(activeWorktreePath))
     : effectiveEnvMode === "worktree"
-      ? resolveEnvModeLabel("worktree")
-      : resolveCurrentWorkspaceLabel(activeWorktreePath);
+      ? localize(resolveEnvModeLabel("worktree"))
+      : localize(resolveCurrentWorkspaceLabel(activeWorktreePath));
   const isLocked = envLocked || envModeLocked;
   const icon = showEnvironmentIndicator ? (
     // Button's base styles apply `-mx-0.5` to descendant SVGs, which eats 4px
@@ -201,7 +205,7 @@ const MobileRunContextSelector = memo(function MobileRunContextSelector({
         {showEnvironmentPicker && availableEnvironments && onEnvironmentChange ? (
           <>
             <MenuGroup>
-              <MenuGroupLabel>Run on</MenuGroupLabel>
+              <MenuGroupLabel>{localize("Run on")}</MenuGroupLabel>
               <MenuRadioGroup
                 value={autoEnvironmentLabel ? "auto" : environmentId}
                 onValueChange={(value) =>
@@ -221,7 +225,7 @@ const MobileRunContextSelector = memo(function MobileRunContextSelector({
                     <span className="flex min-w-0 items-center gap-1.5">
                       <ScaleIcon className="size-3" aria-hidden="true" />
                       <span className="min-w-0 truncate">
-                        {autoEnvironmentLabel ?? "Auto balance"}
+                        {autoEnvironmentLabel ?? localize("Auto balance")}
                       </span>
                     </span>
                   </MenuRadioItem>
@@ -244,7 +248,7 @@ const MobileRunContextSelector = memo(function MobileRunContextSelector({
           </>
         ) : null}
         <MenuGroup>
-          <MenuGroupLabel>Workspace</MenuGroupLabel>
+          <MenuGroupLabel>{localize("Workspace")}</MenuGroupLabel>
           <MenuRadioGroup
             value={effectiveEnvMode}
             onValueChange={(value) => {
@@ -263,14 +267,16 @@ const MobileRunContextSelector = memo(function MobileRunContextSelector({
                   <FolderIcon className="size-3" />
                 )}
                 <span className="min-w-0 truncate">
-                  {resolveCurrentWorkspaceLabel(activeWorktreePath)}
+                  {localize(resolveCurrentWorkspaceLabel(activeWorktreePath))}
                 </span>
               </span>
             </MenuRadioItem>
             <MenuRadioItem disabled={envModeLocked} value="worktree">
               <span className="flex min-w-0 items-center gap-1.5">
                 <FolderGit2Icon className="size-3" />
-                <span className="min-w-0 truncate">{resolveEnvModeLabel("worktree")}</span>
+                <span className="min-w-0 truncate">
+                  {localize(resolveEnvModeLabel("worktree"))}
+                </span>
               </span>
             </MenuRadioItem>
             {previousWorktreeLabel ? (
@@ -483,6 +489,8 @@ export const BranchToolbar = memo(function BranchToolbar({
   composerControlsHostRef,
   contextStripVisible = true,
 }: BranchToolbarProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const branchSelectorRef = useRef<BranchToolbarBranchSelectorHandle>(null);
   const threadRef = useMemo(
     () => scopeThreadRef(environmentId, threadId),

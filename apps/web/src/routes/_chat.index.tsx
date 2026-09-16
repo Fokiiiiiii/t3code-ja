@@ -21,8 +21,11 @@ import {
 import { useEnvironments } from "../state/environments";
 import { APP_DISPLAY_NAME } from "~/branding";
 import { hasCloudPublicConfig } from "~/cloud/publicConfig";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 
 function ChatIndexRouteView() {
+  const { locale } = useI18n();
   const { authGateState } = Route.useRouteContext();
   const { environments, isReady } = useEnvironments();
 
@@ -89,18 +92,22 @@ function IndexDraftLanding() {
 }
 
 function DraftStartError({ onRetry }: { readonly onRetry: () => void }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <SidebarInset className="h-dvh min-h-0 overflow-hidden overscroll-y-none bg-background text-foreground">
       <Empty className="flex-1">
         <EmptyHeader className="max-w-md">
-          <EmptyTitle className="text-foreground text-xl">Couldn’t start a new thread</EmptyTitle>
+          <EmptyTitle className="text-foreground text-xl">
+            {localize("Couldn’t start a new thread")}
+          </EmptyTitle>
           <EmptyDescription className="mt-2 text-sm text-muted-foreground/78">
-            The project is still available. Try opening the draft again.
+            {localize("The project is still available. Try opening the draft again.")}
           </EmptyDescription>
           <div className="mt-5 flex justify-center">
             <Button size="sm" onClick={onRetry}>
               <RefreshIcon className="size-4" />
-              Try again
+              {localize("Try again")}
             </Button>
           </div>
         </EmptyHeader>
@@ -114,13 +121,21 @@ export const Route = createFileRoute("/_chat/")({
 });
 
 function HostedStaticOnboardingState() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const cloudEnabled = hasCloudPublicConfig();
   const localEnvironmentOff = isLocalEnvironmentDisabled();
   const description = localEnvironmentOff
-    ? "The local environment is turned off. Connect a remote environment, or turn the local environment back on in Connections."
+    ? localize(
+        "The local environment is turned off. Connect a remote environment, or turn the local environment back on in Connections.",
+      )
     : cloudEnabled
-      ? "Enable T3 Connect on that machine, then open Connections here to sign in with the same account. You can also add the machine using a pairing link."
-      : "Open Connections and add that machine using its pairing link. This app must be able to reach it.";
+      ? localize(
+          "Enable T3 Connect on that machine, then open Connections here to sign in with the same account. You can also add the machine using a pairing link.",
+        )
+      : localize(
+          "Open Connections and add that machine using its pairing link. This app must be able to reach it.",
+        );
 
   return (
     <SidebarInset className="h-dvh min-h-0 overflow-hidden overscroll-y-none bg-background text-foreground">
@@ -140,11 +155,12 @@ function HostedStaticOnboardingState() {
                 <LinkIcon className="size-5" />
               </div>
               <EmptyTitle className="text-foreground text-xl">
-                Connect to a computer running T3 Code
+                {localize("Connect to a computer running T3 Code")}
               </EmptyTitle>
               <EmptyDescription className="mt-2 text-sm leading-relaxed text-muted-foreground/78">
-                This app connects to T3 Code running on your computer or a server. Start the T3 Code
-                desktop app or command-line server on that machine and keep it running.
+                {localize(
+                  "This app connects to T3 Code running on your computer or a server. Start the T3 Code desktop app or command-line server on that machine and keep it running.",
+                )}
               </EmptyDescription>
               <EmptyDescription className="mt-2 text-sm leading-relaxed text-muted-foreground/78">
                 {description}
@@ -152,7 +168,7 @@ function HostedStaticOnboardingState() {
               <div className="mt-6 flex justify-center">
                 <Button render={<Link to="/settings/connections" />} size="sm">
                   <PlusIcon className="size-4" />
-                  Open Connections
+                  {localize("Open Connections")}
                 </Button>
               </div>
             </EmptyHeader>

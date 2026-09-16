@@ -73,6 +73,8 @@ import {
 } from "./ui/combobox";
 import { stackedThreadToast, toastManager } from "./ui/toast";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 
 export interface BranchToolbarBranchSelectorHandle {
   open: () => void;
@@ -113,6 +115,8 @@ export function BranchToolbarBranchSelector({
   onCheckoutPullRequestRequest,
   onComposerFocusRequest,
 }: BranchToolbarBranchSelectorProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const composerFloatingLayerProps = useComposerMenuProps();
   const startFromOriginSwitchId = useId();
   const stopThreadSession = useAtomCommand(threadEnvironment.stopSession, "thread session stop");
@@ -349,11 +353,11 @@ export function BranchToolbarBranchSelector({
   const [isBranchActionPending, startBranchActionTransition] = useTransition();
   const totalBranchCount = branchRefState.data?.totalCount ?? 0;
   const branchStatusText = isInitialBranchesLoadPending
-    ? "Loading refs..."
+    ? localize("Loading refs...")
     : isFetchingNextPage
-      ? "Loading more refs..."
+      ? localize("Loading more refs...")
       : hasNextPage
-        ? `Showing ${refs.length} of ${totalBranchCount} refs`
+        ? `${localize("Showing")} ${refs.length} ${localize("of")} ${totalBranchCount} ${localize("refs")}`
         : null;
 
   // ---------------------------------------------------------------------------
@@ -365,7 +369,7 @@ export function BranchToolbarBranchSelector({
         if (!didCopy) return;
         toastManager.add({
           type: "success",
-          title: "Branch name copied",
+          title: localize("Branch name copied"),
           description: branchName,
         });
       },
@@ -373,7 +377,7 @@ export function BranchToolbarBranchSelector({
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Failed to copy branch name",
+            title: localize("Failed to copy branch name"),
             description: toBranchActionErrorMessage(error),
           }),
         );
@@ -389,7 +393,7 @@ export function BranchToolbarBranchSelector({
       event.preventDefault();
       event.stopPropagation();
       const items: ContextMenuItem<"copy-branch-name">[] = [
-        { id: "copy-branch-name", label: "Copy branch name", icon: "copy" },
+        { id: "copy-branch-name", label: localize("Copy branch name"), icon: "copy" },
       ];
       void api.contextMenu.show(items, { x: event.clientX, y: event.clientY }).then((action) => {
         if (action === "copy-branch-name") copyBranchName(branchName);
@@ -829,7 +833,7 @@ export function BranchToolbarBranchSelector({
             <ComboboxInput
               className="[&_input]:h-6.5 [&_input]:ps-5 [&_input]:font-sans [&_input]:leading-6.5"
               inputClassName="rounded-none bg-transparent text-sm"
-              placeholder="Search refs..."
+              placeholder={localize("Search refs...")}
               showTrigger={false}
               size="sm"
               unstyled
@@ -839,7 +843,7 @@ export function BranchToolbarBranchSelector({
           </div>
         </div>
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          <ComboboxEmpty>No refs found.</ComboboxEmpty>
+          <ComboboxEmpty>{localize("No refs found.")}</ComboboxEmpty>
           <div className="relative min-h-0 w-full max-h-56 flex-1 overflow-hidden">
             <ComboboxListVirtualized className="size-full min-w-0 p-0">
               <LegendList<string>
@@ -886,21 +890,22 @@ export function BranchToolbarBranchSelector({
                   >
                     <span className="flex min-w-0 items-center gap-1.5 font-medium text-muted-foreground">
                       <RefreshIcon aria-hidden="true" className="size-3 shrink-0 opacity-70" />
-                      <span className="truncate">Start from origin</span>
+                      <span className="truncate">{localize("Start from origin")}</span>
                     </span>
                     <Switch
                       id={startFromOriginSwitchId}
                       checked={startFromOrigin}
                       size="sm"
-                      aria-label="Start worktree from origin"
+                      aria-label={localize("Start worktree from origin")}
                       onCheckedChange={(checked) => onStartFromOriginChange(Boolean(checked))}
                     />
                   </label>
                 }
               />
               <TooltipPopup side="top" className="max-w-72 whitespace-normal leading-tight">
-                Creates the worktree from the latest matching branch on origin instead of your local
-                branch.
+                {localize(
+                  "Creates the worktree from the latest matching branch on origin instead of your local branch.",
+                )}
               </TooltipPopup>
             </Tooltip>
           ) : null}

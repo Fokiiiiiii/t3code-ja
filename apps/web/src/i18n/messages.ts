@@ -5259,6 +5259,23 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
     "このプロジェクトではプルリクエストを利用できません。",
   "Pull requests could not be read for this project.":
     "このプロジェクトのプルリクエストを読み込めませんでした。",
+  Reconnect: "再接続",
+  "to set up its providers.": "してプロバイダーを設定してください。",
+  "Connect an environment to set up its providers.":
+    "環境に接続してプロバイダーを設定してください。",
+  "Couldn’t start a new thread": "新しいタスクを開始できませんでした",
+  "The project is still available. Try opening the draft again.":
+    "プロジェクトは利用できます。下書きをもう一度開いてください。",
+  "The local environment is turned off. Connect a remote environment, or turn the local environment back on in Connections.":
+    "ローカル環境が無効です。リモート環境に接続するか、接続設定でローカル環境を再び有効にしてください。",
+  "Enable T3 Connect on that machine, then open Connections here to sign in with the same account. You can also add the machine using a pairing link.":
+    "そのマシンで T3 Connect を有効にし、ここで接続設定を開いて同じアカウントでサインインしてください。ペアリングリンクでマシンを追加することもできます。",
+  "Open Connections and add that machine using its pairing link. This app must be able to reach it.":
+    "接続設定を開き、ペアリングリンクでそのマシンを追加してください。このアプリからマシンへ接続できる必要があります。",
+  "Connect to a computer running T3 Code": "T3 Code を実行しているコンピューターに接続",
+  "This app connects to T3 Code running on your computer or a server. Start the T3 Code desktop app or command-line server on that machine and keep it running.":
+    "このアプリはコンピューターまたはサーバー上で動作する T3 Code に接続します。そのマシンで T3 Code のデスクトップアプリまたはコマンドラインサーバーを起動し、実行したままにしてください。",
+  "Open Connections": "接続設定を開く",
   "No pull requests found in this repository.": "このリポジトリにプルリクエストはありません。",
   "Still compressing a pasted image.": "貼り付けた画像を圧縮中です。",
   "Send again once its thumbnail appears.": "サムネイルが表示されたら、もう一度送信してください。",
@@ -5314,6 +5331,17 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Show other notices": "その他の通知を表示",
   "Other notices": "その他の通知",
   "Show notice details": "通知の詳細を表示",
+  "View cited assistant text:": "引用したアシスタント本文を表示：",
+  "View source": "出典を表示",
+  "Edit citation comment": "引用コメントを編集",
+  "Add comment to citation": "引用にコメントを追加",
+  "Comment on selected text": "選択したテキストへのコメント",
+  "Enter to save the citation comment; Command/Ctrl+Enter to save and send; Shift+Enter for a new line.":
+    "Enter で引用コメントを保存、Command/Ctrl+Enter で保存して送信、Shift+Enter で改行します。",
+  "Add an optional comment...": "任意のコメントを追加…",
+  "Comments can contain up to": "コメントは最大",
+  "characters.": "文字まで入力できます。",
+  "Shorten comment": "コメントを短くする",
   "Open file in preferred editor": "優先エディターでファイルを開く",
   "From t3.json": "t3.json から",
   Import: "インポート",
@@ -5437,6 +5465,20 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Usage limits are unavailable for this provider": "このプロバイダーの使用制限を取得できません",
   "Keep attachments on this machine": "添付ファイルをこのマシンに保持",
   "Auto balance": "自動バランス",
+  "Loading refs...": "参照を読み込み中…",
+  "Loading more refs...": "参照を追加読み込み中…",
+  Showing: "表示中：",
+  of: "/",
+  refs: "参照",
+  "Branch name copied": "ブランチ名をコピーしました",
+  "Failed to copy branch name": "ブランチ名のコピーに失敗しました",
+  "Copy branch name": "ブランチ名をコピー",
+  "Search refs...": "参照を検索…",
+  "No refs found.": "参照が見つかりません。",
+  "Start from origin": "origin から開始",
+  "Start worktree from origin": "origin から worktree を開始",
+  "Creates the worktree from the latest matching branch on origin instead of your local branch.":
+    "ローカルブランチではなく、origin の一致する最新ブランチから worktree を作成します。",
   "Auto balance unavailable": "自動バランスを利用できません",
   "Failed to interrupt the current turn.": "現在のターンを中断できませんでした。",
   "Unable to add to chat": "チャットに追加できません",

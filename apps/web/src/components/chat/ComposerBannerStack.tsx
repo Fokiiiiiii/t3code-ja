@@ -8,6 +8,13 @@ import { ComposerBanner, type ComposerBannerVariant } from "./ComposerBanner";
 import { useI18n } from "../../i18n/WebI18nProvider";
 import { translateWebSource } from "../../i18n/messages";
 
+function localizeNode(
+  locale: Parameters<typeof translateWebSource>[0],
+  value: ReactNode,
+): ReactNode {
+  return typeof value === "string" ? translateWebSource(locale, value) : value;
+}
+
 // Match the duration-220 exit transition before removing a dismissed notice.
 const DISMISS_TRANSITION_MS = 220;
 
@@ -287,12 +294,12 @@ function ComposerBannerStackAlert({
               typeof item.title === "string" && "truncate",
             )}
           >
-            {item.title}
+            {localizeNode(locale, item.title)}
           </span>
           {item.description ? (
             <>
               <span className="min-w-0 shrink-[9999] truncate text-muted-foreground @max-[400px]:sr-only">
-                {item.description}
+                {localizeNode(locale, item.description)}
               </span>
               <Popover>
                 <PopoverTrigger
@@ -313,7 +320,7 @@ function ComposerBannerStackAlert({
                   side="top"
                   className="max-w-72 whitespace-normal text-pretty"
                 >
-                  {item.description}
+                  {localizeNode(locale, item.description)}
                 </PopoverPopup>
               </Popover>
             </>
@@ -324,7 +331,7 @@ function ComposerBannerStackAlert({
             {item.actions}
             {item.onDismiss ? (
               <ComposerBanner.Dismiss
-                aria-label={item.dismissLabel ?? "Dismiss warning"}
+                aria-label={localize(item.dismissLabel ?? "Dismiss warning")}
                 disabled={exiting}
                 onClick={onDismissRequest}
               />
