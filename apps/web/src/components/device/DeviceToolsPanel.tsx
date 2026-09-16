@@ -27,6 +27,8 @@ import { cn } from "~/lib/utils";
 import { deviceEnvironment } from "~/state/device";
 import { formatEnvironmentQueryError } from "~/state/query";
 import { useAtomCommand } from "~/state/use-atom-command";
+import { useI18n } from "~/i18n/WebI18nProvider";
+import { translateWebSource } from "~/i18n/messages";
 import {
   type DeviceEventLogEntry,
   type DeviceForegroundInfo,
@@ -396,10 +398,11 @@ export function DeviceToolsPanel(props: {
 }
 
 function Section(props: { readonly title: string; readonly children: React.ReactNode }) {
+  const { locale } = useI18n();
   return (
     <section className="flex flex-col gap-2 border-b px-3 py-2.5 last:border-b-0">
       <h3 className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-        {props.title}
+        {translateWebSource(locale, props.title)}
       </h3>
       {props.children}
     </section>
@@ -407,9 +410,12 @@ function Section(props: { readonly title: string; readonly children: React.React
 }
 
 function Row(props: { readonly label: string; readonly children: React.ReactNode }) {
+  const { locale } = useI18n();
   return (
     <div className="flex min-h-7 items-center justify-between gap-3">
-      <span className="shrink-0 text-xs text-muted-foreground">{props.label}</span>
+      <span className="shrink-0 text-xs text-muted-foreground">
+        {translateWebSource(locale, props.label)}
+      </span>
       <div className="flex min-w-0 items-center justify-end">{props.children}</div>
     </div>
   );
@@ -421,11 +427,13 @@ function SwitchRow(props: {
   readonly disabled: boolean;
   readonly onChange: (value: boolean) => Promise<void>;
 }) {
+  const { locale } = useI18n();
+  const label = translateWebSource(locale, props.label);
   return (
-    <Row label={props.label}>
+    <Row label={label}>
       <Switch
         size="sm"
-        aria-label={props.label}
+        aria-label={label}
         checked={props.checked ?? false}
         disabled={props.disabled || props.checked === undefined}
         onCheckedChange={(checked) => void props.onChange(checked)}
@@ -442,6 +450,8 @@ function ChoiceSelect<V extends string>(props: {
   readonly placeholder?: string;
   readonly onChange: (value: V) => Promise<void>;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const current = props.options.find((option) => option.value === props.value);
   return (
     <Select
@@ -451,19 +461,21 @@ function ChoiceSelect<V extends string>(props: {
         if (value !== null && value !== props.value) void props.onChange(value as V);
       }}
     >
-      <SelectTrigger size="xs" className="w-40" aria-label={props.ariaLabel}>
+      <SelectTrigger size="xs" className="w-40" aria-label={localize(props.ariaLabel)}>
         <SelectValue>
           {current ? (
-            current.label
+            localize(current.label)
           ) : (
-            <span className="text-muted-foreground">{props.placeholder ?? "Unknown"}</span>
+            <span className="text-muted-foreground">
+              {localize(props.placeholder ?? "Unknown")}
+            </span>
           )}
         </SelectValue>
       </SelectTrigger>
       <SelectPopup align="end" alignItemWithTrigger={false}>
         {props.options.map((option) => (
           <SelectItem key={option.value} value={option.value}>
-            {option.label}
+            {localize(option.label)}
           </SelectItem>
         ))}
       </SelectPopup>
@@ -477,6 +489,8 @@ function SubmitRow(props: {
   readonly disabled: boolean;
   readonly onSubmit: (value: string) => Promise<void>;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [value, setValue] = useState("");
   const submit = () => {
     const trimmed = value.trim();
@@ -494,7 +508,7 @@ function SubmitRow(props: {
       <Input
         size="compact"
         className="min-w-0 flex-1 font-mono"
-        placeholder={props.placeholder}
+        placeholder={localize(props.placeholder)}
         value={value}
         disabled={props.disabled}
         onChange={(event) => setValue(event.target.value)}
@@ -505,7 +519,7 @@ function SubmitRow(props: {
         variant="outline"
         disabled={props.disabled || value.trim().length === 0}
       >
-        {props.action}
+        {localize(props.action)}
       </Button>
     </form>
   );
