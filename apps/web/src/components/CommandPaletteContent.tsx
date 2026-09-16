@@ -39,6 +39,14 @@ export function CommandPaletteContent({
   const localize = (value: string) => translateWebSource(locale, value);
   const localizedEscapeLabel =
     typeof escapeLabel === "string" ? localize(escapeLabel) : escapeLabel;
+  const localizedFooterActionLabel =
+    typeof footerActionLabel === "string" ? localize(footerActionLabel) : footerActionLabel;
+  const localizedInputProps = {
+    ...inputProps,
+    ...(typeof inputProps.placeholder === "string"
+      ? { placeholder: localize(inputProps.placeholder) }
+      : {}),
+  };
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Direct-open flows replace the initial palette view after the dialog has
@@ -52,7 +60,7 @@ export function CommandPaletteContent({
     <div className="contents" data-testid={testId}>
       <Command {...commandProps}>
         <div className="relative">
-          <CommandInput {...inputProps} ref={inputRef} />
+          <CommandInput {...localizedInputProps} ref={inputRef} />
           {inputAccessory}
         </div>
         <CommandPanel className={panelClassName}>{children}</CommandPanel>
@@ -67,10 +75,10 @@ export function CommandPaletteContent({
               </Kbd>
               <span>{localize("Navigate")}</span>
             </KbdGroup>
-            {footerActionLabel !== undefined ? (
+            {localizedFooterActionLabel !== undefined ? (
               <KbdGroup className="items-center gap-1.5">
                 <Kbd>Enter</Kbd>
-                <span>{footerActionLabel}</span>
+                <span>{localizedFooterActionLabel}</span>
               </KbdGroup>
             ) : null}
             {showBackHint ? (
