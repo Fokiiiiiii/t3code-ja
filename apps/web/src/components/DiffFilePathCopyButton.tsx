@@ -8,8 +8,12 @@ import {
 } from "./ui/anchoredCopyToast";
 import { Button } from "./ui/button";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 
 export function DiffFilePathCopyButton({ filePath }: { filePath: string }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const ref = useRef<HTMLButtonElement>(null);
   const { copyToClipboard, isCopied } = useCopyToClipboard<void>({
     onCopy: () => showAnchoredCopySuccessToast(ref),
@@ -26,7 +30,7 @@ export function DiffFilePathCopyButton({ filePath }: { filePath: string }) {
             size="icon-micro"
             variant="ghost"
             className="text-muted-foreground [:hover,[data-pressed]]:bg-transparent"
-            aria-label="Copy file path"
+            aria-label={localize("Copy file path")}
             onClick={() => copyToClipboard(filePath, undefined)}
           />
         }
@@ -34,7 +38,7 @@ export function DiffFilePathCopyButton({ filePath }: { filePath: string }) {
         {isCopied ? <CheckIcon className="size-3 text-success" /> : <CopyIcon className="size-3" />}
       </TooltipTrigger>
       <TooltipPopup>
-        <p>{isCopied ? "Copied" : "Copy path"}</p>
+        <p>{localize(isCopied ? "Copied" : "Copy path")}</p>
       </TooltipPopup>
     </Tooltip>
   );

@@ -1653,9 +1653,10 @@ export default function ChatView(props: ChatViewProps) {
       if (!inserted) {
         toastManager.add({
           type: "warning",
-          title: "The composer is not ready",
-          description:
+          title: localize("The composer is not ready"),
+          description: localize(
             "Try citing the selection after the connection or pending input is resolved.",
+          ),
         });
       }
       return inserted;
@@ -2139,7 +2140,7 @@ export default function ChatView(props: ChatViewProps) {
           stackedThreadToast({
             type: "error",
             title,
-            description: error instanceof Error ? error.message : "An error occurred.",
+            description: error instanceof Error ? error.message : localize("An error occurred."),
           }),
         );
       }
@@ -2150,10 +2151,10 @@ export default function ChatView(props: ChatViewProps) {
     activeProjectClone === null
       ? null
       : activeProjectClone.phase === "running"
-        ? "Cloning repository"
+        ? localize("Cloning repository")
         : activeProjectClone.phase === "done"
           ? null
-          : "Repository not cloned";
+          : localize("Repository not cloned");
   const projectCloneBannerItem = useMemo<ComposerBannerStackItem | null>(() => {
     if (!activeProjectClone || !activeProjectRef || activeProjectClone.phase === "done") {
       return null;
@@ -2355,8 +2356,8 @@ export default function ChatView(props: ChatViewProps) {
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Could not reconnect environment",
-            description: error instanceof Error ? error.message : "Failed to reconnect.",
+            title: localize("Could not reconnect environment"),
+            description: error instanceof Error ? error.message : localize("Failed to reconnect."),
           }),
         );
       }
@@ -2383,8 +2384,9 @@ export default function ChatView(props: ChatViewProps) {
           toastManager.add(
             stackedThreadToast({
               type: "error",
-              title: "Could not disconnect server",
-              description: error instanceof Error ? error.message : "Failed to disconnect.",
+              title: localize("Could not disconnect server"),
+              description:
+                error instanceof Error ? error.message : localize("Failed to disconnect."),
             }),
           );
         }
@@ -7539,8 +7541,8 @@ export default function ChatView(props: ChatViewProps) {
       toastManager.add(
         stackedThreadToast({
           type: "warning",
-          title: "Choose a project first",
-          description: "This draft no longer points to an available project.",
+          title: localize("Choose a project first"),
+          description: localize("This draft no longer points to an available project."),
         }),
       );
       return;
@@ -8048,7 +8050,7 @@ export default function ChatView(props: ChatViewProps) {
           toastManager.add(
             stackedThreadToast({
               type: "warning",
-              title: "Could not open a fresh composer",
+              title: localize("Could not open a fresh composer"),
               description: error instanceof Error ? error.message : undefined,
             }),
           );
@@ -8077,10 +8079,10 @@ export default function ChatView(props: ChatViewProps) {
             toastManager.add(
               stackedThreadToast({
                 type: "success",
-                title: "Started in background",
+                title: localize("Started in background"),
                 timeout: 5_000,
                 actionProps: {
-                  children: "Open",
+                  children: localize("Open"),
                   onClick: () => {
                     void navigate({
                       to: "/$environmentId/$threadId",
@@ -8190,16 +8192,17 @@ export default function ChatView(props: ChatViewProps) {
         }
         setThreadError(
           threadIdForSend,
-          error instanceof Error ? error.message : "Failed to send message.",
+          error instanceof Error ? error.message : localize("Failed to send message."),
         );
         if (backgroundDraftOpened && draftId) {
           toastManager.add(
             stackedThreadToast({
               type: "error",
-              title: "Background task failed",
-              description: error instanceof Error ? error.message : "Failed to send message.",
+              title: localize("Background task failed"),
+              description:
+                error instanceof Error ? error.message : localize("Failed to send message."),
               actionProps: {
-                children: "Open draft",
+                children: localize("Open draft"),
                 onClick: () => {
                   void navigate({ to: "/draft/$draftId", params: { draftId } });
                 },
@@ -8306,7 +8309,7 @@ export default function ChatView(props: ChatViewProps) {
         const error = squashAtomCommandFailure(result);
         setThreadError(
           activeThreadId,
-          error instanceof Error ? error.message : "Failed to submit approval decision.",
+          error instanceof Error ? error.message : localize("Failed to submit approval decision."),
         );
       }
       setRespondingRequestIds((existing) => existing.filter((id) => id !== requestId));
@@ -8367,7 +8370,7 @@ export default function ChatView(props: ChatViewProps) {
         const error = squashAtomCommandFailure(result);
         setThreadError(
           activeThreadId,
-          error instanceof Error ? error.message : "Failed to submit user input.",
+          error instanceof Error ? error.message : localize("Failed to submit user input."),
         );
       }
       userInputResponsesInFlight.current.delete(responseKey);
@@ -8401,7 +8404,7 @@ export default function ChatView(props: ChatViewProps) {
         const error = squashAtomCommandFailure(result);
         setThreadError(
           activeThreadId,
-          error instanceof Error ? error.message : "Failed to dismiss the question.",
+          error instanceof Error ? error.message : localize("Failed to dismiss the question."),
         );
       }
       setRespondingUserInputRequestIds((existing) => existing.filter((id) => id !== requestId));
@@ -8672,7 +8675,7 @@ export default function ChatView(props: ChatViewProps) {
         const error = squashAtomCommandFailure(failure);
         setThreadError(
           threadIdForSend,
-          error instanceof Error ? error.message : "Failed to send plan follow-up.",
+          error instanceof Error ? error.message : localize("Failed to send plan follow-up."),
         );
       }
       sendInFlightRef.current = false;
@@ -8832,11 +8835,11 @@ export default function ChatView(props: ChatViewProps) {
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Could not start implementation thread",
+            title: localize("Could not start implementation thread"),
             description:
               error instanceof Error
                 ? error.message
-                : "An error occurred while creating the new thread.",
+                : localize("An error occurred while creating the new thread."),
           }),
         );
       }
@@ -9570,7 +9573,7 @@ export default function ChatView(props: ChatViewProps) {
                   style={{ bottom: scrollToEndClearance + 4 }}
                 >
                   <Button
-                    aria-label="Scroll to end"
+                    aria-label={localize("Scroll to end")}
                     onPointerDown={(event) => event.preventDefault()}
                     onClick={() => {
                       composerRef.current?.restoreAfterTimelineReachedEnd();
@@ -9851,7 +9854,9 @@ export default function ChatView(props: ChatViewProps) {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogClose render={<Button variant="outline" />}>Cancel</AlertDialogClose>
+                  <AlertDialogClose render={<Button variant="outline" />}>
+                    {localize("Cancel")}
+                  </AlertDialogClose>
                   <Button
                     variant="default"
                     onClick={() => {
@@ -10027,7 +10032,9 @@ export default function ChatView(props: ChatViewProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogClose render={<Button variant="outline" />}>Cancel</AlertDialogClose>
+            <AlertDialogClose render={<Button variant="outline" />}>
+              {localize("Cancel")}
+            </AlertDialogClose>
             <Button
               variant="destructive"
               onClick={() => {

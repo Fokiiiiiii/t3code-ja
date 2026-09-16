@@ -78,6 +78,8 @@ import {
   DropdownMenuTrigger,
 } from "./ui/menu";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 import { useEnvironmentQuery } from "../state/query";
 import { useAtomCommand } from "../state/use-atom-command";
 import { serverEnvironment } from "../state/server";
@@ -110,6 +112,8 @@ export default function DiffPanel({
   initialGitScope: initialGitScopeProp,
   workspaceMutationId,
 }: DiffPanelProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { resolvedTheme } = useTheme();
   const settings = useClientSettings();
   const [initialGitScope] = useState(initialGitScopeProp);
@@ -216,21 +220,21 @@ export default function DiffPanel({
   const selectedScopeLabel =
     selectedTurnId === null
       ? selectedGitScope === "unstaged"
-        ? "Working tree"
-        : "Branch changes"
+        ? localize("Working tree")
+        : localize("Branch changes")
       : selectedTurn?.turnId === latestTurn?.turnId
-        ? "Latest turn"
-        : `Turn ${selectedCheckpointTurnCount ?? "?"}`;
+        ? localize("Latest turn")
+        : `${localize("Turn")} ${selectedCheckpointTurnCount ?? "?"}`;
   const reviewSectionId = selectedTurn ? `turn:${selectedTurn.turnId}` : selectedGitScope;
   const collapseScopeKey = routeThreadRef
     ? `${routeThreadRef.environmentId}:${routeThreadRef.threadId}:${reviewSectionId}`
     : null;
   const codeViewMountKey = `${collapseScopeKey ?? reviewSectionId}:${codeViewRevision}`;
   const reviewSectionTitle = selectedTurn
-    ? `Turn ${selectedCheckpointTurnCount ?? "?"}`
+    ? `${localize("Turn")} ${selectedCheckpointTurnCount ?? "?"}`
     : selectedGitScope === "unstaged"
-      ? "Working tree"
-      : "Branch changes";
+      ? localize("Working tree")
+      : localize("Branch changes");
   const selectedCheckpointRange = useMemo(
     () =>
       typeof selectedCheckpointTurnCount === "number"
@@ -572,7 +576,7 @@ export default function DiffPanel({
               }
               onClick={() => selectGitScope("unstaged")}
             >
-              <span>Working tree</span>
+              <span>{localize("Working tree")}</span>
             </DropdownMenuItem>
             <DropdownMenuItem
               className={
@@ -582,7 +586,7 @@ export default function DiffPanel({
               }
               onClick={() => selectGitScope("branch")}
             >
-              <span>Branch changes</span>
+              <span>{localize("Branch changes")}</span>
             </DropdownMenuItem>
             <DropdownMenuItem
               className={
@@ -594,10 +598,10 @@ export default function DiffPanel({
                 if (latestTurn) selectTurn(latestTurn.turnId);
               }}
             >
-              <span>Latest turn</span>
+              <span>{localize("Latest turn")}</span>
             </DropdownMenuItem>
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger>Turn</DropdownMenuSubTrigger>
+              <DropdownMenuSubTrigger>{localize("Turn")}</DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="w-64">
                 {orderedTurnDiffSummaries.map((summary) => {
                   const turnCount =
@@ -671,7 +675,7 @@ export default function DiffPanel({
                     <ComboboxInput
                       className="[&_input]:h-6.5 [&_input]:ps-5 [&_input]:font-sans [&_input]:leading-6.5"
                       inputClassName="rounded-none bg-transparent text-sm"
-                      placeholder="Search refs..."
+                      placeholder={localize("Search refs...")}
                       showTrigger={false}
                       size="sm"
                       unstyled
@@ -683,8 +687,8 @@ export default function DiffPanel({
                 <div className="grid shrink-0 grid-cols-[1rem_minmax(0,1fr)] items-center gap-2 border-b border-border/70 ps-3 pe-6.5 pt-2 pb-1.5 font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
                   <span aria-hidden="true" />
                   <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_2rem] items-center">
-                    <span>Branch</span>
-                    <span className="text-right">Remote</span>
+                    <span>{localize("Branch")}</span>
+                    <span className="text-right">{localize("Remote")}</span>
                   </div>
                 </div>
                 <ComboboxEmpty>No matching refs.</ComboboxEmpty>
@@ -694,7 +698,7 @@ export default function DiffPanel({
                     contentClassName="w-full min-w-0 overflow-hidden"
                     value={AUTOMATIC_BASE_REF}
                   >
-                    <span className="block min-w-0 truncate">Automatic</span>
+                    <span className="block min-w-0 truncate">{localize("Automatic")}</span>
                   </ComboboxItem>
                   {baseRefChoices.map((choice) => {
                     const item = valueForBaseRefChoice(choice);
@@ -734,13 +738,13 @@ export default function DiffPanel({
                                   <span className="flex justify-end text-muted-foreground">
                                     <CheckIcon
                                       role="img"
-                                      aria-label="Remote only"
+                                      aria-label={localize("Remote only")}
                                       className="size-3"
                                     />
                                   </span>
                                 }
                               />
-                              <TooltipPopup side="top">Remote only</TooltipPopup>
+                              <TooltipPopup side="top">{localize("Remote only")}</TooltipPopup>
                             </Tooltip>
                           ) : null}
                         </div>
@@ -770,7 +774,9 @@ export default function DiffPanel({
                   type="button"
                   size="icon-sm"
                   variant="ghost"
-                  aria-label={branchDiffPreview.isPending ? "Refreshing diff" : "Refresh diff"}
+                  aria-label={localize(
+                    branchDiffPreview.isPending ? "Refreshing diff" : "Refresh diff",
+                  )}
                   onClick={refreshBranchDiffPreview}
                 />
               }
@@ -778,7 +784,7 @@ export default function DiffPanel({
               <RefreshIcon className="size-3.5" refreshing={branchDiffPreview.isPending} />
             </TooltipTrigger>
             <TooltipPopup side="top">
-              {branchDiffPreview.isPending ? "Refreshing diff…" : "Refresh diff"}
+              {localize(branchDiffPreview.isPending ? "Refreshing diff…" : "Refresh diff")}
             </TooltipPopup>
           </Tooltip>
         )}
@@ -790,7 +796,9 @@ export default function DiffPanel({
                   type="button"
                   size="icon-sm"
                   variant="ghost"
-                  aria-label={allDiffFilesCollapsed ? "Expand all files" : "Collapse all files"}
+                  aria-label={localize(
+                    allDiffFilesCollapsed ? "Expand all files" : "Collapse all files",
+                  )}
                   onClick={toggleDiffFileCollapse}
                 />
               }
@@ -802,12 +810,12 @@ export default function DiffPanel({
               )}
             </TooltipTrigger>
             <TooltipPopup side="top">
-              {allDiffFilesCollapsed ? "Expand all files" : "Collapse all files"}
+              {localize(allDiffFilesCollapsed ? "Expand all files" : "Collapse all files")}
             </TooltipPopup>
           </Tooltip>
         )}
         <ToggleGroup
-          aria-label="Diff layout"
+          aria-label={localize("Diff layout")}
           className="shrink-0"
           variant="segmented"
           value={[diffLayout]}
@@ -818,10 +826,10 @@ export default function DiffPanel({
             }
           }}
         >
-          <Toggle aria-label="Stacked diff view" value="stacked">
+          <Toggle aria-label={localize("Stacked diff view")} value="stacked">
             <Rows3Icon className="size-3.5" />
           </Toggle>
-          <Toggle aria-label="Split diff view" value="split">
+          <Toggle aria-label={localize("Split diff view")} value="split">
             <Columns2Icon className="size-3.5" />
           </Toggle>
         </ToggleGroup>
@@ -829,7 +837,9 @@ export default function DiffPanel({
           <TooltipTrigger
             render={
               <Toggle
-                aria-label={wordWrap ? "Disable diff line wrapping" : "Enable diff line wrapping"}
+                aria-label={localize(
+                  wordWrap ? "Disable diff line wrapping" : "Enable diff line wrapping",
+                )}
                 variant="ghost"
                 size="sm"
                 pressed={wordWrap}
@@ -842,16 +852,16 @@ export default function DiffPanel({
             <TextWrapIcon className="size-3.5" />
           </TooltipTrigger>
           <TooltipPopup side="top">
-            {wordWrap ? "Disable line wrapping" : "Enable line wrapping"}
+            {localize(wordWrap ? "Disable line wrapping" : "Enable line wrapping")}
           </TooltipPopup>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger
             render={
               <Toggle
-                aria-label={
-                  diffIgnoreWhitespace ? "Show whitespace changes" : "Hide whitespace changes"
-                }
+                aria-label={localize(
+                  diffIgnoreWhitespace ? "Show whitespace changes" : "Hide whitespace changes",
+                )}
                 variant="ghost"
                 size="sm"
                 pressed={diffIgnoreWhitespace}
@@ -864,7 +874,7 @@ export default function DiffPanel({
             <PilcrowIcon className="size-3.5" />
           </TooltipTrigger>
           <TooltipPopup side="top">
-            {diffIgnoreWhitespace ? "Show whitespace changes" : "Hide whitespace changes"}
+            {localize(diffIgnoreWhitespace ? "Show whitespace changes" : "Hide whitespace changes")}
           </TooltipPopup>
         </Tooltip>
         {codeViewFiles.length > 0 && (
@@ -872,7 +882,7 @@ export default function DiffPanel({
             <TooltipTrigger
               render={
                 <Toggle
-                  aria-label={fileTreeOpen ? "Hide file tree" : "Show file tree"}
+                  aria-label={localize(fileTreeOpen ? "Hide file tree" : "Show file tree")}
                   variant="ghost"
                   size="sm"
                   pressed={fileTreeOpen}
@@ -883,7 +893,7 @@ export default function DiffPanel({
               <FolderTreeIcon className="size-3.5" />
             </TooltipTrigger>
             <TooltipPopup side="top">
-              {fileTreeOpen ? "Hide file tree" : "Show file tree"}
+              {localize(fileTreeOpen ? "Hide file tree" : "Show file tree")}
             </TooltipPopup>
           </Tooltip>
         )}
@@ -927,7 +937,7 @@ export default function DiffPanel({
                       ? "Loading checkpoint diff..."
                       : selectedGitScope === "unstaged"
                         ? "Loading working tree diff..."
-                        : "Loading branch diff..."
+                        : localize("Loading branch diff...")
                   }
                 />
               ) : (
@@ -935,7 +945,7 @@ export default function DiffPanel({
                   <p>
                     {hasNoNetChanges
                       ? "No net changes in this selection."
-                      : "No patch available for this selection."}
+                      : localize("No patch available for this selection.")}
                   </p>
                 </div>
               )
@@ -1020,7 +1030,7 @@ export default function DiffPanel({
                             )}
                           </TooltipTrigger>
                           <TooltipPopup side="top">
-                            {collapsed ? "Expand diff" : "Collapse diff"}
+                            {localize(collapsed ? "Expand diff" : "Collapse diff")}
                           </TooltipPopup>
                         </Tooltip>
                       );

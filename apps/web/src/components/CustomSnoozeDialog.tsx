@@ -31,6 +31,8 @@ import {
   DialogPanel,
   DialogFooter,
 } from "./ui/dialog";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 
 type SnoozeChoice = { readonly snoozedUntil: string };
 type Request = { readonly resolve: (choice: SnoozeChoice | null) => void };
@@ -54,6 +56,8 @@ export function CustomSnoozeDialogHost() {
 }
 
 function CustomSnoozeDialog() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const id = useId();
   const [initial] = useState(() => new Date(Date.now() + 3_600_000));
   const [mode, setMode] = useState<CustomSnoozeInput["mode"]>("date");
@@ -81,8 +85,8 @@ function CustomSnoozeDialog() {
             if (!snoozedUntil) {
               setError(
                 mode === "date"
-                  ? "Choose a valid date and time in the future."
-                  : "Enter a positive duration.",
+                  ? localize("Choose a valid date and time in the future.")
+                  : localize("Enter a positive duration."),
               );
               return;
             }
@@ -90,8 +94,10 @@ function CustomSnoozeDialog() {
           }}
         >
           <DialogHeader>
-            <DialogTitle>Custom snooze</DialogTitle>
-            <DialogDescription>Choose when snoozed threads return to your inbox.</DialogDescription>
+            <DialogTitle>{localize("Custom snooze")}</DialogTitle>
+            <DialogDescription>
+              {localize("Choose when snoozed threads return to your inbox.")}
+            </DialogDescription>
           </DialogHeader>
           <DialogPanel className="flex flex-col gap-4 text-base sm:text-sm">
             <Tabs.Root
@@ -103,7 +109,7 @@ function CustomSnoozeDialog() {
               className="flex flex-col gap-4"
             >
               <Tabs.List
-                aria-label="Schedule type"
+                aria-label={localize("Schedule type")}
                 className="flex gap-0.5 rounded-lg bg-input/40 p-0.5"
               >
                 {(["date", "duration"] as const).map((value) => (
@@ -117,7 +123,7 @@ function CustomSnoozeDialog() {
                       className: "flex-1",
                     })}
                   >
-                    {value === "date" ? "Date and time" : "Duration"}
+                    {value === "date" ? localize("Date and time") : localize("Duration")}
                   </Tabs.Tab>
                 ))}
               </Tabs.List>
@@ -125,7 +131,7 @@ function CustomSnoozeDialog() {
                 {mode === "date" ? (
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div className="flex min-w-0 flex-col gap-1.5">
-                      <Label htmlFor={`${id}-date`}>Date</Label>
+                      <Label htmlFor={`${id}-date`}>{localize("Date")}</Label>
                       <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                         <PopoverTrigger
                           render={
@@ -143,7 +149,7 @@ function CustomSnoozeDialog() {
                           })}
                           <CalendarIcon className="size-4 text-muted-foreground" />
                         </PopoverTrigger>
-                        <PopoverPopup align="start" aria-label="Choose snooze date">
+                        <PopoverPopup align="start" aria-label={localize("Choose snooze date")}>
                           <Calendar
                             mode="single"
                             required
@@ -163,7 +169,7 @@ function CustomSnoozeDialog() {
                       className="flex min-w-0 flex-col items-stretch gap-1.5"
                       htmlFor={`${id}-time`}
                     >
-                      Time
+                      {localize("Time")}
                       <Input
                         nativeInput
                         id={`${id}-time`}
@@ -191,21 +197,25 @@ function CustomSnoozeDialog() {
                         setError(null);
                       }}
                     >
-                      <Label htmlFor={`${id}-amount`}>Snooze for</Label>
+                      <Label htmlFor={`${id}-amount`}>{localize("Snooze for")}</Label>
                       <NumberFieldGroup>
-                        <NumberFieldDecrement aria-label="Decrease duration" />
+                        <NumberFieldDecrement aria-label={localize("Decrease duration")} />
                         <NumberFieldInput required />
-                        <NumberFieldIncrement aria-label="Increase duration" />
+                        <NumberFieldIncrement aria-label={localize("Increase duration")} />
                       </NumberFieldGroup>
                     </NumberField>
                     <Label
                       className="flex min-w-0 flex-col items-stretch gap-1.5"
                       htmlFor={`${id}-unit`}
                     >
-                      Unit
+                      {localize("Unit")}
                       <Select
                         value={unit}
-                        items={{ minutes: "Minutes", hours: "Hours", days: "Days" }}
+                        items={{
+                          minutes: localize("Minutes"),
+                          hours: localize("Hours"),
+                          days: localize("Days"),
+                        }}
                         onValueChange={(value) => {
                           if (value === "minutes" || value === "hours" || value === "days")
                             setUnit(value);
@@ -216,9 +226,9 @@ function CustomSnoozeDialog() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectPopup>
-                          <SelectItem value="minutes">Minutes</SelectItem>
-                          <SelectItem value="hours">Hours</SelectItem>
-                          <SelectItem value="days">Days</SelectItem>
+                          <SelectItem value="minutes">{localize("Minutes")}</SelectItem>
+                          <SelectItem value="hours">{localize("Hours")}</SelectItem>
+                          <SelectItem value="days">{localize("Days")}</SelectItem>
                         </SelectPopup>
                       </Select>
                     </Label>
@@ -234,9 +244,9 @@ function CustomSnoozeDialog() {
           </DialogPanel>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => finish(null)}>
-              Cancel
+              {localize("Cancel")}
             </Button>
-            <Button type="submit">Snooze</Button>
+            <Button type="submit">{localize("Snooze")}</Button>
           </DialogFooter>
         </form>
       </DialogPopup>
