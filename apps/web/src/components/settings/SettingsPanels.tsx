@@ -171,6 +171,7 @@ import { searchableSetting } from "./settingsSearch";
 import { ProjectFavicon } from "../ProjectFavicon";
 import { PanelAnimationsPreview } from "./PanelAnimationsPreview";
 import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const ENVIRONMENT_IDENTIFICATION_LABELS: Record<EnvironmentIdentificationMode, string> = {
   artwork: "Artwork",
@@ -1121,6 +1122,8 @@ function BackgroundActivityAdvancedDialog({
 }
 
 export function AppearanceSettingsPanel() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const {
     appearanceMode,
     refreshTheme,
@@ -1342,13 +1345,15 @@ export function AppearanceSettingsPanel() {
                   aria-label="Environment identification"
                 >
                   <SelectValue>
-                    {ENVIRONMENT_IDENTIFICATION_LABELS[settings.environmentIdentificationMode]}
+                    {localize(
+                      ENVIRONMENT_IDENTIFICATION_LABELS[settings.environmentIdentificationMode],
+                    )}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectPopup align="end" alignItemWithTrigger={false}>
                   {Object.entries(ENVIRONMENT_IDENTIFICATION_LABELS).map(([value, label]) => (
                     <SelectItem hideIndicator key={value} value={value}>
-                      {label}
+                      {localize(label)}
                     </SelectItem>
                   ))}
                 </SelectPopup>
@@ -2119,6 +2124,8 @@ function LegacyFeaturesSection() {
 }
 
 export function GeneralSettingsPanel() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const settings = useScopedSettings();
   const updateSettings = useUpdateScopedSettings();
   const navigate = useNavigate();
@@ -2360,17 +2367,19 @@ export function GeneralSettingsPanel() {
               }}
             >
               <SelectTrigger size="sm" className="w-full sm:w-40" aria-label="Timestamp format">
-                <SelectValue>{TIMESTAMP_FORMAT_LABELS[settings.timestampFormat]}</SelectValue>
+                <SelectValue>
+                  {localize(TIMESTAMP_FORMAT_LABELS[settings.timestampFormat])}
+                </SelectValue>
               </SelectTrigger>
               <SelectPopup align="end" alignItemWithTrigger={false}>
                 <SelectItem hideIndicator value="locale">
-                  {TIMESTAMP_FORMAT_LABELS.locale}
+                  {localize(TIMESTAMP_FORMAT_LABELS.locale)}
                 </SelectItem>
                 <SelectItem hideIndicator value="12-hour">
-                  {TIMESTAMP_FORMAT_LABELS["12-hour"]}
+                  {localize(TIMESTAMP_FORMAT_LABELS["12-hour"])}
                 </SelectItem>
                 <SelectItem hideIndicator value="24-hour">
-                  {TIMESTAMP_FORMAT_LABELS["24-hour"]}
+                  {localize(TIMESTAMP_FORMAT_LABELS["24-hour"])}
                 </SelectItem>
               </SelectPopup>
             </Select>
@@ -2415,19 +2424,21 @@ export function GeneralSettingsPanel() {
                 <SelectTrigger size="sm" className="w-full sm:w-56" aria-label="Response streaming">
                   <SelectValue>
                     {(value: ResponseStreamingMode | null) =>
-                      value === null ? "Mixed" : RESPONSE_STREAMING_MODE_LABELS[value]
+                      value === null
+                        ? localize("Mixed")
+                        : localize(RESPONSE_STREAMING_MODE_LABELS[value])
                     }
                   </SelectValue>
                 </SelectTrigger>
                 <SelectPopup align="end" alignItemWithTrigger={false}>
                   <SelectItem hideIndicator value="turn">
-                    {RESPONSE_STREAMING_MODE_LABELS.turn}
+                    {localize(RESPONSE_STREAMING_MODE_LABELS.turn)}
                   </SelectItem>
                   <SelectItem hideIndicator value="paragraph">
-                    {RESPONSE_STREAMING_MODE_LABELS.paragraph}
+                    {localize(RESPONSE_STREAMING_MODE_LABELS.paragraph)}
                   </SelectItem>
                   <SelectItem hideIndicator value="token">
-                    {RESPONSE_STREAMING_MODE_LABELS.token}
+                    {localize(RESPONSE_STREAMING_MODE_LABELS.token)}
                   </SelectItem>
                 </SelectPopup>
               </Select>
@@ -2534,14 +2545,14 @@ export function GeneralSettingsPanel() {
               }}
             >
               <SelectTrigger size="sm" className="w-full sm:w-40" aria-label="Diff layout">
-                <SelectValue>{DIFF_LAYOUT_LABELS[settings.diffLayout]}</SelectValue>
+                <SelectValue>{localize(DIFF_LAYOUT_LABELS[settings.diffLayout])}</SelectValue>
               </SelectTrigger>
               <SelectPopup align="end" alignItemWithTrigger={false}>
                 <SelectItem hideIndicator value="stacked">
-                  {DIFF_LAYOUT_LABELS.stacked}
+                  {localize(DIFF_LAYOUT_LABELS.stacked)}
                 </SelectItem>
                 <SelectItem hideIndicator value="split">
-                  {DIFF_LAYOUT_LABELS.split}
+                  {localize(DIFF_LAYOUT_LABELS.split)}
                 </SelectItem>
               </SelectPopup>
             </Select>
@@ -2742,7 +2753,9 @@ export function GeneralSettingsPanel() {
                 >
                   <SelectValue>
                     {(value: BackgroundActivityProfileOption | null) =>
-                      value === null ? "Mixed" : BACKGROUND_ACTIVITY_PROFILE_OPTION_LABELS[value]
+                      value === null
+                        ? localize("Mixed")
+                        : localize(BACKGROUND_ACTIVITY_PROFILE_OPTION_LABELS[value])
                     }
                   </SelectValue>
                 </SelectTrigger>
@@ -2758,8 +2771,8 @@ export function GeneralSettingsPanel() {
                   </SelectItem>
                   <SelectItem hideIndicator value="advanced" disabled={!isEnvironmentScope}>
                     {isEnvironmentScope
-                      ? BACKGROUND_ACTIVITY_PROFILE_OPTION_LABELS.advanced
-                      : `${BACKGROUND_ACTIVITY_PROFILE_OPTION_LABELS.advanced} (one environment)`}
+                      ? localize(BACKGROUND_ACTIVITY_PROFILE_OPTION_LABELS.advanced)
+                      : `${localize(BACKGROUND_ACTIVITY_PROFILE_OPTION_LABELS.advanced)} (${localize("one environment")})`}
                   </SelectItem>
                 </SelectPopup>
               </Select>
