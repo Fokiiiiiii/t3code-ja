@@ -4898,6 +4898,13 @@ const WEB_MESSAGE_TEMPLATES = (
 
 const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Go to threads": "タスク一覧へ移動",
+  "Environment scope": "環境の範囲",
+  "Project scope": "プロジェクトの範囲",
+  "All environments": "すべての環境",
+  "All projects": "すべてのプロジェクト",
+  "Unavailable environment": "利用できない環境",
+  "Unavailable project": "利用できないプロジェクト",
+  Offline: "オフライン",
   "Search settings": "設定を検索",
   Search: "検索",
   "Clear settings search": "設定検索をクリア",

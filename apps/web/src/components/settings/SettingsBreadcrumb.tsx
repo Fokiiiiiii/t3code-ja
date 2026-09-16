@@ -136,6 +136,8 @@ function EnvironmentScopeMenu({
   environments,
   onChange,
 }: SettingsScopeBreadcrumbProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const resolved = resolveSettingsScope(value, groups, environments);
   const environmentValue = environmentAxisValue(
     value,
@@ -146,7 +148,7 @@ function EnvironmentScopeMenu({
   );
   return (
     <ScopeMenu
-      ariaLabel="Environment scope"
+      ariaLabel={localize("Environment scope")}
       narrowed={environmentValue !== ALL_ENVIRONMENTS_VALUE}
       icon={
         selected ? (
@@ -161,8 +163,8 @@ function EnvironmentScopeMenu({
         selected
           ? settingsScopeEnvironmentLabel(selected, environments)
           : environmentValue !== ALL_ENVIRONMENTS_VALUE
-            ? "Unavailable environment"
-            : "All environments"
+            ? localize("Unavailable environment")
+            : localize("All environments")
       }
     >
       <MenuRadioGroup
@@ -174,7 +176,7 @@ function EnvironmentScopeMenu({
         <MenuRadioItem value={ALL_ENVIRONMENTS_VALUE}>
           <span className="flex min-w-0 items-center gap-2">
             <LayersIcon aria-hidden className="size-3.5" />
-            <span className="min-w-0 flex-1 truncate">All environments</span>
+            <span className="min-w-0 flex-1 truncate">{localize("All environments")}</span>
             <MenuRadioItemIndicator />
           </span>
         </MenuRadioItem>
@@ -203,13 +205,18 @@ function EnvironmentScopeMenu({
 }
 
 function ProjectScopeMenu({ value, groups, onChange }: SettingsScopeBreadcrumbProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const selected = groups.find((group) => group.projectKey === value.project);
   return (
     <ScopeMenu
-      ariaLabel="Project scope"
+      ariaLabel={localize("Project scope")}
       narrowed={value.project !== undefined}
       icon={selected ? <ProjectFavicon project={selected} className="size-3.5 shrink-0" /> : null}
-      label={selected?.displayName ?? (value.project ? "Unavailable project" : "All projects")}
+      label={
+        selected?.displayName ??
+        (value.project ? localize("Unavailable project") : localize("All projects"))
+      }
     >
       <MenuRadioGroup
         value={projectAxisValue(value)}
@@ -219,7 +226,7 @@ function ProjectScopeMenu({ value, groups, onChange }: SettingsScopeBreadcrumbPr
       >
         <MenuRadioItem value={ALL_PROJECTS_VALUE}>
           <span className="flex min-w-0 items-center gap-2">
-            <span className="min-w-0 flex-1 truncate">All projects</span>
+            <span className="min-w-0 flex-1 truncate">{localize("All projects")}</span>
             <MenuRadioItemIndicator />
           </span>
         </MenuRadioItem>
