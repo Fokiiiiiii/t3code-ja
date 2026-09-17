@@ -6643,6 +6643,21 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Unable to open preview": "プレビューを開けません",
   "Visible thread count": "表示するタスク数",
   "Visible threads": "表示するタスク",
+  "A comment is anchored to the whole change, so switch to All commits to write one.":
+    "コメントは変更全体に紐づくため、書き込むには「すべてのコミット」に切り替えてください。",
+  "Add to agent": "エージェントに追加",
+  "Add to review": "レビューに追加",
+  "All commits": "すべてのコミット",
+  "Close review": "レビューを閉じる",
+  "Diff scope:": "差分の範囲：",
+  "Line comments are written from the whole change": "行コメントは変更全体に対して記録されます",
+  "More comments could not be loaded": "追加のコメントを読み込めませんでした",
+  "Reply could not be posted": "返信を投稿できませんでした",
+  "Some of this diff was not shown": "差分の一部は表示されていません",
+  "The comment could not be saved": "コメントを保存できませんでした",
+  "The conversation could not be updated": "会話を更新できませんでした",
+  "The host withheld part of this diff — a binary file, or a change too large to inline.":
+    "ホストが差分の一部を省略しました — バイナリファイル、またはインライン表示には大きすぎる変更です。",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
