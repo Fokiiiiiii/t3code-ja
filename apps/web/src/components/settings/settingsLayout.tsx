@@ -147,12 +147,17 @@ export const SETTINGS_PICKER_TRIGGER_CLASSNAME =
 
 /** Info affordance explaining how a setting interacts with the shared background policy. */
 export function PolicyTooltip({ children }: { readonly children: string }) {
+  const { locale } = useI18n();
   return (
     <Tooltip>
       <TooltipTrigger
         delay={200}
         render={
-          <Button size="icon-micro" variant="ghost-muted" aria-label="Background policy details">
+          <Button
+            size="icon-micro"
+            variant="ghost-muted"
+            aria-label={translateWebSource(locale, "Background policy details")}
+          >
             <InfoIcon className="size-3.5" />
           </Button>
         }
@@ -502,6 +507,9 @@ export function SettingResetButton({
   disabled?: boolean;
   onClick: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
+  const localizedTooltip = localize(tooltip);
   return (
     <Tooltip>
       <TooltipTrigger
@@ -509,7 +517,7 @@ export function SettingResetButton({
           <Button
             size="icon-micro"
             variant="ghost-muted"
-            aria-label={`Reset ${label} to default`}
+            aria-label={`${localize("Reset")} ${label} ${localize("to default")}`}
             disabled={disabled}
             onClick={(event) => {
               event.stopPropagation();
@@ -520,7 +528,7 @@ export function SettingResetButton({
           </Button>
         }
       />
-      <TooltipPopup side="top">{tooltip}</TooltipPopup>
+      <TooltipPopup side="top">{localizedTooltip}</TooltipPopup>
     </Tooltip>
   );
 }

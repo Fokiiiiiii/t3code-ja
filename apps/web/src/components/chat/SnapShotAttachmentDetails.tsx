@@ -10,6 +10,8 @@ import { RenderErrorBoundary } from "../RenderErrorBoundary";
 import { Button } from "../ui/button";
 import { Popover, PopoverPopup, PopoverTitle, PopoverTrigger } from "../ui/popover";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 export const SNAP_SHOT_ATTACHMENT_FRAME_CLASS =
   "relative h-28 w-52 max-w-full overflow-hidden rounded-lg border border-border/80";
@@ -134,10 +136,12 @@ export function SnapShotContentsButton({
   className?: string;
   side?: "top" | "right" | "bottom" | "left";
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const includesAccessibility = snapShotIncludesAccessibility(source);
   const ContentsIcon = includesAccessibility ? TextIcon : ImageIcon;
   const accessibilityDetails = snapShotAccessibilityDetails(source);
-  const tooltip = includesAccessibility ? "Accessibility data" : "No accessibility data";
+  const tooltip = localize(includesAccessibility ? "Accessibility data" : "No accessibility data");
 
   return (
     <Popover>
@@ -147,9 +151,9 @@ export function SnapShotContentsButton({
             <PopoverTrigger
               render={
                 <Button
-                  aria-label={
-                    includesAccessibility ? "View accessibility data" : "No accessibility data"
-                  }
+                  aria-label={localize(
+                    includesAccessibility ? "View accessibility data" : "No accessibility data",
+                  )}
                   className={cn("[--control-icon-color:currentColor]", className)}
                   onClick={(event) => event.stopPropagation()}
                   size="icon-micro"
@@ -170,7 +174,9 @@ export function SnapShotContentsButton({
         viewportClassName="max-h-[min(28rem,70vh)]"
       >
         <div className="space-y-2">
-          <PopoverTitle className="text-sm leading-5">Accessibility data</PopoverTitle>
+          <PopoverTitle className="text-sm leading-5">
+            {localize("Accessibility data")}
+          </PopoverTitle>
           {accessibilityDetails ? (
             <SnapShotAccessibilityData
               details={accessibilityDetails}
@@ -178,12 +184,13 @@ export function SnapShotContentsButton({
             />
           ) : includesAccessibility ? (
             <div className="rounded-md border border-border/70 bg-muted/45 p-2.5 text-muted-foreground text-xs leading-4">
-              Structured accessibility elements were included, but they have no readable names or
-              values.
+              {localize(
+                "Structured accessibility elements were included, but they have no readable names or values.",
+              )}
             </div>
           ) : (
             <div className="rounded-md border border-border/70 bg-muted/45 p-2.5 text-muted-foreground text-xs leading-4">
-              The app or capture backend did not provide verified accessibility data.
+              {localize("The app or capture backend did not provide verified accessibility data.")}
             </div>
           )}
         </div>

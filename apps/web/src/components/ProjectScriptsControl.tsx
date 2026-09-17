@@ -130,7 +130,7 @@ export default function ProjectScriptsControl({
       setEditorRequest({
         scriptId: null,
         initial: payload,
-        error: error instanceof Error ? error.message : "Failed to import action.",
+        error: error instanceof Error ? error.message : localize("Failed to import action."),
       });
     }
   };

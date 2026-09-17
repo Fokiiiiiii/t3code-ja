@@ -20,6 +20,8 @@ import {
 } from "../ui/combobox";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
 import { PullRequestPeopleGhost } from "./PullRequestGhosts";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 export function PullRequestCandidatePicker<T>({
   icon,
@@ -73,17 +75,26 @@ export function PullRequestCandidatePicker<T>({
   onSelect: (candidate: T) => void;
   children: (candidate: T) => ReactNode;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
+  const localizedLabel = localize(label);
+  const localizedDisabledReason = localize(disabledReason);
+  const localizedSearchLabel = localize(searchLabel);
+  const localizedEmptyLabel = localize(emptyLabel);
+  const localizedNoMatchLabel = localize(noMatchLabel);
+  const localizedErrorLabel = localize(errorLabel);
+  const localizedTruncatedLabel = localize(truncatedLabel);
   if (!allowed) {
     return (
       <Tooltip>
         <TooltipTrigger
           render={
-            <Button size="icon-xs" variant="ghost" disabled aria-label={label}>
+            <Button size="icon-xs" variant="ghost" disabled aria-label={localizedLabel}>
               {icon}
             </Button>
           }
         />
-        <TooltipPopup side="bottom">{disabledReason}</TooltipPopup>
+        <TooltipPopup side="bottom">{localizedDisabledReason}</TooltipPopup>
       </Tooltip>
     );
   }
@@ -117,7 +128,7 @@ export function PullRequestCandidatePicker<T>({
     >
       <ComboboxTrigger
         render={
-          <Button size="icon-xs" variant="ghost" aria-label={label}>
+          <Button size="icon-xs" variant="ghost" aria-label={localizedLabel}>
             {icon}
           </Button>
         }
@@ -130,10 +141,10 @@ export function PullRequestCandidatePicker<T>({
               className="pointer-events-none absolute top-1.5 left-0 size-4 shrink-0 text-muted-foreground/55"
             />
             <ComboboxInput
-              aria-label={searchLabel}
+              aria-label={localizedSearchLabel}
               className="[&_input]:h-6.5 [&_input]:ps-5 [&_input]:font-sans [&_input]:leading-6.5"
               inputClassName="rounded-none bg-transparent text-sm"
-              placeholder={searchLabel}
+              placeholder={localizedSearchLabel}
               showTrigger={false}
               size="sm"
               unstyled
@@ -147,11 +158,11 @@ export function PullRequestCandidatePicker<T>({
             <PullRequestPeopleGhost rows={4} />
           ) : error !== null ? (
             <p className="p-2 text-xs text-muted-foreground">
-              {errorLabel} {error}
+              {localizedErrorLabel} {error}
             </p>
           ) : candidates.length === 0 ? (
             <p className="p-2 text-xs text-muted-foreground">
-              {query.length > 0 ? noMatchLabel : emptyLabel}
+              {query.length > 0 ? localizedNoMatchLabel : localizedEmptyLabel}
             </p>
           ) : (
             candidates.map((candidate, index) => (
@@ -171,7 +182,7 @@ export function PullRequestCandidatePicker<T>({
           {truncated ? (
             // Typing filters what arrived; it does not ask the host again, so this says what the
             // list is rather than offering a search that would find nothing further.
-            <p className="px-2 py-1.5 text-xs text-muted-foreground">{truncatedLabel}</p>
+            <p className="px-2 py-1.5 text-xs text-muted-foreground">{localizedTruncatedLabel}</p>
           ) : null}
         </ComboboxList>
       </ComboboxPopup>

@@ -11,6 +11,8 @@ import { Switch } from "../ui/switch";
 import { EnvironmentRow, environmentTransportLabel } from "./EnvironmentRow";
 import { FoldedSettingsSection } from "./FoldedSettingsSection";
 import { searchableSetting } from "./settingsSearch";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const preferences = [
   { value: 100, label: "Prefer" },
@@ -60,6 +62,8 @@ export function LoadBalancingSettings({
 }: {
   environments: ReadonlyArray<EnvironmentPresentation>;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const settings = useClientSettings();
   const settingsHydrated = useClientSettingsHydrated();
   const updateSettings = useUpdateClientSettings();
@@ -74,11 +78,11 @@ export function LoadBalancingSettings({
       summary={
         settings.loadBalancingEnabled
           ? summarizeLoadPreferences(environments, settings.loadBalancingWeights)
-          : "Off"
+          : localize("Off")
       }
       control={
         <Switch
-          aria-label="Automatically balance load"
+          aria-label={localize("Automatically balance load")}
           checked={settings.loadBalancingEnabled}
           disabled={!settingsHydrated}
           onCheckedChange={(loadBalancingEnabled) => updateSettings({ loadBalancingEnabled })}
@@ -86,8 +90,9 @@ export function LoadBalancingSettings({
       }
     >
       <p className="px-3 py-2.5 text-xs text-muted-foreground sm:px-4">
-        New threads in shared projects start on the machine with the most free CPU and memory,
-        weighted by each machine's preference.
+        {localize(
+          "New threads in shared projects start on the machine with the most free CPU and memory, weighted by each machine's preference.",
+        )}
       </p>
       {environments.map((environment) => (
         <EnvironmentRow
@@ -115,14 +120,14 @@ export function LoadBalancingSettings({
             <SelectTrigger
               size="xs"
               className="w-32"
-              aria-label={`${environment.label} load preference`}
+              aria-label={`${environment.label} ${localize("load preference")}`}
             >
               <SelectValue />
             </SelectTrigger>
             <SelectPopup align="end" alignItemWithTrigger={false}>
               {preferences.map(({ value, label }) => (
                 <SelectItem key={value} value={value}>
-                  {label}
+                  {localize(label)}
                 </SelectItem>
               ))}
             </SelectPopup>

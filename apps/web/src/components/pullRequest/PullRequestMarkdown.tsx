@@ -9,6 +9,8 @@ import { PULL_REQUESTS_PANEL_REF } from "~/rightPanelStore";
 import ChatMarkdown from "../ChatMarkdown";
 import { MediaVideoPlayer } from "../media/MediaVideoPlayer";
 import { remarkPullRequestAutolinks, splitPullRequestBody } from "./pullRequestMarkdown.logic";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 export const PullRequestMarkdownContext = createContext<{
   repositoryUrl: string | null;
@@ -30,6 +32,8 @@ export function PullRequestMarkdown({
   threadRef?: ScopedThreadRef | null;
   className?: string;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const segments = splitPullRequestBody(text);
   const context = useContext(PullRequestMarkdownContext);
   const repositoryUrl = context?.repositoryUrl;
@@ -66,7 +70,7 @@ export function PullRequestMarkdown({
               key={`${segment.id}:${segment.url}`}
               src={segment.url}
               originalUrl={segment.url}
-              label="Pull request video"
+              label={localize("Pull request video")}
               className="w-full"
               videoClassName="rounded-lg border border-border/60"
             />
@@ -84,7 +88,7 @@ export function PullRequestMarkdown({
             className="flex items-center gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-sm hover:bg-muted/60"
           >
             <PaperclipIcon aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
-            <span className="min-w-0 flex-1 truncate">Open attachment on GitHub</span>
+            <span className="min-w-0 flex-1 truncate">{localize("Open attachment on GitHub")}</span>
             <ExternalLinkIcon aria-hidden className="size-3 shrink-0 text-muted-foreground" />
           </a>
         );

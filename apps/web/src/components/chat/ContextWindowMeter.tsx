@@ -1,10 +1,7 @@
 import { Button } from "../ui/button";
 import { type ContextWindowSnapshot, formatContextWindowTokens } from "~/lib/contextWindow";
 import { Popover, PopoverPopup, PopoverTrigger } from "../ui/popover";
-import {
-  formatContextWindowCompactionMessage,
-  resolveContextHygieneState,
-} from "./ContextWindowMeter.logic";
+import { resolveContextHygieneState } from "./ContextWindowMeter.logic";
 import { Minimize2Icon } from "lucide-react";
 import { composerFloatingLayerProps } from "./composerEventScope";
 import { useI18n } from "../../i18n/WebI18nProvider";
@@ -132,7 +129,9 @@ export function ContextWindowMeter(props: {
       >
         <div className="flex flex-col gap-2.5 p-[var(--floating-content-inset)]">
           <div className="flex items-center justify-between gap-3">
-            <div className="font-medium text-muted-foreground text-xs">Context Window</div>
+            <div className="font-medium text-muted-foreground text-xs">
+              {localize("Context Window")}
+            </div>
             {usage.maxTokens !== null && usedPercentage ? (
               <div className="text-secondary-label text-[11px] tabular-nums">
                 <span>{usedPercentage}</span>
@@ -155,7 +154,7 @@ export function ContextWindowMeter(props: {
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={Math.round(normalizedPercentage)}
-              aria-label="Context window usage"
+              aria-label={localize("Context window usage")}
             >
               <div
                 className="h-full rounded-full transition-[width,background-color] duration-500 ease-out motion-reduce:transition-none"
@@ -243,9 +242,9 @@ export function ContextWindowMeter(props: {
               <span className="font-medium text-muted-foreground">
                 {localize("Session health")}
               </span>
-              <span className="font-medium text-secondary-label">{hygiene.label}</span>
+              <span className="font-medium text-secondary-label">{localize(hygiene.label)}</span>
             </div>
-            <p className="mt-0.5 text-secondary-label">{hygiene.description}</p>
+            <p className="mt-0.5 text-secondary-label">{localize(hygiene.description)}</p>
             {hygiene.level !== "healthy" ? (
               <div className="mt-2 grid grid-cols-2 gap-2 border-t border-border/50 pt-2 text-[10px]">
                 <div>
@@ -265,7 +264,20 @@ export function ContextWindowMeter(props: {
           </div>
           {usage.compactsAutomatically ? (
             <div className="mt-1 text-pretty text-secondary-label text-[11px] font-medium">
-              {formatContextWindowCompactionMessage(modelDisplayName, usage.autoCompactThreshold)}
+              {usage.autoCompactThreshold && usage.autoCompactThreshold > 0
+                ? localize("Compacts automatically at") +
+                  " " +
+                  usage.autoCompactThreshold.toLocaleString("en-US") +
+                  " " +
+                  localize("tokens") +
+                  "."
+                : modelDisplayName
+                  ? localize("Context for") +
+                    " " +
+                    modelDisplayName +
+                    " " +
+                    localize("compacts automatically when needed.")
+                  : localize("Context compacts automatically when needed.")}
             </div>
           ) : null}
           {onCompact ? (
@@ -278,7 +290,7 @@ export function ContextWindowMeter(props: {
                 onClick={onCompact}
               >
                 <Minimize2Icon aria-hidden="true" />
-                Compact context
+                {localize("Compact context")}
               </Button>
             </div>
           ) : null}

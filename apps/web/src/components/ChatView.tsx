@@ -5840,7 +5840,7 @@ export default function ChatView(props: ChatViewProps) {
         '[data-chat-composer-main-surface="true"]',
       );
       const button = composerOverlayElement?.parentElement?.querySelector<HTMLElement>(
-        'button[aria-label="Scroll to end"]',
+        "button[data-scroll-to-end]",
       );
       const clearance =
         composerOverlayElement && mainSurface && button
@@ -9235,8 +9235,8 @@ export default function ChatView(props: ChatViewProps) {
       <PullRequestDetailGhost />
     ) : renderedRightPanelSurface?.kind === "pull-request" && !supportsPullRequests ? (
       <PullRequestsUnavailableState
-        title="Pull requests unavailable"
-        error="Update this environment's T3 Code server to browse pull requests."
+        title={localize("Pull requests unavailable")}
+        error={localize("Update this environment's T3 Code server to browse pull requests.")}
       />
     ) : renderedRightPanelSurface?.kind === "pull-request" ? (
       // No onClose: the surface tab's own X owns closing here, and a second X in the header
@@ -9574,6 +9574,7 @@ export default function ChatView(props: ChatViewProps) {
                 >
                   <Button
                     aria-label={localize("Scroll to end")}
+                    data-scroll-to-end="true"
                     onPointerDown={(event) => event.preventDefault()}
                     onClick={() => {
                       composerRef.current?.restoreAfterTimelineReachedEnd();
@@ -9584,7 +9585,7 @@ export default function ChatView(props: ChatViewProps) {
                     variant="glass"
                   >
                     <ChevronDownIcon className="size-3.5" />
-                    Scroll to end
+                    {localize("Scroll to end")}
                   </Button>
                 </div>
               )}

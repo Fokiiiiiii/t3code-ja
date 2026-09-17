@@ -10,6 +10,8 @@ import { isElectron } from "../../env";
 import { AuthSurfaceShell } from "../auth/AuthSurfaceShell";
 import { resolveClerkSignInProps } from "../clerk/authRedirect";
 import { Button } from "../ui/button";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 function ConnectCliAuthMessage({
   eyebrow,
@@ -20,15 +22,17 @@ function ConnectCliAuthMessage({
   readonly title: string;
   readonly description: string;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <>
       {eyebrow ? (
         <p className="text-[10px] font-semibold tracking-[0.18em] text-blue-600 uppercase dark:text-blue-400">
-          {eyebrow}
+          {localize(eyebrow)}
         </p>
       ) : null}
-      <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
-      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{description}</p>
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{localize(title)}</h1>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{localize(description)}</p>
     </>
   );
 }
@@ -47,6 +51,7 @@ const invalidLinkMessage = {
  * CLI. Headless hosts use Clerk's device authorization page instead.
  */
 export function ConnectCliAuthorizeSurface() {
+  const { locale } = useI18n();
   const [request] = useState(() => readConnectAuthorizeRequest(new URL(window.location.href)));
   const clerk = useClerk();
   const { isLoaded, isSignedIn } = useAuth();
@@ -106,7 +111,7 @@ export function ConnectCliAuthorizeSurface() {
       {isLoaded && !isSignedIn ? (
         <div className="mt-6">
           <Button type="button" onClick={openSignIn}>
-            Sign in
+            {translateWebSource(locale, "Sign in")}
           </Button>
         </div>
       ) : null}

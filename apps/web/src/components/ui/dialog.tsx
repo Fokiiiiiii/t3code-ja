@@ -12,6 +12,8 @@ import {
   DIALOG_POPUP_CLASS,
 } from "~/components/ui/dialog-styles";
 import { ScrollArea } from "~/components/ui/scroll-area";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const DialogCreateHandle = DialogPrimitive.createHandle;
 
@@ -74,6 +76,7 @@ function DialogPopup({
   viewportClassName?: string;
   variant?: "default" | "media";
 }) {
+  const { locale } = useI18n();
   return (
     <DialogPortal>
       <DialogBackdrop className={backdropClassName} variant={variant} />
@@ -97,7 +100,7 @@ function DialogPopup({
           {children}
           {showCloseButton && (
             <DialogPrimitive.Close
-              aria-label="Close"
+              aria-label={translateWebSource(locale, "Close")}
               className="absolute end-2 top-2"
               render={<Button size="icon" variant="ghost" />}
             >

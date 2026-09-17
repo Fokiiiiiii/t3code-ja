@@ -17,6 +17,8 @@ import {
   PullRequestApprovalGlyph,
   PullRequestStateGlyph,
 } from "./pullRequestPresentation";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 /**
  * Each slot past the first only appears once the meta line is wide enough to hold it, so a
@@ -95,6 +97,8 @@ function PullRequestRowImpl({
   statsRef?: RefCallback<HTMLButtonElement>;
   onSelect: (entry: PullRequestRowTarget) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { Icon, providerName } = getSourceControlPresentationForKind(entry.provider);
   return (
     <button
@@ -144,7 +148,7 @@ function PullRequestRowImpl({
             <PullRequestApprovalGlyph />
           ) : entry.reviewDecision === "changes-requested" ? (
             <span className="min-w-0 truncate text-amber-600/90 dark:text-amber-400/80">
-              Changes requested
+              {localize("Changes requested")}
             </span>
           ) : null}
           {entry.checksState === undefined ? null : (
@@ -172,13 +176,13 @@ function PullRequestRowImpl({
                   <span className="flex min-w-6 items-center gap-1 overflow-hidden rounded-full border border-border/60 px-1 text-[10px]" />
                 }
               >
-                <span className="sr-only">matched in the description</span>
+                <span className="sr-only">{localize("matched in the description")}</span>
                 <SearchIcon aria-hidden className="size-3 shrink-0" />
                 <span aria-hidden className="hidden truncate @xs/pr-row-meta:block">
-                  matched in the description
+                  {localize("matched in the description")}
                 </span>
               </TooltipTrigger>
-              <TooltipPopup side="top">Matched in the description</TooltipPopup>
+              <TooltipPopup side="top">{localize("Matched in the description")}</TooltipPopup>
             </Tooltip>
           ) : null}
           <span className="flex shrink-0 items-center gap-1">

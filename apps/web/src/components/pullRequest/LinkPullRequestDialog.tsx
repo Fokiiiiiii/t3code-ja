@@ -25,6 +25,8 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Input } from "../ui/input";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 /**
  * Which thread has the link dialog open, set by whichever entry point asked (command palette,
@@ -122,6 +124,8 @@ function LinkPullRequestDialog({
   projectId,
   onOpenChange,
 }: LinkPullRequestDialogProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const inputRef = useRef<HTMLInputElement>(null);
   const [reference, setReference] = useState("");
   const [dirty, setDirty] = useState(false);
@@ -180,7 +184,9 @@ function LinkPullRequestDialog({
     try {
       await linking.changeLink(threadRef, resolved.link.url, true);
     } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : "Could not link the pull request.");
+      setSubmitError(
+        error instanceof Error ? error.message : localize("Could not link the pull request."),
+      );
       return;
     } finally {
       setPending(false);
@@ -191,27 +197,28 @@ function LinkPullRequestDialog({
   const validation = !dirty
     ? null
     : reference.trim().length === 0
-      ? "Paste a pull request URL or enter 123 / #123."
+      ? localize("Paste a pull request URL or enter 123 / #123.")
       : resolved === null
-        ? "Use a pull request URL, 123, or #123."
+        ? localize("Use a pull request URL, 123, or #123.")
         : "error" in resolved
-          ? resolved.error
+          ? localize(resolved.error)
           : null;
 
   return (
     <Dialog open={open} onOpenChange={(next) => (pending ? undefined : onOpenChange(next))}>
       <DialogPopup className="max-w-xl">
         <DialogHeader>
-          <DialogTitle>Link pull request</DialogTitle>
+          <DialogTitle>{localize("Link pull request")}</DialogTitle>
           <DialogDescription>
-            Attach a pull request to this thread. A full URL can point at any repository on a host
-            this environment has a project for.
+            {localize(
+              "Attach a pull request to this thread. A full URL can point at any repository on a host this environment has a project for.",
+            )}
           </DialogDescription>
         </DialogHeader>
         <DialogPanel className="space-y-3">
           <Input
             ref={inputRef}
-            placeholder="Pull request URL or #42"
+            placeholder={localize("Pull request URL or #42")}
             value={reference}
             onChange={(event) => {
               setDirty(true);
@@ -240,7 +247,7 @@ function LinkPullRequestDialog({
             onClick={() => onOpenChange(false)}
             disabled={pending}
           >
-            Cancel
+            {localize("Cancel")}
           </Button>
           <Button
             type="button"
@@ -248,7 +255,7 @@ function LinkPullRequestDialog({
             onClick={() => void submit()}
             disabled={pending || resolved === null || "error" in resolved}
           >
-            {pending ? "Linking..." : "Link"}
+            {localize(pending ? "Linking..." : "Link")}
           </Button>
         </DialogFooter>
       </DialogPopup>

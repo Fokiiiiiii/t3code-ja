@@ -26,6 +26,8 @@ import { cn } from "~/lib/utils";
 import { Badge } from "../ui/badge";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
 import type { PullRequestReviewOutcome } from "./pullRequestDetail.logic";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 interface StatePresentation {
   readonly label: string;
@@ -34,6 +36,8 @@ interface StatePresentation {
 }
 
 export function PullRequestApprovalGlyph() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <Tooltip>
       <TooltipTrigger render={<span className="inline-flex shrink-0" />}>
@@ -41,9 +45,9 @@ export function PullRequestApprovalGlyph() {
           aria-hidden
           className={cn("size-3.5", CHECK_STATUS_PRESENTATION.success.toneClassName)}
         />
-        <span className="sr-only">Approved</span>
+        <span className="sr-only">{localize("Approved")}</span>
       </TooltipTrigger>
-      <TooltipPopup>Approved</TooltipPopup>
+      <TooltipPopup>{localize("Approved")}</TooltipPopup>
     </Tooltip>
   );
 }
@@ -112,6 +116,7 @@ export function PullRequestStateGlyph({
   baseBranch?: string;
   className?: string;
 }) {
+  const { locale } = useI18n();
   const presentation = resolvePullRequestState({
     state,
     isDraft,
@@ -125,11 +130,11 @@ export function PullRequestStateGlyph({
       <TooltipTrigger render={<span className="inline-flex shrink-0" />}>
         <presentation.Icon
           role="img"
-          aria-label={presentation.label}
+          aria-label={translateWebSource(locale, presentation.label)}
           className={cn("size-4 shrink-0", presentation.toneClassName, className)}
         />
       </TooltipTrigger>
-      <TooltipPopup>{presentation.label}</TooltipPopup>
+      <TooltipPopup>{translateWebSource(locale, presentation.label)}</TooltipPopup>
     </Tooltip>
   );
 }
@@ -382,6 +387,7 @@ export function PullRequestActorLabel({
   tooltip?: boolean;
   profileUrl?: string | null;
 }) {
+  const { locale } = useI18n();
   const login = actor?.login ?? "ghost";
   const label = (
     <>
@@ -401,7 +407,7 @@ export function PullRequestActorLabel({
               href={profileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`Open ${login}'s profile`}
+              aria-label={`${translateWebSource(locale, "Open")} ${login}${translateWebSource(locale, "'s profile")}`}
             />
           ) : (
             <span />
@@ -416,7 +422,11 @@ export function PullRequestActorLabel({
       >
         {label}
       </TooltipTrigger>
-      <TooltipPopup side="top">{profileUrl ? `Open ${login}'s profile` : login}</TooltipPopup>
+      <TooltipPopup side="top">
+        {profileUrl
+          ? `${translateWebSource(locale, "Open")} ${login}${translateWebSource(locale, "'s profile")}`
+          : login}
+      </TooltipPopup>
     </Tooltip>
   );
 }

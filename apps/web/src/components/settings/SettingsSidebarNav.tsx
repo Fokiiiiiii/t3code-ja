@@ -269,7 +269,7 @@ export function SettingsSidebarNav({ pathname }: { pathname: string }) {
                 size="icon-micro"
                 variant="ghost"
                 className="shrink-0 text-sidebar-muted-foreground hover:bg-sidebar-control-surface hover:text-sidebar-foreground"
-                aria-label="Clear settings search"
+                aria-label={localize("Clear settings search")}
                 onClick={() => {
                   clearSearch();
                   searchInputRef.current?.focus();

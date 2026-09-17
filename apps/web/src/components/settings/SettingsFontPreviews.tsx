@@ -8,6 +8,8 @@ import { DISCONNECTED_COMPOSER_PLACEHOLDER } from "../../composerPlaceholder";
 import { resolveDiffThemeName, type DiffThemeName } from "../../lib/diffRendering";
 import { PREFERRED_HIGHLIGHTER } from "../../lib/syntaxHighlighting";
 import { GhosttyTerminalSurface } from "~/terminal/ghostty/surface";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 // The font previews are the real surfaces, not lookalikes: the composer's
 // Lexical editor, the diff panel's file diff, and the Ghostty canvas
@@ -179,6 +181,7 @@ function previewTerminalFont(family: string, size: number): { family?: string; s
  * terminal drawer uses.
  */
 export function TerminalFontPreview({ family, size }: { family: string; size: number }) {
+  const { locale } = useI18n();
   const mountRef = useRef<HTMLDivElement>(null);
   const surfaceRef = useRef<GhosttyTerminalSurface | null>(null);
   const fontRef = useRef({ family, size });
@@ -266,7 +269,7 @@ export function TerminalFontPreview({ family, size }: { family: string; size: nu
     <div
       ref={mountRef}
       className="relative mt-1 mb-2 h-52 overflow-hidden rounded-lg border border-border"
-      aria-label="Terminal font preview"
+      aria-label={translateWebSource(locale, "Terminal font preview")}
     />
   );
 }

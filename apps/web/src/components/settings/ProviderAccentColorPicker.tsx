@@ -7,6 +7,8 @@ import { Button } from "../ui/button";
 import { Popover, PopoverClose, PopoverPopup, PopoverTrigger } from "../ui/popover";
 import { normalizeProviderAccentColor } from "../../providerInstances";
 import { cn } from "../../lib/utils";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const FALLBACK_ACCENT_COLOR = "#2563eb";
 
@@ -74,6 +76,8 @@ function ProviderCustomColorPanel(props: {
   readonly value: string;
   readonly onCommit: (value: string) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { onCommit } = props;
   const initialHsv = useMemo(() => hexToHsv(props.value), [props.value]);
   const [hsv, setHsv] = useState(initialHsv);
@@ -163,7 +167,7 @@ function ProviderCustomColorPanel(props: {
           }}
           onBlur={() => setHexDraft(null)}
           className="h-8 rounded-md border border-input bg-background px-2 font-mono text-xs text-foreground outline-none transition-colors focus:border-ring"
-          aria-label="Custom hex accent color"
+          aria-label={localize("Custom hex accent color")}
           spellCheck={false}
         />
       </div>
@@ -177,6 +181,8 @@ function ProviderCustomColorPicker(props: {
   readonly onCommit: (value: string) => void;
   readonly onClear: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const normalized = normalizeProviderAccentColor(props.value) ?? FALLBACK_ACCENT_COLOR;
 
   return (
@@ -190,7 +196,7 @@ function ProviderCustomColorPicker(props: {
               "hover:scale-105 hover:border-ring/60",
             )}
             style={{ backgroundColor: normalized }}
-            aria-label={`Choose accent color for ${props.displayName}`}
+            aria-label={`${localize("Choose accent color for")} ${props.displayName}`}
           >
             <PipetteIcon className="size-3 text-white/70 drop-shadow-sm" aria-hidden />
           </button>
@@ -214,7 +220,7 @@ function ProviderCustomColorPicker(props: {
               disabled={!props.value}
             >
               <XIcon className="size-3.5" aria-hidden />
-              Clear color
+              {localize("Clear color")}
             </Button>
           }
         />
@@ -232,6 +238,8 @@ export function ProviderAccentColorPicker(props: {
   /** `inline` renders only the swatch row, for callers that supply their own label. */
   readonly layout?: "stacked" | "inline";
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const {
     commitDelayMs = 0,
     description,
@@ -313,7 +321,7 @@ export function ProviderAccentColorPicker(props: {
 
   return (
     <div className="grid gap-2">
-      <span className="text-xs font-medium text-foreground">Accent color</span>
+      <span className="text-xs font-medium text-foreground">{localize("Accent color")}</span>
       {picker}
       {description ? <span className="text-xs text-muted-foreground">{description}</span> : null}
     </div>

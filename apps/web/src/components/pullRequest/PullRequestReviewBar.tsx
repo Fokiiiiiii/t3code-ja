@@ -19,6 +19,8 @@ import {
   usePendingReviewComments,
   usePullRequestReviewStore,
 } from "./pullRequestReviewStore";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const VERDICTS: ReadonlyArray<{
   readonly value: PullRequestReviewVerdict;
@@ -59,6 +61,8 @@ export function PullRequestReviewBar({
   requestChangesSummaryRequired: boolean;
   onSubmitted: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [pending, setPending] = useState(false);
   const comments = usePendingReviewComments(reference);
   const reviewKey = pullRequestReviewKey(reference);
@@ -94,7 +98,7 @@ export function PullRequestReviewBar({
     setPending(false);
     if (result._tag === "Failure") {
       // The draft is kept: whatever went wrong, retyping the review is not the answer.
-      toastManager.add({ type: "error", title: "The review could not be submitted" });
+      toastManager.add({ type: "error", title: localize("The review could not be submitted") });
       return;
     }
     // More remarks may have been added while the host was accepting this snapshot. Leave those,
@@ -104,7 +108,7 @@ export function PullRequestReviewBar({
       submittedComments.map((comment) => comment.id),
     );
     clearSummary(reviewKey, submittedBody);
-    toastManager.add({ type: "success", title: verdict.sent });
+    toastManager.add({ type: "success", title: localize(verdict.sent) });
     onSubmitted();
   };
 
@@ -119,12 +123,12 @@ export function PullRequestReviewBar({
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <span>
           {comments.length === 0
-            ? "No line comments yet"
-            : `${comments.length} ${comments.length === 1 ? "comment" : "comments"} pending`}
+            ? localize("No line comments yet")
+            : `${comments.length} ${localize(comments.length === 1 ? "comment" : "comments")} ${localize("pending")}`}
         </span>
         {comments.length > 0 ? (
           <Button size="xs" variant="ghost" disabled={pending} onClick={() => clear(reviewKey)}>
-            Discard
+            {localize("Discard")}
           </Button>
         ) : null}
       </div>
@@ -134,10 +138,10 @@ export function PullRequestReviewBar({
         value={body}
         placeholder={
           requestChangesSummaryRequired && verdicts.includes("request-changes")
-            ? "Summarize your review (required to request changes)"
-            : "Summarize your review (optional)"
+            ? localize("Summarize your review (required to request changes)")
+            : localize("Summarize your review (optional)")
         }
-        aria-label="Review summary"
+        aria-label={localize("Review summary")}
         onChange={(event) => setSummary(reviewKey, event.target.value)}
       />
       <div className="mt-2 flex flex-wrap justify-end gap-2">
@@ -151,7 +155,7 @@ export function PullRequestReviewBar({
           >
             <span className="flex items-center gap-1.5">
               {verdict.icon}
-              {verdict.label}
+              {localize(verdict.label)}
             </span>
           </Button>
         ))}

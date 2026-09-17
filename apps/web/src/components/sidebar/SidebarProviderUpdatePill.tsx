@@ -12,6 +12,8 @@ import {
 } from "../ProviderUpdateLaunchNotification.logic";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
 import { Button } from "../ui/button";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const PROVIDER_UPDATE_PILL_STYLES = {
   loading:
@@ -41,6 +43,8 @@ function latestProviderCheckedAt(
 }
 
 export function SidebarProviderUpdatePill() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const navigate = useNavigate();
   const providers = useAtomValue(primaryServerProvidersAtom);
   const [dismissedKeys, setDismissedKeys] = useState<ReadonlySet<string>>(() => new Set());
@@ -169,7 +173,7 @@ export function SidebarProviderUpdatePill() {
           render={
             <button
               type="button"
-              aria-label={displayedView.description}
+              aria-label={localize(displayedView.description)}
               className="provider-update-main relative z-[1] flex min-w-0 flex-1 items-center gap-2 px-2 py-1.5 text-left"
               onClick={openProviderSettings}
             >
@@ -182,11 +186,11 @@ export function SidebarProviderUpdatePill() {
               ) : (
                 <DownloadIcon className="size-3.5 shrink-0" />
               )}
-              <span className="min-w-0 wrap-break-word">{displayedView.title}</span>
+              <span className="min-w-0 wrap-break-word">{localize(displayedView.title)}</span>
             </button>
           }
         />
-        <TooltipPopup side="top">{displayedView.description}</TooltipPopup>
+        <TooltipPopup side="top">{localize(displayedView.description)}</TooltipPopup>
       </Tooltip>
       {displayedView.dismissible && (
         <Tooltip>
@@ -195,7 +199,7 @@ export function SidebarProviderUpdatePill() {
               <Button
                 size="icon-micro"
                 variant="ghost"
-                aria-label="Dismiss provider update notice"
+                aria-label={localize("Dismiss provider update notice")}
                 className="relative z-[1] mr-1 [--control-icon-color:currentColor] rounded-md text-inherit opacity-70 hover:bg-transparent hover:opacity-100"
                 onClick={() => startExit(displayedView.key, null, displayedView.key)}
               >
@@ -203,7 +207,9 @@ export function SidebarProviderUpdatePill() {
               </Button>
             }
           />
-          <TooltipPopup side="top">Dismiss until provider status changes</TooltipPopup>
+          <TooltipPopup side="top">
+            {localize("Dismiss until provider status changes")}
+          </TooltipPopup>
         </Tooltip>
       )}
     </div>

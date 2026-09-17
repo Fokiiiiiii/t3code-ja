@@ -95,6 +95,8 @@ export function SidebarUpdateArchitectureWarning() {
 }
 
 function SidebarUpdateArchitectureWarningContent() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const state = useDesktopUpdateState();
   const visible = shouldShowArm64IntelBuildWarning(state);
   const description = state && visible ? getArm64IntelBuildWarningDescription(state) : null;
@@ -104,8 +106,8 @@ function SidebarUpdateArchitectureWarningContent() {
   return (
     <Alert variant="warning" className="rounded-2xl border-warning/40 bg-warning/8 text-xs">
       <TriangleAlertIcon />
-      <AlertTitle>Intel build on Apple Silicon</AlertTitle>
-      <AlertDescription>{description}</AlertDescription>
+      <AlertTitle>{localize("Intel build on Apple Silicon")}</AlertTitle>
+      <AlertDescription>{localize(description)}</AlertDescription>
     </Alert>
   );
 }

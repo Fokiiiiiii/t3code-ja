@@ -3,6 +3,8 @@ import { RefreshIcon } from "~/components/ui/refresh-icon";
 import { cn } from "~/lib/utils";
 
 import { Button } from "../ui/button";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 export function PullRequestActivityUnavailableState({
   error,
@@ -13,6 +15,8 @@ export function PullRequestActivityUnavailableState({
   onRetry: () => void;
   compact?: boolean;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <div
       className={cn(
@@ -20,11 +24,13 @@ export function PullRequestActivityUnavailableState({
         compact ? "py-3" : "min-h-48 px-4 py-10",
       )}
     >
-      <p className="text-sm font-medium text-foreground">Could not load pull request activity</p>
+      <p className="text-sm font-medium text-foreground">
+        {localize("Could not load pull request activity")}
+      </p>
       <p className="max-w-md text-xs text-muted-foreground">{error}</p>
       <Button size="sm" variant="outline" onClick={onRetry}>
         <RefreshIcon aria-hidden className="size-3.5" />
-        Retry
+        {localize("Retry")}
       </Button>
     </div>
   );

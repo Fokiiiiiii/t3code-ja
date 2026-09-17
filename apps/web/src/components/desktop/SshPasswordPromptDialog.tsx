@@ -12,6 +12,8 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Input } from "../ui/input";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 function describeSshTarget(request: DesktopSshPasswordPromptRequest): string {
   return request.username ? `${request.username}@${request.destination}` : request.destination;
@@ -67,6 +69,8 @@ function ActiveSshPasswordPrompt({
   readonly request: DesktopSshPasswordPromptRequest;
   readonly onRemove: (requestId: string) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [password, setPassword] = useState("");
   const [isResponding, setIsResponding] = useState(false);
   const [now, setNow] = useState(() => Date.now());
@@ -101,7 +105,7 @@ function ActiveSshPasswordPrompt({
   const remainingLabel =
     remainingSeconds === null ? null : formatRemainingSeconds(remainingSeconds);
   const visibleResponseError = isExpired
-    ? "This SSH password prompt expired. Try connecting again."
+    ? localize("This SSH password prompt expired. Try connecting again.")
     : responseError;
 
   const respond = async (nextPassword: string | null) => {
@@ -111,7 +115,7 @@ function ActiveSshPasswordPrompt({
 
     const requestId = request.requestId;
     if (nextPassword !== null && isExpired) {
-      setResponseError("This SSH password prompt expired. Try connecting again.");
+      setResponseError(localize("This SSH password prompt expired. Try connecting again."));
       return;
     }
 
@@ -158,10 +162,12 @@ function ActiveSshPasswordPrompt({
     >
       <DialogPopup className="max-w-md" showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle>SSH Password Required</DialogTitle>
+          <DialogTitle>{localize("SSH Password Required")}</DialogTitle>
           <DialogDescription>
-            T3 needs your SSH password to connect to <code>{target}</code>. The password is passed
-            to the local SSH process for this connection attempt and is not saved by T3 Code.
+            {localize("T3 needs your SSH password to connect to")} <code>{target}</code>.{" "}
+            {localize(
+              "The password is passed to the local SSH process for this connection attempt and is not saved by T3 Code.",
+            )}
           </DialogDescription>
         </DialogHeader>
         <DialogPanel className="space-y-3" scrollFade={false}>
@@ -184,7 +190,7 @@ function ActiveSshPasswordPrompt({
                         : "shrink-0 text-xs text-muted-foreground"
                     }
                   >
-                    {isExpired ? "Expired" : remainingLabel}
+                    {isExpired ? localize("Expired") : remainingLabel}
                   </span>
                 ) : null}
               </div>
@@ -202,17 +208,17 @@ function ActiveSshPasswordPrompt({
               <p className="text-sm text-destructive">{visibleResponseError}</p>
             ) : (
               <p className="text-sm text-muted-foreground">
-                Use SSH keys to avoid repeated password prompts on new SSH sessions.
+                {localize("Use SSH keys to avoid repeated password prompts on new SSH sessions.")}
               </p>
             )}
           </form>
         </DialogPanel>
         <DialogFooter>
           <Button disabled={isResponding} type="button" variant="outline" onClick={cancelPrompt}>
-            {isExpired ? "Dismiss" : "Cancel"}
+            {isExpired ? localize("Dismiss") : localize("Cancel")}
           </Button>
           <Button disabled={isResponding || isExpired} form={formId} type="submit">
-            Continue
+            {localize("Continue")}
           </Button>
         </DialogFooter>
       </DialogPopup>

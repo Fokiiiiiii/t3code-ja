@@ -12,6 +12,8 @@ import {
   CONTEXT_INLINE_CHIP_TONE_CLASS_NAMES,
 } from "../composerInlineChip";
 import { ContextChipPopover, ContextChipShell } from "../contextChipParts";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 interface TerminalContextInlineChipProps {
   label: string;
@@ -25,6 +27,8 @@ interface TerminalContextInlineChipProps {
 }
 
 export function TerminalContextInlineChip(props: TerminalContextInlineChipProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { label, terminalLabel, lineStart, lineEnd, text, detailsMode, expired = false } = props;
   const chipClassName =
     props.surface === "transcript" ? CHAT_INLINE_CHIP_CLASS_NAME : COMPOSER_INLINE_CHIP_CLASS_NAME;
@@ -43,7 +47,7 @@ export function TerminalContextInlineChip(props: TerminalContextInlineChipProps)
   if (!expired && text.length > 0 && detailsMode === "popover") {
     return (
       <ContextChipPopover
-        accessibleLabel={`Terminal excerpt, ${label}`}
+        accessibleLabel={`${localize("Terminal excerpt")}, ${label}`}
         chip={
           <>
             {icon}
@@ -66,12 +70,14 @@ export function TerminalContextInlineChip(props: TerminalContextInlineChipProps)
               {terminalLabel}
             </span>
             <span className="ml-auto shrink-0 text-secondary-label text-xs">
-              {lineStart === lineEnd ? `Line ${lineStart}` : `Lines ${lineStart}–${lineEnd}`}
+              {lineStart === lineEnd
+                ? `${localize("Line")} ${lineStart}`
+                : `${localize("Lines")} ${lineStart}–${lineEnd}`}
             </span>
           </div>
           <pre
             className="max-h-80 overflow-auto whitespace-pre bg-muted p-3 font-mono text-foreground text-xs leading-relaxed outline-none [tab-size:4] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
-            aria-label="Captured terminal output"
+            aria-label={localize("Captured terminal output")}
             tabIndex={0}
           >
             {text}
@@ -91,12 +97,12 @@ export function TerminalContextInlineChip(props: TerminalContextInlineChipProps)
         expired && "border-destructive/35 bg-destructive/8 text-destructive",
       )}
       labelClassName={COMPOSER_INLINE_CHIP_LABEL_CLASS_NAME}
-      aria-label={`Terminal excerpt, ${label}${expired ? ", expired" : ""}`}
+      aria-label={`${localize("Terminal excerpt")}, ${label}${expired ? `, ${localize("expired")}` : ""}`}
       data-terminal-context-expired={expired ? "true" : undefined}
       tooltipClassName="max-w-80 whitespace-pre-wrap leading-tight"
       tooltip={
         expired
-          ? `Terminal context expired. Remove and re-add ${label} to include it in your message.`
+          ? `${localize("Terminal context expired. Remove and re-add")} ${label} ${localize("to include it in your message.")}`
           : detailsMode === "none"
             ? undefined
             : text

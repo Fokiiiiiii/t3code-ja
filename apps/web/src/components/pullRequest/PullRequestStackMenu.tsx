@@ -25,6 +25,8 @@ import { toastManager } from "../ui/toast";
 import { PullRequestStackLayers } from "./PullRequestStackLayers";
 import { PullRequestStackHeader } from "./PullRequestStackHeader";
 import { PullRequestStackLayerContent } from "./PullRequestStackLayerContent";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 export function PullRequestStackMenu({
   stack,
@@ -49,6 +51,8 @@ export function PullRequestStackMenu({
   onSelect?: ((reference: PullRequestRef) => void) | undefined;
   onActed: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [open, setOpen] = useState(false);
   const [confirmation, setConfirmation] = useState<"merge" | "update-branch" | null>(null);
   const [pending, setPending] = useState(false);
@@ -103,16 +107,16 @@ export function PullRequestStackMenu({
     if (result._tag === "Failure") {
       toastManager.add({
         type: "error",
-        title: "Stack operation did not complete",
+        title: localize("Stack operation did not complete"),
         description: String(squashAtomCommandFailure(result)),
       });
     } else {
       toastManager.add({
         type: "success",
-        title: action === "merge" ? "Stack merge request completed" : "Stack rebased",
+        title: localize(action === "merge" ? "Stack merge request completed" : "Stack rebased"),
         description:
           action === "merge"
-            ? "GitHub merged the stack or added it to its merge queue."
+            ? localize("GitHub merged the stack or added it to its merge queue.")
             : undefined,
       });
     }
@@ -129,7 +133,7 @@ export function PullRequestStackMenu({
                   <Button
                     variant="ghost"
                     size="xs"
-                    aria-label={`Stack ${stack.number}, layer ${position} of ${stack.layers.length}`}
+                    aria-label={`${localize("Stack")} ${stack.number}, ${localize("layer")} ${position} ${localize("of")} ${stack.layers.length}`}
                   />
                 }
               >
@@ -139,14 +143,17 @@ export function PullRequestStackMenu({
             }
           />
           <TooltipPopup>
-            View stack #{stack.number}, layer {position} of {stack.layers.length}
+            {localize("View stack")} #{stack.number}, {localize("layer")} {position}{" "}
+            {localize("of")} {stack.layers.length}
             {notice ? ` · ${notice}` : null}
           </TooltipPopup>
         </Tooltip>
         <MenuPopup align="start" className="w-96 max-w-[calc(100vw-2rem)]">
           <MenuGroup>
             <PullRequestStackHeader number={stack.number} notice={notice} stale={!!onRetry} />
-            {onRetry ? <MenuItem onClick={onRetry}>Retry stack refresh</MenuItem> : null}
+            {onRetry ? (
+              <MenuItem onClick={onRetry}>{localize("Retry stack refresh")}</MenuItem>
+            ) : null}
             <PullRequestStackLayers
               stack={stack}
               reference={reference}
@@ -167,7 +174,7 @@ export function PullRequestStackMenu({
               {canMerge ? (
                 <MenuItem disabled={mergeDisabled} onClick={() => setConfirmation("merge")}>
                   <GitMergeIcon aria-hidden />
-                  Merge stack ({mergeLayers.length})
+                  {localize("Merge stack")} ({mergeLayers.length})
                 </MenuItem>
               ) : null}
               {canRebase ? (
@@ -176,12 +183,12 @@ export function PullRequestStackMenu({
                   onClick={() => setConfirmation("update-branch")}
                 >
                   <RefreshCwIcon aria-hidden />
-                  Rebase stack
+                  {localize("Rebase stack")}
                 </MenuItem>
               ) : null}
               {mergeHasClosed || mergeLayers.some((layer) => layer.isDraft) ? (
                 <p className="px-2 py-1 text-xs text-muted-foreground">
-                  Every layer being merged must be open and ready for review.
+                  {localize("Every layer being merged must be open and ready for review.")}
                 </p>
               ) : null}
             </>
@@ -200,14 +207,15 @@ export function PullRequestStackMenu({
                   onClick={() => setConfirmation("merge")}
                 >
                   <GitMergeIcon aria-hidden className="size-3.5" />
-                  Merge stack
+                  {localize("Merge stack")}
                 </Button>
               </span>
             }
           />
           <TooltipPopup>
-            Merge stack through #{reference.number} into {stack.base} ({mergeLayers.length}{" "}
-            {mergeLayers.length === 1 ? "pull request" : "pull requests"})
+            {localize("Merge stack through")} #{reference.number} {localize("into")} {stack.base} (
+            {mergeLayers.length}{" "}
+            {localize(mergeLayers.length === 1 ? "pull request" : "pull requests")})
           </TooltipPopup>
         </Tooltip>
       ) : null}
@@ -221,13 +229,13 @@ export function PullRequestStackMenu({
           <DialogHeader>
             <DialogTitle>
               {confirmation === "merge"
-                ? `Merge ${mergeLayers.length} pull requests?`
-                : `Rebase ${unmerged.length} pull requests?`}
+                ? `${localize("Merge")} ${mergeLayers.length} ${localize("pull requests")} ?`
+                : `${localize("Rebase")} ${unmerged.length} ${localize("pull requests")} ?`}
             </DialogTitle>
             <DialogDescription>
               {confirmation === "merge"
-                ? `Merge #${reference.number} and its unmerged layers below into ${stack.base} using ${mergeMethod}. GitHub checks their rules before merging or queueing them and rebases the remaining stack after merging.`
-                : `Rebase the remote branches from bottom to top onto ${stack.base}. This rewrites branch history and may restart checks. If a layer fails, earlier updates remain.`}
+                ? `${localize("Merge")} #${reference.number} ${localize("and its unmerged layers below into")} ${stack.base} ${localize("using")} ${mergeMethod}. ${localize("GitHub checks their rules before merging or queueing them and rebases the remaining stack after merging.")}`
+                : `${localize("Rebase the remote branches from bottom to top onto")} ${stack.base}. ${localize("This rewrites branch history and may restart checks. If a layer fails, earlier updates remain.")}`}
             </DialogDescription>
           </DialogHeader>
           <DialogPanel>
@@ -244,10 +252,12 @@ export function PullRequestStackMenu({
           </DialogPanel>
           <DialogFooter>
             <Button variant="outline" disabled={pending} onClick={() => setConfirmation(null)}>
-              Cancel
+              {localize("Cancel")}
             </Button>
             <Button disabled={pending} onClick={() => void run()}>
-              {pending ? "Working…" : confirmation === "merge" ? "Merge stack" : "Rebase stack"}
+              {pending
+                ? localize("Working…")
+                : localize(confirmation === "merge" ? "Merge stack" : "Rebase stack")}
             </Button>
           </DialogFooter>
         </DialogPopup>

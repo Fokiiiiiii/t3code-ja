@@ -33,6 +33,8 @@ import {
 } from "../../lib/desktopSnapShot";
 import { readFileAsDataUrl } from "../ChatView.logic";
 import { stackedThreadToast, toastManager } from "../ui/toast";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 type CaptureTarget = DraftId | ScopedThreadRef;
 
@@ -195,6 +197,8 @@ export async function deliverSnapShot(
 }
 
 export function SnapShotCoordinator() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const {
     activeDraftThread,
     activeThread,
@@ -285,8 +289,8 @@ export function SnapShotCoordinator() {
             toastManager.add(
               stackedThreadToast({
                 type: "error",
-                title: "Snapshot taken, but no project is available",
-                description: "Add a project, then capture the window again.",
+                title: localize("Snapshot taken, but no project is available"),
+                description: localize("Add a project, then capture the window again."),
               }),
             );
             continue;
@@ -302,9 +306,9 @@ export function SnapShotCoordinator() {
             toastManager.add(
               stackedThreadToast({
                 type: "error",
-                title: "Snapshot failed",
+                title: localize("Snapshot failed"),
                 description: `Capture ${item.id}: ${
-                  error instanceof Error ? error.message : "Try the capture again."
+                  error instanceof Error ? error.message : localize("Try the capture again.")
                 }`,
               }),
             );
@@ -317,8 +321,9 @@ export function SnapShotCoordinator() {
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Snapshot failed",
-            description: error instanceof Error ? error.message : "Try the capture again.",
+            title: localize("Snapshot failed"),
+            description:
+              error instanceof Error ? error.message : localize("Try the capture again."),
           }),
         );
       })
@@ -376,8 +381,10 @@ export function SnapShotCoordinator() {
             toastManager.add(
               stackedThreadToast({
                 type: "error",
-                title: "Snapshot failed",
-                description: state.message ?? "Try the capture again.",
+                title: localize("Snapshot failed"),
+                description: state.message
+                  ? localize(state.message)
+                  : localize("Try the capture again."),
               }),
             );
           });

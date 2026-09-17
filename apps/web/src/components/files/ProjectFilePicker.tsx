@@ -57,7 +57,7 @@ function EmptyProjectFilePicker() {
   const localize = (value: string) => translateWebSource(locale, value);
   return (
     <CommandPaletteContent
-      aria-label="File picker"
+      aria-label={localize("File picker")}
       escapeLabel="Back"
       footerActionLabel="Open file"
       inputProps={{ disabled: true, placeholder: "Search files…" }}
@@ -73,6 +73,8 @@ function EmptyProjectFilePicker() {
 }
 
 function OpenProjectFilePicker(props: ProjectFilePickerProps & { target: ActiveProjectTarget }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { target } = props;
   const [query, setQuery] = useState("");
   const [highlightedItemValue, setHighlightedItemValue] = useState<string | null>(null);
@@ -117,11 +119,11 @@ function OpenProjectFilePicker(props: ProjectFilePickerProps & { target: ActiveP
     [hasMatchedQuery, matches, resolvedTheme, target.threadRef],
   );
 
-  const emptyStateMessage = getEmptyStateMessage(query, result.error, result.isPending);
+  const emptyStateMessage = localize(getEmptyStateMessage(query, result.error, result.isPending));
 
   return (
     <CommandPaletteContent
-      aria-label="File picker"
+      aria-label={localize("File picker")}
       autoHighlight="always"
       escapeLabel="Back"
       footerActionLabel="Open file"

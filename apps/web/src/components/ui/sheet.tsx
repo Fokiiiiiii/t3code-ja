@@ -6,6 +6,8 @@ import type { CSSProperties } from "react";
 import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const Sheet = SheetPrimitive.Root;
 
@@ -79,6 +81,7 @@ function SheetPopup({
   side?: "right" | "left" | "top" | "bottom";
   variant?: "default" | "inset";
 }) {
+  const { locale } = useI18n();
   const transitionStyle =
     transitionDurationMs === undefined
       ? undefined
@@ -120,7 +123,7 @@ function SheetPopup({
           {children}
           {showCloseButton && (
             <SheetPrimitive.Close
-              aria-label="Close"
+              aria-label={translateWebSource(locale, "Close")}
               className="absolute end-2 top-2"
               render={<Button size="icon" variant="ghost" />}
             >

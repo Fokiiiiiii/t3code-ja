@@ -193,7 +193,9 @@ function EnvironmentScopeMenu({
                 {settingsScopeEnvironmentLabel(environment, environments)}
               </span>
               {environment.connection.phase === "connected" ? null : (
-                <span className="shrink-0 text-xs text-muted-foreground">Offline</span>
+                <span className="shrink-0 text-xs text-muted-foreground">
+                  {localize("Offline")}
+                </span>
               )}
               <MenuRadioItemIndicator />
             </span>

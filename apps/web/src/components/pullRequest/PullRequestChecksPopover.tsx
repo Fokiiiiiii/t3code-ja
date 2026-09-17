@@ -20,6 +20,8 @@ import {
   pullRequestChecksStatePresentation,
   summarizePullRequestChecks,
 } from "./pullRequestPresentation";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 /**
  * The checks behind the rollup, for a row that only carries the rollup. Mounted by the popup, so
@@ -35,6 +37,8 @@ function LazyChecksBody({
   reference: PullRequestRef;
   threadRef: ScopedThreadRef | null;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const detailQuery = useEnvironmentQuery(
     pullRequestEnvironment.detail({ environmentId, input: reference }),
   );
@@ -44,7 +48,7 @@ function LazyChecksBody({
   if (detailQuery.data === null) {
     return (
       <p className="text-muted-foreground text-xs">
-        {detailQuery.isPending ? "Loading checks…" : "No checks reported"}
+        {detailQuery.isPending ? localize("Loading checks…") : localize("No checks reported")}
       </p>
     );
   }
@@ -58,9 +62,11 @@ function ChecksBody({
   checks: ReadonlyArray<PullRequestCheck>;
   threadRef: ScopedThreadRef | null;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const openLink = useOpenLink(threadRef);
   if (checks.length === 0) {
-    return <p className="text-muted-foreground text-xs">No checks reported</p>;
+    return <p className="text-muted-foreground text-xs">{localize("No checks reported")}</p>;
   }
   return (
     <ul className="flex flex-col gap-1">
@@ -76,7 +82,7 @@ function ChecksBody({
             <TooltipPopup side="top">{check.description ?? check.name}</TooltipPopup>
           </Tooltip>
           <span className="shrink-0 text-muted-foreground">
-            {pullRequestCheckStatusLabel(check)}
+            {localize(pullRequestCheckStatusLabel(check))}
           </span>
           {check.url === null ? null : (
             <button
@@ -86,11 +92,14 @@ function ChecksBody({
                 if (!check.url) return;
                 void openLink(check.url).catch((error: unknown) => {
                   console.error(error);
-                  toastManager.add({ type: "error", title: "Unable to open check details" });
+                  toastManager.add({
+                    type: "error",
+                    title: localize("Unable to open check details"),
+                  });
                 });
               }}
             >
-              Details
+              {localize("Details")}
             </button>
           )}
         </li>
@@ -123,6 +132,8 @@ export function PullRequestChecksPopover({
   threadRef?: ScopedThreadRef | null;
   className?: string;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const presentation = pullRequestChecksStatePresentation(checksState);
   // Counts beat the rollup's own wording where they are known, the way GitHub's own header reads.
   const summary = checks === undefined ? null : summarizePullRequestChecks(checks);
@@ -137,7 +148,7 @@ export function PullRequestChecksPopover({
           <span
             role="button"
             tabIndex={0}
-            aria-label={`Checks: ${presentation.label}`}
+            aria-label={`${localize("Checks:")} ${localize(presentation.label)}`}
             className={cn("inline-flex shrink-0 cursor-pointer items-center", className)}
           />
         }
@@ -146,8 +157,10 @@ export function PullRequestChecksPopover({
         <presentation.Icon aria-hidden className={cn("size-3.5", presentation.toneClassName)} />
       </PopoverTrigger>
       <PopoverPopup align="start" className="w-80 max-w-full" side="bottom">
-        <p className="mb-2 font-medium text-sm">{presentation.label}</p>
-        {summary === null ? null : <p className="mb-2 text-muted-foreground text-xs">{summary}</p>}
+        <p className="mb-2 font-medium text-sm">{localize(presentation.label)}</p>
+        {summary === null ? null : (
+          <p className="mb-2 text-muted-foreground text-xs">{localize(summary)}</p>
+        )}
         {checks !== undefined ? (
           <ChecksBody checks={checks} threadRef={threadRef} />
         ) : environmentId !== undefined && reference !== undefined ? (

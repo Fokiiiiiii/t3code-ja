@@ -4,6 +4,8 @@ import { memo, type ComponentProps } from "react";
 import { formatDuration } from "../../session-logic";
 import { cn } from "~/lib/utils";
 import { ComposerBanner } from "./ComposerBanner";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 export interface ComposerTasksProgress {
   readonly step: string;
@@ -71,13 +73,15 @@ function TaskSummary({
   readonly progress: ComposerTasksProgress;
   readonly steps: readonly ComposerTaskStep[];
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <>
       <ComposerBanner.Icon>
         <ListTodoIcon />
       </ComposerBanner.Icon>
       <ComposerBanner.Content>
-        <span className="shrink-0 text-muted-foreground">Tasks</span>
+        <span className="shrink-0 text-muted-foreground">{localize("Tasks")}</span>
         <span
           className="min-w-0 flex-1 truncate text-left font-medium text-foreground/80"
           data-composer-task-current="true"
@@ -90,7 +94,7 @@ function TaskSummary({
           className={progress.completedSteps >= progress.totalSteps ? "text-success" : undefined}
           data-composer-task-progress="true"
         >
-          {progress.completedSteps}/{progress.totalSteps} complete
+          {progress.completedSteps}/{progress.totalSteps} {localize("complete")}
         </ComposerBanner.Count>
         <TaskSegments className="hidden w-20 sm:flex" steps={steps} />
         <ComposerBanner.ToggleIcon expanded={expanded} />
@@ -112,13 +116,15 @@ export const ComposerTasksBadge = memo(function ComposerTasksBadge({
   readonly progress: ComposerTasksProgress;
   readonly steps: readonly ComposerTaskStep[];
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   if (progress.totalSteps <= 0) return null;
 
   const row = (
     <ComposerBanner.Row
       render={<button type="button" />}
       aria-expanded={expanded}
-      aria-label={`${expanded ? "Collapse tasks" : "Tasks"}: ${progress.completedSteps} of ${progress.totalSteps} complete. Current task: ${progress.step}`}
+      aria-label={`${localize(expanded ? "Collapse tasks" : "Tasks")}: ${progress.completedSteps} ${localize("of")} ${progress.totalSteps} ${localize("complete")}. ${localize("Current task:")} ${progress.step}`}
       data-composer-tasks-badge="true"
       onClick={onToggle}
       onPointerDown={(event) => event.preventDefault()}
@@ -146,6 +152,8 @@ export const ComposerTasksContent = memo(function ComposerTasksContent({
   readonly progress: ComposerTasksProgress;
   readonly steps: readonly ComposerTaskStep[];
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <div
       data-chat-composer-collapsed-controls="true"
@@ -162,7 +170,7 @@ export const ComposerTasksContent = memo(function ComposerTasksContent({
         <ComposerBanner.Scroll data-composer-tasks-scroll="true">
           <ComposerBanner.Children
             render={<ul role="list" />}
-            aria-label={`Task list. ${progress.completedSteps} of ${progress.totalSteps} complete.`}
+            aria-label={`${localize("Task list.")} ${progress.completedSteps} ${localize("of")} ${progress.totalSteps} ${localize("complete")}.`}
             data-composer-tasks-list="true"
           >
             {keyedTaskSteps(steps).map(({ key, step }) => (
@@ -192,7 +200,7 @@ export const ComposerTasksContent = memo(function ComposerTasksContent({
                 </ComposerBanner.Content>
                 <ComposerBanner.Actions>
                   <span className="text-[10px] text-muted-foreground">
-                    {taskStatusLabels[step.status]}
+                    {localize(taskStatusLabels[step.status])}
                   </span>
                   <span
                     className="w-10 text-right text-[10px] text-muted-foreground/45 tabular-nums"

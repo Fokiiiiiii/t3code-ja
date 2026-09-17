@@ -16,6 +16,8 @@ import { Popover, PopoverPopup, PopoverTrigger } from "../ui/popover";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
 import type { ProjectOverrideEntry, ScopedSettingsTarget } from "./scopedSettings";
 import { isProjectScopedSettingKey } from "./scopedSettings";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 interface InheritanceLayer {
   readonly key: "project" | "environment" | "built-in";
@@ -148,6 +150,8 @@ export function SettingInheritance({
   overridingProjects?: readonly SettingOverridingProject[];
   onClearOverrides?: (entries: readonly ProjectOverrideEntry[]) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const key = keys[0];
   if (!key || targets.length === 0) return null;
   const overrideSummary =
@@ -178,7 +182,7 @@ export function SettingInheritance({
                 <Button
                   size="icon-micro"
                   variant="ghost-muted"
-                  aria-label={`${overrideSummary}. Show where this value comes from`}
+                  aria-label={`${overrideSummary}. ${localize("Show where this value comes from")}`}
                   className={cn(
                     "[--control-icon-color:currentColor]",
                     state === "overridden"
@@ -228,7 +232,9 @@ export function SettingInheritance({
                         layer.effective ? "font-medium text-foreground" : "text-muted-foreground",
                       )}
                     >
-                      {layer.key === "environment" ? "Environment" : layer.label}
+                      {layer.key === "environment"
+                        ? localize("Environment")
+                        : localize(layer.label)}
                     </span>
                     <span
                       className={cn(
@@ -259,14 +265,14 @@ export function SettingInheritance({
                 return (
                   <div className="mt-2 border-t border-border/60 pt-2">
                     <div className="flex items-center justify-between gap-3 px-2 text-xs text-muted-foreground">
-                      <span>Overridden by</span>
+                      <span>{localize("Overridden by")}</span>
                       {onClearOverrides ? (
                         <button
                           type="button"
                           className="cursor-pointer font-medium text-foreground underline-offset-2 hover:underline focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
                           onClick={() => onClearOverrides(overriding)}
                         >
-                          Reset {overriding.length === 1 ? "it" : "all"}
+                          {localize("Reset")} {localize(overriding.length === 1 ? "it" : "all")}
                         </button>
                       ) : null}
                     </div>
