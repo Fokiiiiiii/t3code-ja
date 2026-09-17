@@ -6155,6 +6155,36 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Current version of the application.": "現在のアプリバージョンです。",
   "View diagnostics": "診断を表示",
   "View licenses": "ライセンスを表示",
+  "Open a surface": "パネルを開く",
+  "Open browser in a profile": "プロファイルを指定してブラウザーを開く",
+  "Watch an iOS Simulator or Android Emulator.":
+    "iOS シミュレーターまたは Android エミュレーターを表示します。",
+  "Terminal surfaces are only available from a project thread.":
+    "ターミナルパネルはプロジェクトのスレッドでのみ利用できます。",
+  "Available when a project is open.": "プロジェクトを開いている場合に利用できます。",
+  "Diff is only available for server threads in Git repositories.":
+    "Diff は Git リポジトリのサーバースレッドでのみ利用できます。",
+  "This thread's branch has no pull request yet.":
+    "このスレッドのブランチにはまだプルリクエストがありません。",
+  "No linked pull requests are available for this thread.":
+    "このスレッドに紐づくプルリクエストはありません。",
+  "Devices are only available from a thread.": "デバイスはスレッドからのみ利用できます。",
+  "Available for Git repositories.": "Git リポジトリで利用できます。",
+  "No pull request on this branch yet.": "このブランチにはまだプルリクエストがありません。",
+  "No linked pull requests available.": "利用可能な紐づき済みプルリクエストはありません。",
+  "Available from a thread.": "スレッドから利用できます。",
+  Unmute: "ミュート解除",
+  Mute: "ミュート",
+  "Unmute tab": "タブのミュートを解除",
+  "Mute tab": "タブをミュート",
+  "Device tab name": "デバイスタブ名",
+  "Add panel surface": "パネルを追加",
+  "Scroll panel tabs": "パネルタブをスクロール",
+  "Scroll tabs left": "タブを左へスクロール",
+  "Scroll tabs right": "タブを右へスクロール",
+  "Close others": "他を閉じる",
+  "Close to the right": "右側を閉じる",
+  "Close all": "すべて閉じる",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {

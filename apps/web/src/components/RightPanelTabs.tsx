@@ -67,6 +67,8 @@ import { useTheme } from "~/hooks/useTheme";
 import { pullRequestEnvironment } from "~/state/pullRequests";
 import { useEnvironmentQuery } from "~/state/query";
 import { COLLAPSED_SIDEBAR_TITLEBAR_INSET_CLASS } from "~/workspaceTitlebar";
+import { useI18n } from "~/i18n/WebI18nProvider";
+import { translateWebSource } from "~/i18n/messages";
 
 import { PreviewPanelShell, type PreviewPanelMode } from "./preview/PreviewPanelShell";
 import { FaviconImage } from "./preview/PreviewFaviconIcon";
@@ -273,10 +275,11 @@ export function surfaceShortcutTargetsTypingContext(
 }
 
 function DisabledReasonTooltip(props: { reason: string; trigger: ReactElement }) {
+  const { locale } = useI18n();
   return (
     <Tooltip>
       <TooltipTrigger render={props.trigger} />
-      <TooltipPopup side="top">{props.reason}</TooltipPopup>
+      <TooltipPopup side="top">{translateWebSource(locale, props.reason)}</TooltipPopup>
     </Tooltip>
   );
 }
@@ -331,6 +334,8 @@ function RightPanelEmptyState(props: {
   deviceAvailable: boolean;
   liveAgentCount: number;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   // -1 means no highlight: it only appears on hover or arrow use.
   const [highlight, setHighlight] = useState(-1);
 
@@ -400,7 +405,7 @@ function RightPanelEmptyState(props: {
     },
     {
       label: "Device",
-      description: "Watch an iOS Simulator or Android Emulator.",
+      description: localize("Watch an iOS Simulator or Android Emulator."),
       icon: Smartphone,
       shortcut: "M",
       available: props.deviceAvailable,
@@ -497,7 +502,7 @@ function RightPanelEmptyState(props: {
       ref={focusOnMount}
       tabIndex={0}
       onKeyDown={handleKeyDown}
-      aria-label="Open a surface"
+      aria-label={localize("Open a surface")}
       data-surface-launcher-keys={availableActions.map((action) => action.shortcut).join("")}
       className={cn(
         "flex min-h-0 flex-1 items-center justify-center overflow-y-auto px-6 pt-6 outline-none",
@@ -507,7 +512,9 @@ function RightPanelEmptyState(props: {
       )}
     >
       <div className="w-full max-w-xs">
-        <h3 className="mb-3 text-center font-medium text-foreground text-sm">Open a surface</h3>
+        <h3 className="mb-3 text-center font-medium text-foreground text-sm">
+          {localize("Open a surface")}
+        </h3>
         <div className="flex flex-col gap-0.5">
           {actions.map((action) =>
             action.available ? (
@@ -540,7 +547,7 @@ function RightPanelEmptyState(props: {
                       action.label === "Browser" && props.browserProfiles.length > 1 && "pr-7",
                     )}
                   >
-                    {action.label}
+                    {localize(action.label)}
                   </span>
                   <Kbd>{action.shortcut}</Kbd>
                 </button>
@@ -554,7 +561,7 @@ function RightPanelEmptyState(props: {
                     <MenuTrigger
                       render={
                         <Button
-                          aria-label="Open browser in a profile"
+                          aria-label={localize("Open browser in a profile")}
                           className="absolute top-1/2 right-8 -translate-y-1/2 [--control-icon-color:currentColor]"
                           size="icon-xs"
                           variant="ghost-muted"
@@ -592,7 +599,7 @@ function RightPanelEmptyState(props: {
                     className="flex h-8 w-full cursor-default items-center gap-2.5 rounded-[var(--control-radius)] px-2.5 text-left text-sm opacity-50"
                   >
                     {actionIcon(action, "size-4")}
-                    <span className="min-w-0 flex-1 truncate">{action.label}</span>
+                    <span className="min-w-0 flex-1 truncate">{localize(action.label)}</span>
                     <Kbd>{action.shortcut}</Kbd>
                   </div>
                 }
@@ -817,6 +824,8 @@ function PullRequestSurfaceIcon({
 }
 
 export function RightPanelTabs(props: RightPanelTabsProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const ownsDesktopTitleBar = isElectron && props.mode === "inline";
   const browserProfiles = useBrowserDefaults().profiles;
   const { resolvedTheme } = useTheme();
@@ -949,9 +958,9 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
 
       const items: ContextMenuItem<TabContextMenuAction>[] = [];
       if (surface.kind === "device" && props.onRenameDevice)
-        items.push({ id: "rename", label: "Rename" });
+        items.push({ id: "rename", label: localize("Rename") });
       if (surface.kind === "file" && surface.attachment === undefined) {
-        items.push({ id: "copy-path", label: "Copy path" });
+        items.push({ id: "copy-path", label: localize("Copy path") });
       }
       const menuPreviewTabId = previewTabIdOf(surface, props.previewSessions);
       // Desktop overlay state only arrives once the preview manager has created
@@ -973,20 +982,20 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
         });
       }
       items.push(
-        { id: "close", label: "Close" },
+        { id: "close", label: localize("Close") },
         {
           id: "close-others",
-          label: "Close others",
+          label: localize("Close others"),
           disabled: props.surfaces.length <= 1,
         },
         {
           id: "close-to-right",
-          label: "Close to the right",
+          label: localize("Close to the right"),
           disabled: surfaceIndex >= props.surfaces.length - 1,
         },
         {
           id: "close-all",
-          label: "Close all",
+          label: localize("Close all"),
           disabled: props.surfaces.length === 0,
         },
       );
@@ -1029,7 +1038,7 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
           break;
       }
     },
-    [props],
+    [localize, props],
   );
   const handleTabMouseDown = useCallback((event: ReactMouseEvent) => {
     if (event.button !== 1) return;
@@ -1125,7 +1134,9 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
             {props.surfaces.map((surface) => {
               const active = surface.id === props.activeSurfaceId;
               const pending = props.pendingSurfaceIds.has(surface.id);
-              const title = surfaceTitle(surface, props.previewSessions, props.terminalLabelsById);
+              const title = localize(
+                surfaceTitle(surface, props.previewSessions, props.terminalLabelsById),
+              );
               const previewTabId = previewTabIdOf(surface, props.previewSessions);
               // Desktop state is keyed by the session id, but desktop actions
               // must be addressed with the runtime id.
@@ -1151,7 +1162,7 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
                   )}
                 >
                   <PanelTabCloseButton
-                    label={`Close ${title}`}
+                    label={`${localize("Close")} ${title}`}
                     onClick={() => props.onCloseSurface(surface)}
                   >
                     <SurfaceIcon
@@ -1176,7 +1187,7 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
                           <button
                             type="button"
                             className="cursor-pointer flex size-4 shrink-0 items-center justify-center rounded-sm hover:bg-muted"
-                            aria-label={audio === "muted" ? `Unmute ${title}` : `Mute ${title}`}
+                            aria-label={`${localize(audio === "muted" ? "Unmute" : "Mute")} ${title}`}
                             onClick={(event) => {
                               // Sibling of the close button, inside a tab that
                               // activates on click: keep this to the toggle.
@@ -1194,12 +1205,14 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
                           </button>
                         }
                       />
-                      <TooltipPopup>{audio === "muted" ? "Unmute tab" : "Mute tab"}</TooltipPopup>
+                      <TooltipPopup>
+                        {localize(audio === "muted" ? "Unmute tab" : "Mute tab")}
+                      </TooltipPopup>
                     </Tooltip>
                   )}
                   {renamingDevice === surface.id ? (
                     <input
-                      aria-label="Device tab name"
+                      aria-label={localize("Device tab name")}
                       className="w-24 min-w-0 rounded-sm bg-background px-1 outline-none ring-1 ring-ring"
                       defaultValue={title}
                       ref={(element) => {
@@ -1247,7 +1260,7 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
                 <MenuTrigger
                   render={
                     <Button
-                      aria-label="Add panel surface"
+                      aria-label={localize("Add panel surface")}
                       className="size-6 shrink-0 text-muted-foreground hover:text-foreground"
                       size="icon-xs"
                       variant="ghost"
@@ -1293,7 +1306,7 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
                             }}
                           >
                             <Icon />
-                            {action.label}
+                            {localize(action.label)}
                             <MenuShortcut>{action.shortcut}</MenuShortcut>
                           </MenuSubTrigger>
                           {/*
@@ -1323,7 +1336,7 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
                         onClick={action.onClick}
                       >
                         <Icon />
-                        {action.label}
+                        {localize(action.label)}
                       </SurfaceMenuItem>
                     );
                   })}
@@ -1336,14 +1349,14 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
           <div
             className="flex shrink-0 items-center gap-0.5 [-webkit-app-region:no-drag]"
             role="group"
-            aria-label="Scroll panel tabs"
+            aria-label={localize("Scroll panel tabs")}
           >
             <Tooltip>
               <TooltipTrigger
                 render={
                   <span className="inline-flex">
                     <Button
-                      aria-label="Scroll tabs left"
+                      aria-label={localize("Scroll tabs left")}
                       disabled={!tabScrollState.canScrollLeft}
                       onClick={() => scrollTabs(-1)}
                       size="icon-xs"
@@ -1354,14 +1367,14 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
                   </span>
                 }
               />
-              <TooltipPopup>Scroll tabs left</TooltipPopup>
+              <TooltipPopup>{localize("Scroll tabs left")}</TooltipPopup>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger
                 render={
                   <span className="inline-flex">
                     <Button
-                      aria-label="Scroll tabs right"
+                      aria-label={localize("Scroll tabs right")}
                       disabled={!tabScrollState.canScrollRight}
                       onClick={() => scrollTabs(1)}
                       size="icon-xs"
@@ -1372,7 +1385,7 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
                   </span>
                 }
               />
-              <TooltipPopup>Scroll tabs right</TooltipPopup>
+              <TooltipPopup>{localize("Scroll tabs right")}</TooltipPopup>
             </Tooltip>
           </div>
         ) : null}
