@@ -7038,6 +7038,65 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Use global default": "グローバルの既定値を使う",
   "Create new thread in": "新しいタスクを作成：",
   projects: "件のプロジェクト",
+  "Unable to update popped-out preview": "ポップアウトしたプレビューを更新できません",
+  "Close popped-out preview": "ポップアウトしたプレビューを閉じる",
+  "Pop preview into separate window": "プレビューを別ウィンドウにポップアウト",
+  "Close separate window": "別ウィンドウを閉じる",
+  "Pop into separate window": "別ウィンドウにポップアウト",
+  "Reconnecting preview…": "プレビューに再接続中…",
+  "Floating browser preview": "フローティングブラウザープレビュー",
+  "Floating device preview": "フローティングデバイスプレビュー",
+  "Recording preview": "プレビューを録画中",
+  Continue: "続行",
+  Cloning: "クローン中",
+  Select: "選択",
+  "Enter Git clone URL": "Git クローン URL を入力",
+  "Git URL": "Git URL",
+  "Clone from a remote URL": "リモート URL からクローン",
+  "The selected environment": "選択した環境",
+  "This device": "このデバイス",
+  "Failed to add project": "プロジェクトを追加できませんでした",
+  "Windows-style paths are only supported on Windows.":
+    "Windows 形式のパスは Windows でのみ使用できます。",
+  "Relative paths require an active project.": "相対パスにはアクティブなプロジェクトが必要です。",
+  "Failed to open project": "プロジェクトを開けませんでした",
+  "Repository lookup failed": "リポジトリの検索に失敗しました",
+  "Clone failed": "クローンに失敗しました",
+  "Choose a destination path and press Enter to clone.":
+    "保存先のパスを選択して Enter キーでクローンしてください。",
+  "Press Enter to create this folder and add it as a project.":
+    "Enter キーでこのフォルダーを作成し、プロジェクトとして追加します。",
+  "Start the matching WSL backend, then choose the folder again.":
+    "対応する WSL バックエンドを起動してから、もう一度フォルダーを選択してください。",
+  Lookup: "検索",
+  "is not connected.": "は接続されていません。",
+  Clone: "クローン",
+  Local: "ローカル",
+  "Enter a repository path and press Enter to look it up.":
+    "リポジトリのパスを入力し、Enter キーで検索してください。",
+  "Publish repository...": "リポジトリを公開…",
+  "Detached HEAD: create and check out a branch to enable push and pull request actions.":
+    "Detached HEAD です。プッシュとプルリクエストを有効にするにはブランチを作成してチェックアウトしてください。",
+  "Behind upstream. Pull/rebase first.":
+    "upstream より遅れています。先に pull または rebase してください。",
+  "Commit changes": "変更をコミット",
+  "Commit message (optional)": "コミットメッセージ（任意）",
+  "Commit on new branch": "新しいブランチにコミット",
+  Commit: "コミット",
+  "Run action on default branch?": "既定ブランチで操作を実行しますか？",
+  Abort: "中止",
+  none: "なし",
+  "Running git action...": "Git 操作を実行中…",
+  "Committing...": "コミット中…",
+  "Running for": "実行時間",
+  "Enter a Git clone URL and press Enter to continue.":
+    "Git クローン URL を入力し、Enter キーで続行してください。",
+  repository: "リポジトリ",
+  "Open Settings -> Source Control to configure this provider.":
+    "このプロバイダーを設定するには「設定 -> ソース管理」を開いてください。",
+  "Searching thread messages…": "タスクのメッセージを検索中…",
+  "Create & Clone": "作成してクローン",
+  "Create & Add": "作成して追加",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {

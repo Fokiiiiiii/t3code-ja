@@ -33,6 +33,8 @@ import {
 } from "~/previewMiniPlayerStore";
 import { useRightPanelStore } from "~/rightPanelStore";
 import { useDeviceState } from "~/state/device";
+import { useI18n } from "~/i18n/WebI18nProvider";
+import { translateWebSource } from "~/i18n/messages";
 
 import { DeviceStreamView } from "../device/DeviceStreamView";
 import type { DeviceScreenSize } from "../device/deviceStream";
@@ -152,6 +154,8 @@ function BrowserMiniPlayer({
   miniPlayer,
   composerOverlayElement,
 }: Props & { readonly tabId: string }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const previewState = useThreadPreviewState(threadRef);
   const snapshot = previewState.sessions[tabId] ?? null;
   const runtimeTabId = previewRuntimeTabId(threadRef, previewState.serverEpoch, tabId);
@@ -182,8 +186,8 @@ function BrowserMiniPlayer({
     void operation(runtimeTabId).catch((error) => {
       toastManager.add({
         type: "error",
-        title: "Unable to update popped-out preview",
-        description: error instanceof Error ? error.message : "An error occurred.",
+        title: localize("Unable to update popped-out preview"),
+        description: error instanceof Error ? error.message : localize("An error occurred."),
       });
     });
   };
@@ -206,11 +210,11 @@ function BrowserMiniPlayer({
               <Button
                 variant={desktopOverlay?.pictureInPicture ? "secondary" : "ghost"}
                 size="icon-xs"
-                aria-label={
+                aria-label={localize(
                   desktopOverlay?.pictureInPicture
                     ? "Close popped-out preview"
-                    : "Pop preview into separate window"
-                }
+                    : "Pop preview into separate window",
+                )}
                 disabled={!desktopOverlay?.hasWebContents}
                 onPointerDown={(event) => event.stopPropagation()}
                 onClick={toggleNativePictureInPicture}
@@ -220,9 +224,11 @@ function BrowserMiniPlayer({
             <PictureInPicture2 />
           </TooltipTrigger>
           <TooltipPopup side="top">
-            {desktopOverlay?.pictureInPicture
-              ? "Close separate window"
-              : "Pop into separate window"}
+            {localize(
+              desktopOverlay?.pictureInPicture
+                ? "Close separate window"
+                : "Pop into separate window",
+            )}
           </TooltipPopup>
         </Tooltip>
       }
@@ -240,7 +246,7 @@ function BrowserMiniPlayer({
           />
           {!desktopOverlay?.hasWebContents ? (
             <div className="pointer-events-none absolute inset-0 z-[49] flex items-center justify-center rounded-[inherit] bg-muted text-xs text-muted-foreground">
-              Reconnecting preview…
+              {localize("Reconnecting preview…")}
             </div>
           ) : null}
         </>
@@ -255,6 +261,7 @@ function DeviceMiniPlayer({
   miniPlayer,
   composerOverlayElement,
 }: Props & { readonly source: Extract<PreviewMiniPlayerSource, { kind: "device" }> }) {
+  const { locale } = useI18n();
   const { state: deviceState } = useDeviceState(threadRef.environmentId);
   const [screen, setScreen] = useState<DeviceScreenSize | null>(null);
   const sourceSize = resolveDeviceMiniPlayerSourceSize(source.platform, screen);
@@ -262,7 +269,8 @@ function DeviceMiniPlayer({
     (entry) => entry.hostId === source.hostId && entry.id === source.deviceId,
   );
   const hostLabel =
-    deviceState.hosts.find((host) => host.id === source.hostId)?.label ?? "Device host";
+    deviceState.hosts.find((host) => host.id === source.hostId)?.label ??
+    translateWebSource(locale, "Device host");
   const cornerRadius = useCallback(
     (player: PreviewMiniPlayerSize) => resolveDeviceMiniPlayerCornerRadius(source.platform, player),
     [source.platform],
@@ -339,6 +347,7 @@ function MiniPlayerShell({
   readonly cornerRadius?: (frame: PreviewMiniPlayerSize) => number;
   readonly children: (frame: PreviewMiniPlayerFrame) => ReactNode;
 }) {
+  const { locale } = useI18n();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const gestureRef = useRef<PointerGesture | null>(null);
   const [layout, setLayout] = useState<Layout | null>(null);
@@ -438,7 +447,7 @@ function MiniPlayerShell({
     <div ref={containerRef} className="pointer-events-none absolute inset-0">
       {frame ? (
         <section
-          aria-label={label}
+          aria-label={translateWebSource(locale, label)}
           data-preview-mini-player={sourceKey}
           className="pointer-events-none absolute select-none"
           style={{
@@ -455,7 +464,7 @@ function MiniPlayerShell({
           >
             <div
               role={recording ? "status" : undefined}
-              aria-label={recording ? "Recording preview" : undefined}
+              aria-label={recording ? translateWebSource(locale, "Recording preview") : undefined}
               aria-hidden={!recording}
               className="absolute right-0 top-0 size-2 transition-opacity group-hover:opacity-0 group-focus-within:opacity-0"
             >
@@ -484,7 +493,7 @@ function MiniPlayerShell({
                     <Button
                       variant="ghost"
                       size="icon-xs"
-                      aria-label="Open preview in right panel"
+                      aria-label={translateWebSource(locale, "Open preview in right panel")}
                       onPointerDown={(event) => event.stopPropagation()}
                       onClick={onOpenInPanel}
                     />
@@ -492,7 +501,9 @@ function MiniPlayerShell({
                 >
                   <PanelRightIcon />
                 </TooltipTrigger>
-                <TooltipPopup side="top">Open in right panel</TooltipPopup>
+                <TooltipPopup side="top">
+                  {translateWebSource(locale, "Open in right panel")}
+                </TooltipPopup>
               </Tooltip>
               {pillActions}
               <Tooltip>
@@ -501,7 +512,7 @@ function MiniPlayerShell({
                     <Button
                       variant="ghost"
                       size="icon-xs"
-                      aria-label="Close floating preview"
+                      aria-label={translateWebSource(locale, "Close floating preview")}
                       onPointerDown={(event) => event.stopPropagation()}
                       onClick={close}
                     />
@@ -509,7 +520,9 @@ function MiniPlayerShell({
                 >
                   <XIcon />
                 </TooltipTrigger>
-                <TooltipPopup side="top">Close floating preview</TooltipPopup>
+                <TooltipPopup side="top">
+                  {translateWebSource(locale, "Close floating preview")}
+                </TooltipPopup>
               </Tooltip>
             </div>
           </div>

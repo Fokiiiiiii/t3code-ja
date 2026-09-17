@@ -1786,13 +1786,14 @@ export default function GitActionsControl({
                   }}
                 >
                   <CloudUploadIcon />
-                  Publish repository...
+                  {localize("Publish repository...")}
                 </MenuItem>
               ) : null}
               {gitStatusForActions?.refName === null && (
                 <p className="px-2 py-1.5 text-xs text-warning">
-                  Detached HEAD: create and check out a branch to enable push and pull request
-                  actions.
+                  {localize(
+                    "Detached HEAD: create and check out a branch to enable push and pull request actions.",
+                  )}
                 </p>
               )}
               {gitStatusForActions &&
@@ -1801,7 +1802,7 @@ export default function GitActionsControl({
                 gitStatusForActions.behindCount > 0 &&
                 gitStatusForActions.aheadCount === 0 && (
                   <p className="px-2 py-1.5 text-xs text-warning">
-                    Behind upstream. Pull/rebase first.
+                    {localize("Behind upstream. Pull/rebase first.")}
                   </p>
                 )}
               {gitStatusError && (
@@ -1825,8 +1826,8 @@ export default function GitActionsControl({
       >
         <DialogPopup>
           <DialogHeader>
-            <DialogTitle>{COMMIT_DIALOG_TITLE}</DialogTitle>
-            <DialogDescription>{COMMIT_DIALOG_DESCRIPTION}</DialogDescription>
+            <DialogTitle>{localize(COMMIT_DIALOG_TITLE)}</DialogTitle>
+            <DialogDescription>{localize(COMMIT_DIALOG_DESCRIPTION)}</DialogDescription>
           </DialogHeader>
           <DialogPanel className="space-y-4">
             <div className="space-y-3 rounded-xl bg-zinc-25 p-3 text-sm ring-1 ring-black/5 dark:bg-white/[0.035] dark:ring-white/5">
@@ -1943,7 +1944,7 @@ export default function GitActionsControl({
               </div>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium">Commit message (optional)</p>
+              <p className="text-sm font-medium">{localize("Commit message (optional)")}</p>
               <Textarea
                 value={dialogCommitMessage}
                 onChange={(event) => setDialogCommitMessage(event.target.value)}
@@ -1963,7 +1964,7 @@ export default function GitActionsControl({
                 setIsEditingFiles(false);
               }}
             >
-              Cancel
+              {localize("Cancel")}
             </Button>
             <Button
               variant="outline"
@@ -1971,10 +1972,10 @@ export default function GitActionsControl({
               disabled={noneSelected}
               onClick={runDialogActionOnNewBranch}
             >
-              Commit on new branch
+              {localize("Commit on new branch")}
             </Button>
             <Button size="sm" disabled={noneSelected} onClick={runDialogAction}>
-              Commit
+              {localize("Commit")}
             </Button>
           </DialogFooter>
         </DialogPopup>
@@ -1999,7 +2000,7 @@ export default function GitActionsControl({
         <DialogPopup className="max-w-xl">
           <DialogHeader>
             <DialogTitle>
-              {pendingDefaultBranchActionCopy?.title ?? "Run action on default branch?"}
+              {localize(pendingDefaultBranchActionCopy?.title ?? "Run action on default branch?")}
             </DialogTitle>
             <DialogDescription>{pendingDefaultBranchActionCopy?.description}</DialogDescription>
           </DialogHeader>
@@ -2010,7 +2011,7 @@ export default function GitActionsControl({
               size="sm"
               onClick={() => setPendingDefaultBranchAction(null)}
             >
-              Abort
+              {localize("Abort")}
             </Button>
             <Button
               className="min-h-8 w-full max-w-full whitespace-normal py-1.5 leading-snug sm:min-h-7 sm:w-auto"
@@ -2018,7 +2019,7 @@ export default function GitActionsControl({
               size="sm"
               onClick={continuePendingDefaultBranchAction}
             >
-              {pendingDefaultBranchActionCopy?.continueLabel ?? "Continue"}
+              {localize(pendingDefaultBranchActionCopy?.continueLabel ?? "Continue")}
             </Button>
             <Button
               className="min-h-8 w-full max-w-full whitespace-normal py-1.5 leading-snug sm:min-h-7 sm:w-auto"
