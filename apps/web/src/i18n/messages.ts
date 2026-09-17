@@ -6356,6 +6356,23 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "of pool": "プールの割合",
   Restores: "回復量",
   Segment: "セグメント",
+  "Add choice": "選択肢を追加",
+  "Choice label": "選択肢のラベル",
+  "Choice value": "選択肢の値",
+  Choices: "選択肢",
+  "Copy from…": "コピー元…",
+  "Copy options from a built-in model": "組み込みモデルからオプションをコピー",
+  "Custom option": "カスタムオプション",
+  "Default choice": "既定の選択肢",
+  "No custom options. The composer uses the provider's default options.":
+    "カスタムオプションはありません。入力欄ではプロバイダーの既定オプションを使います。",
+  "Option id": "オプション ID",
+  "Option label": "オプションのラベル",
+  "Option type": "オプションの種類",
+  optionId: "オプション ID",
+  "Options shown in the composer": "入力欄に表示するオプション",
+  "Remove choice": "選択肢を削除",
+  "Remove option": "オプションを削除",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
