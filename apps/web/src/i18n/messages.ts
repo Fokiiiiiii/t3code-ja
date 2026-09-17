@@ -6608,6 +6608,17 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "threads could": "タスクを",
   "Scan limit reached. Some projects or conversations may be missing.":
     "スキャン上限に達しました。一部のプロジェクトまたは会話が見つからない可能性があります。",
+  "Search themes...": "テーマを検索…",
+  "Searching themes...": "テーマを検索中…",
+  "View source for": "ソースを表示：",
+  "Reading…": "読み込み中…",
+  brightness: "明るさ",
+  hue: "色相",
+  "is used": "使用されています",
+  "picker hex value": "カラーピッカーの HEX 値",
+  "picker RGB value": "カラーピッカーの RGB 値",
+  saturation: "彩度",
+  "saturation and brightness": "彩度と明るさ",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
