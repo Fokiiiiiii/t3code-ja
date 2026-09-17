@@ -6393,6 +6393,69 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Refreshing providers": "プロバイダーを更新中",
   "This provider instance is no longer available on this device.":
     "このプロバイダーインスタンスはこのデバイスで利用できなくなりました。",
+  "Antigravity download": "Antigravity のダウンロード",
+  "Antigravity setup": "Antigravity の設定",
+  "Automatic installation unavailable. Set a binary path or use another environment.":
+    "自動インストールを利用できません。バイナリパスを設定するか、別の環境を使用してください。",
+  "Cancel installation": "インストールをキャンセル",
+  "Cancel sign-in": "サインインをキャンセル",
+  "Cancelling installation": "インストールをキャンセル中",
+  "Cancelling sign-in": "サインインをキャンセル中",
+  "Checking redirect": "リダイレクトを確認中",
+  "Checking the downloaded runtime.": "ダウンロードしたランタイムを確認中です。",
+  "Connect with the credentials below.": "以下の認証情報で接続します。",
+  "Connect your Google account.": "Google アカウントに接続します。",
+  "Could not copy the sign-in link. Use Open sign-in page.":
+    "サインインリンクをコピーできませんでした。「サインインページを開く」を使用してください。",
+  "Could not open the sign-in page. Copy the link and open it in your browser.":
+    "サインインページを開けませんでした。リンクをコピーしてブラウザーで開いてください。",
+  "Device that runs this provider.": "このプロバイダーを実行するデバイスです。",
+  "download.": "ダウンロードです。",
+  "Enable Antigravity": "Antigravity を有効化",
+  "Extracting Antigravity.": "Antigravity を展開中です。",
+  "Google sign-in and thread history are kept.":
+    "Google のサインイン状態とタスク履歴は保持されます。",
+  "If the final localhost page does not load, paste its full URL here.":
+    "最後の localhost ページが読み込まれない場合は、完全な URL をここに貼り付けてください。",
+  "Install and manage Antigravity.": "Antigravity をインストールして管理します。",
+  "Install Antigravity": "Antigravity をインストール",
+  "Install managed runtime": "管理対象ランタイムをインストール",
+  "Installed.": "インストール済みです。",
+  "Link expires at": "リンクの有効期限：",
+  "Not installed.": "未インストールです。",
+  "Open sign-in page": "サインインページを開く",
+  "Provider setup failed.": "プロバイダーの設定に失敗しました。",
+  "Provider setup failed. Try again.": "プロバイダーの設定に失敗しました。もう一度試してください。",
+  "Provider setup is read-only.": "プロバイダーの設定は読み取り専用です。",
+  "Reading sign-in status.": "サインイン状態を読み込み中です。",
+  "Reinstall Antigravity": "Antigravity を再インストール",
+  "Remove downloaded runtime": "ダウンロードしたランタイムを削除",
+  "Remove the downloaded Antigravity runtime from":
+    "ダウンロードした Antigravity ランタイムを削除：",
+  "Removing runtime": "ランタイムを削除中",
+  "Retry connection": "接続を再試行",
+  "Retry Google sign-in": "Google サインインを再試行",
+  "Retry installation": "インストールを再試行",
+  "Retry setup status": "設定状態を再試行",
+  "Setup unavailable": "設定を利用できません",
+  "Sign in with Google": "Google でサインイン",
+  "Sign-in is open in another client. Complete or cancel it there.":
+    "別のクライアントでサインインを開始しています。そこで完了またはキャンセルしてください。",
+  "Signed in with Google.": "Google でサインイン済みです。",
+  "Signing out": "サインアウト中",
+  "Starting installation": "インストールを開始中",
+  "Starting sign-in": "サインインを開始中",
+  "The configured Antigravity runtime has not been checked.":
+    "設定された Antigravity ランタイムはまだ確認されていません。",
+  "The configured Antigravity runtime is unavailable.":
+    "設定された Antigravity ランタイムを利用できません。",
+  "This stops its running threads. Thread history is kept.":
+    "実行中のタスクを停止します。タスク履歴は保持されます。",
+  "Update Antigravity": "Antigravity を更新",
+  "Update this environment to manage Antigravity.":
+    "Antigravity を管理するにはこの環境を更新してください。",
+  "Uses the custom binary path below. Installation keeps that path.":
+    "以下のカスタムバイナリパスを使用します。インストール後もこのパスを保持します。",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
