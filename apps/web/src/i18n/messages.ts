@@ -6703,6 +6703,7 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "This environment does not support multiple linked pull requests.":
     "この環境は複数の紐づき済みプルリクエストに対応していません。",
   "Waiting for host state": "ホストの状態を待機中",
+  "Open activity on host": "ホストでアクティビティを開く",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
