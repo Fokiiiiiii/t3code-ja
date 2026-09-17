@@ -6490,6 +6490,36 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Start new worktrees from origin by default": "既定で origin から新しい worktree を開始",
   "The selected targets use different streaming modes.":
     "選択した対象で異なるストリーミングモードが使われています。",
+  "Add host": "ホストを追加",
+  "Add remote machines with simulator or emulator runtimes installed, and the selected environments will connect over SSH and set up device tools automatically.":
+    "シミュレーターまたはエミュレーターのランタイムがインストールされたリモートマシンを追加すると、選択した環境が SSH で接続しデバイスツールを自動設定します。",
+  "Already available locally": "ローカルですでに利用可能",
+  "Check access before saving": "保存前にアクセスを確認",
+  "Checking connection…": "接続を確認中…",
+  "Checking environments…": "環境を確認中…",
+  "Connect a selected environment to manage device hosts.":
+    "デバイスホストを管理するには環境を選択して接続してください。",
+  "Connect from": "接続元：",
+  "Connected or already available locally on each selected environment.":
+    "選択した各環境で接続済み、またはローカルで利用可能です。",
+  "Connection checks passed": "接続確認に成功しました",
+  "Could not connect from": "接続できませんでした：",
+  "Device hosts": "デバイスホスト",
+  "Device hosts not saved on all environments":
+    "すべての環境でデバイスホストを保存できませんでした",
+  "environments failed": "環境で失敗",
+  "Hosts on the same machine are skipped.": "同じマシン上のホストはスキップされます。",
+  "Identity file": "識別ファイル",
+  "No device hosts.": "デバイスホストはありません。",
+  "Optional. Resolved separately on each environment.": "任意です。環境ごとに個別に解決されます。",
+  "Save host": "ホストを保存",
+  "Show error": "エラーを表示",
+  "SSH config default": "SSH 設定の既定値",
+  "SSH options": "SSH オプション",
+  "SSH target": "SSH 接続先",
+  "Test connection": "接続をテスト",
+  "user@host or SSH alias": "user@host または SSH エイリアス",
+  "Connecting…": "接続中…",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {

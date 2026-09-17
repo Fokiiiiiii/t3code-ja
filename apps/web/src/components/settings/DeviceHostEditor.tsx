@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 import * as Option from "effect/Option";
 import type { SshDeviceHostConfig } from "@t3tools/contracts";
 import { CheckIcon, MonitorIcon, XIcon } from "lucide-react";
@@ -37,6 +39,8 @@ export function DeviceHostEditor({
   onSave: (host: SshDeviceHostConfig) => void;
   onClose: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [draft, setDraft] = useState(host);
   const { checks, testConnection } = useHostConnectionChecks(targets);
   const results = checks[deviceHostConnectionKey(draft)];
@@ -64,44 +68,46 @@ export function DeviceHostEditor({
         }
       >
         <DialogHeader>
-          <DialogTitle>{isNew ? "Add device host" : "Edit device host"}</DialogTitle>
+          <DialogTitle>{localize(isNew ? "Add device host" : "Edit device host")}</DialogTitle>
           <DialogDescription>
             {targets.length === 1
-              ? `Connect from ${targets[0]?.label}.`
-              : `Connect from ${targets.length} selected environments.`}{" "}
-            Hosts on the same machine are skipped.
+              ? `${localize("Connect from")} ${targets[0]?.label}.`
+              : `${localize("Connect from")} ${targets.length} ${localize("selected environments")}.`}{" "}
+            {localize("Hosts on the same machine are skipped.")}
           </DialogDescription>
         </DialogHeader>
         <DialogPanel className="space-y-4">
           <label className="block space-y-1.5 text-sm">
-            <span>Name</span>
+            <span>{localize("Name")}</span>
             <Input
               autoFocus
               required
               value={draft.label}
               disabled={busy}
               onChange={(event) => setDraft({ ...draft, label: event.target.value })}
-              placeholder="Mac mini"
+              placeholder={localize("Mac mini")}
             />
           </label>
           <label className="block space-y-1.5 text-sm">
-            <span>SSH target</span>
+            <span>{localize("SSH target")}</span>
             <Input
               required
               value={draft.target}
               disabled={busy}
               onChange={(event) => setDraft({ ...draft, target: event.target.value })}
-              placeholder="user@host or SSH alias"
+              placeholder={localize("user@host or SSH alias")}
             />
           </label>
           <details
             open={host.port !== undefined || host.identityFile !== undefined || undefined}
             className="text-sm"
           >
-            <summary className="cursor-pointer text-muted-foreground">SSH options</summary>
+            <summary className="cursor-pointer text-muted-foreground">
+              {localize("SSH options")}
+            </summary>
             <div className="mt-3 grid grid-cols-[minmax(0,1fr)_7rem] gap-3">
               <label className="block space-y-1.5">
-                <span>Identity file</span>
+                <span>{localize("Identity file")}</span>
                 <Input
                   value={draft.identityFile ?? ""}
                   disabled={busy}
@@ -111,11 +117,11 @@ export function DeviceHostEditor({
                       event.target.value ? { ...rest, identityFile: event.target.value } : rest,
                     );
                   }}
-                  placeholder="SSH config default"
+                  placeholder={localize("SSH config default")}
                 />
               </label>
               <label className="block space-y-1.5">
-                <span>Port</span>
+                <span>{localize("Port")}</span>
                 <Input
                   type="number"
                   min={1}
@@ -128,24 +134,24 @@ export function DeviceHostEditor({
                       event.target.value ? { ...rest, port: Number(event.target.value) } : rest,
                     );
                   }}
-                  placeholder="Default"
+                  placeholder={localize("Default")}
                 />
               </label>
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              Optional. Resolved separately on each environment.
+              {localize("Optional. Resolved separately on each environment.")}
             </p>
           </details>
           <div className="rounded-lg border border-border/60">
             <div className="flex items-center justify-between gap-3 px-3 py-2.5">
               <p role="status" className="text-xs text-muted-foreground">
                 {checking
-                  ? "Checking environments…"
+                  ? localize("Checking environments…")
                   : results
                     ? failed
-                      ? `${failed} of ${targets.length} failed`
-                      : "Connection checks passed"
-                    : "Check access before saving"}
+                      ? `${failed} ${localize("of")} ${targets.length} ${localize("failed")}`
+                      : localize("Connection checks passed")
+                    : localize("Check access before saving")}
               </p>
               <Button
                 type="button"
@@ -156,7 +162,7 @@ export function DeviceHostEditor({
                   if (Option.isSome(input)) void testConnection(input.value);
                 }}
               >
-                {checking ? <Spinner className="size-3" /> : null} Test connection
+                {checking ? <Spinner className="size-3" /> : null} {localize("Test connection")}
               </Button>
             </div>
             {results ? (
@@ -173,19 +179,20 @@ export function DeviceHostEditor({
                         >
                           {result.status === "pending" ? (
                             <>
-                              <Spinner className="size-3" /> Checking…
+                              <Spinner className="size-3" /> {localize("Checking…")}
                             </>
                           ) : result.status === "local" ? (
                             <>
-                              <MonitorIcon className="size-3" /> Already available locally
+                              <MonitorIcon className="size-3" />{" "}
+                              {localize("Already available locally")}
                             </>
                           ) : result.status === "failed" ? (
                             <>
-                              <XIcon className="size-3" /> Failed
+                              <XIcon className="size-3" /> {localize("Failed")}
                             </>
                           ) : (
                             <>
-                              <CheckIcon className="size-3" /> Connected
+                              <CheckIcon className="size-3" /> {localize("Connected")}
                             </>
                           )}
                         </span>
@@ -197,7 +204,7 @@ export function DeviceHostEditor({
                       ) : null}
                       {result.status === "failed" ? (
                         <details className="mt-1.5 text-muted-foreground">
-                          <summary className="cursor-pointer">Show error</summary>
+                          <summary className="cursor-pointer">{localize("Show error")}</summary>
                           <p className="mt-1 max-h-32 overflow-auto whitespace-pre-wrap break-words">
                             {result.error}
                           </p>
@@ -212,10 +219,10 @@ export function DeviceHostEditor({
         </DialogPanel>
         <DialogFooter>
           <Button type="button" variant="ghost" disabled={busy} onClick={onClose}>
-            Cancel
+            {localize("Cancel")}
           </Button>
           <Button type="submit" disabled={busy || checking || !valid || !draft.label.trim()}>
-            {busy ? <Spinner className="size-3" /> : null} Save host
+            {busy ? <Spinner className="size-3" /> : null} {localize("Save host")}
           </Button>
         </DialogFooter>
       </DialogPopup>
