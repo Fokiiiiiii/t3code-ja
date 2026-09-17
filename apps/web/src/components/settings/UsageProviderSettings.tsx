@@ -1,6 +1,8 @@
 import type { EnvironmentId, UnifiedSettings } from "@t3tools/contracts";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 import { useUpdateEnvironmentSettings } from "../../hooks/useSettings";
 import {
@@ -29,6 +31,8 @@ export function UsageProviderSettings({
   readonly sources: UnifiedSettings["usageLimitSources"];
   readonly readOnly: boolean;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const updateSettings = useUpdateEnvironmentSettings(environmentId);
   const [adding, setAdding] = useState(false);
   const entries = Object.entries(sources);
@@ -41,13 +45,13 @@ export function UsageProviderSettings({
           !readOnly ? (
             <Button size="xs" variant="outline" onClick={() => setAdding(true)}>
               <PlusIcon className="size-3" aria-hidden />
-              Add hub
+              {localize("Add hub")}
             </Button>
           ) : null
         }
       >
         {entries.length === 0 ? (
-          <SettingsRow title="No usage providers configured." />
+          <SettingsRow title={localize("No usage providers configured.")} />
         ) : (
           entries.map(([id, source]) => {
             const label = source.label?.trim() || source.url;
@@ -57,7 +61,7 @@ export function UsageProviderSettings({
                 title={label}
                 description={
                   <span className="break-all">
-                    CLI Proxy{source.enabled ? "" : " · Disabled"}
+                    CLI Proxy{source.enabled ? "" : ` · ${localize("Disabled")}`}
                     {label !== source.url ? ` · ${source.url}` : ""}
                   </span>
                 }
@@ -94,24 +98,30 @@ function RemoveUsageProviderButton({
   readonly label: string;
   readonly onConfirm: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [open, setOpen] = useState(false);
   return (
     <>
       <Button size="xs" variant="ghost" onClick={() => setOpen(true)}>
-        Remove
+        {localize("Remove")}
       </Button>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogPopup>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remove {label}?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {localize("Remove")} {label}?
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              The hub's management key is deleted from this server. Its accounts leave the Limits
-              view; the hub itself is untouched. Add it again with the URL and key to bring them
-              back.
+              {localize(
+                "The hub's management key is deleted from this server. Its accounts leave the Limits view; the hub itself is untouched. Add it again with the URL and key to bring them back.",
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogClose render={<Button variant="outline" />}>Cancel</AlertDialogClose>
+            <AlertDialogClose render={<Button variant="outline" />}>
+              {localize("Cancel")}
+            </AlertDialogClose>
             <Button
               variant="destructive"
               onClick={() => {
@@ -119,7 +129,7 @@ function RemoveUsageProviderButton({
                 onConfirm();
               }}
             >
-              Remove hub
+              {localize("Remove hub")}
             </Button>
           </AlertDialogFooter>
         </AlertDialogPopup>

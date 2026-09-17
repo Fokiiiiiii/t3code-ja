@@ -6759,6 +6759,135 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "T3 Code needs Full Disk Access. Turn it on in System Settings, then come back to finish the import — you can revoke it again once the import is done.":
     "T3 Code にはフルディスクアクセスが必要です。システム設定で有効にしてから戻り、インポートを完了してください。完了後は再び取り消せます。",
   "To import cookies from": "Cookie のインポート元：",
+  "A custom --config or NIRI_CONFIG can change its location.":
+    "カスタムの --config または NIRI_CONFIG で場所を変更できます。",
+  "Add this binding to your Hyprland config, then save.":
+    "このバインドを Hyprland 設定に追加して保存してください。",
+  "Allow T3 Code to read your desktop settings. You'll review any changes here before saving.":
+    "T3 Code にデスクトップ設定の読み取りを許可します。保存前にここで変更を確認できます。",
+  "Change the keys if needed.": "必要に応じてキーを変更してください。",
+  "Choose a different file…": "別のファイルを選択…",
+  "Connecting to your desktop…": "デスクトップに接続中…",
+  "Copy shortcut": "ショートカットをコピー",
+  "Couldn't save your shortcut. Review the changes and try again.":
+    "ショートカットを保存できませんでした。変更を確認してもう一度試してください。",
+  "from another app to capture a window.": "別のアプリからウィンドウをキャプチャ",
+  "from another app.": "別のアプリから",
+  "I've added the shortcut": "ショートカットを追加しました",
+  "Linked to": "リンク先：",
+  "Manual setup": "手動設定",
+  "On Omarchy, use your own bindings file, not its defaults.":
+    "Omarchy では既定ファイルではなく、自分のバインドファイルを使用してください。",
+  "Paste this inside binds { … } in your Niri config, then save.":
+    "Niri 設定の binds { … } 内に貼り付けて保存してください。",
+  "Preparing changes…": "変更を準備中…",
+  "Press your shortcut. Esc cancels.": "ショートカットを押してください。Esc でキャンセルします。",
+  "Remove shortcut": "ショートカットを削除",
+  "Remove shortcut…": "ショートカットを削除…",
+  "Restart T3 Code to finish connecting your shortcut.":
+    "ショートカットの接続を完了するには T3 Code を再起動してください。",
+  "Review changes": "変更を確認",
+  "Review the change below to remove your shortcut.":
+    "以下の変更を確認してショートカットを削除します。",
+  "Review the change below, then save your shortcut.":
+    "以下の変更を確認してショートカットを保存します。",
+  "Save shortcut": "ショートカットを保存",
+  "Saved, but the shortcut needs attention. Check Advanced for help.":
+    "保存しましたが、ショートカットに注意が必要です。詳しくは詳細設定を確認してください。",
+  "Settings file": "設定ファイル",
+  "Shortcut changes": "ショートカットの変更",
+  "Shortcut removed.": "ショートカットを削除しました。",
+  "Shortcut saved": "ショートカットを保存しました",
+  "T3 Code also reads any files included by this file.":
+    "T3 Code はこのファイルから読み込まれるファイルも読み取ります。",
+  "The link will be kept.": "リンクは保持されます。",
+  "There's no capture shortcut to remove.": "削除するキャプチャショートカットはありません。",
+  "This shortcut is already set up.": "このショートカットはすでに設定されています。",
+  "to free up the keys.": "キーを解放します。",
+  Troubleshooting: "トラブルシューティング",
+  "Turn capture off in T3 Code to stop it. Remove the shortcut from":
+    "停止するには T3 Code でキャプチャをオフにします。ショートカットの削除元：",
+  "Update T3 Code to finish setting up your shortcut.":
+    "ショートカットの設定を完了するには T3 Code を更新してください。",
+  "Use your desktop's shortcut settings file.":
+    "デスクトップのショートカット設定ファイルを使用します。",
+  "Animate captured windows into your draft.":
+    "キャプチャしたウィンドウを下書きにアニメーション表示します。",
+  "Animate snapshots": "スナップショットをアニメーション表示",
+  "Capture the window you're using without switching apps.":
+    "アプリを切り替えずに使用中のウィンドウをキャプチャします。",
+  "Change shortcut": "ショートカットを変更",
+  "Choose a window to capture from any app.":
+    "任意のアプリからキャプチャするウィンドウを選択します。",
+  "Choose the sound played when capture starts.": "キャプチャ開始時に再生する音を選択します。",
+  "Enable snapshots": "スナップショットを有効化",
+  "Flash captured window": "キャプチャしたウィンドウをフラッシュ表示",
+  "Include app text in snapshots": "スナップショットにアプリのテキストを含める",
+  "Include text and controls when the app makes them available.":
+    "アプリが提供する場合はテキストとコントロールを含めます。",
+  "Play Click": "クリック音を再生",
+  "Play Whoosh": "シュッという音を再生",
+  "Shortcut permissions": "ショートカットの権限",
+  "Show a gentle cue on the captured window.":
+    "キャプチャしたウィンドウに控えめな合図を表示します。",
+  "Snapshot sound": "スナップショットの音",
+  "Updating capture settings…": "キャプチャ設定を更新中…",
+  Whoosh: "シュッ",
+  "Allow capture": "キャプチャを許可",
+  "Capture needs attention. Go back to check access.":
+    "キャプチャに注意が必要です。戻ってアクセスを確認してください。",
+  "Capture the window you're using.": "使用中のウィンドウをキャプチャします。",
+  "Choose your keys, then approve the permission prompt if asked.":
+    "キーを選択し、求められたら権限プロンプトを承認してください。",
+  "Choose your shortcut": "ショートカットを選択",
+  "Click the shortcut, then press the keys you want.":
+    "ショートカットをクリックして、使うキーを押してください。",
+  "Couldn't finish this step. Try again or check Advanced for help.":
+    "この手順を完了できませんでした。もう一度試すか、詳細設定を確認してください。",
+  "Disable extension": "拡張機能を無効化",
+  "Enable extension": "拡張機能を有効化",
+  "Include text and controls from the captured app.":
+    "キャプチャしたアプリのテキストとコントロールを含めます。",
+  "Included with T3 Code. No download needed.":
+    "T3 Code に含まれているため、ダウンロードは不要です。",
+  "Install extension": "拡張機能をインストール",
+  "Install helper": "ヘルパーをインストール",
+  "Optional. Include text and controls from the captured app.":
+    "任意です。キャプチャしたアプリのテキストとコントロールを含めます。",
+  "Reinstall helper": "ヘルパーを再インストール",
+  "Remove capture helper": "キャプチャヘルパーを削除",
+  "Screen Recording": "画面収録",
+  "Set up snapshots": "スナップショットを設定",
+  "Set up snapshots for": "スナップショットの設定対象：",
+  "Test capture and continue": "キャプチャをテストして続行",
+  "Update extension": "拡張機能を更新",
+  "Update helper": "ヘルパーを更新",
+  "Use both Shift keys, or record a different shortcut.":
+    "左右両方の Shift キーを使うか、別のショートカットを記録してください。",
+  "Working…": "処理中…",
+  "Loading open-source notices…": "オープンソース通知を読み込み中…",
+  "No licenses match that search.": "検索に一致するライセンスはありません。",
+  "Open-source notices are unavailable": "オープンソース通知を利用できません",
+  "Project source": "プロジェクトのソース",
+  "Search licenses": "ライセンスを検索",
+  "Search open-source licenses": "オープンソースライセンスを検索",
+  "The license manifest could not load.": "ライセンスマニフェストを読み込めませんでした。",
+  "Third-party notices": "サードパーティ通知",
+  "View project source for": "プロジェクトのソースを表示：",
+  "Add hub": "ハブを追加",
+  "No usage providers configured.": "使用量プロバイダーが設定されていません。",
+  "Remove hub": "ハブを削除",
+  "The hub's management key is deleted from this server. Its accounts leave the Limits view; the hub itself is untouched. Add it again with the URL and key to bring them back.":
+    "ハブの管理キーをこのサーバーから削除します。アカウントは使用量の上限画面から消えますが、ハブ自体は変更しません。URL とキーで再度追加すると戻せます。",
+  "Add a CLIProxyAPI hub": "CLIProxyAPI ハブを追加",
+  "Defaults to the hub's host name": "ハブのホスト名を既定値にします",
+  "https://hub.example.ts.net:8318": "https://hub.example.ts.net:8318",
+  "Hub URL": "ハブ URL",
+  "Label (optional)": "ラベル（任意）",
+  "Management key": "管理キー",
+  "Show the quota of every account the hub pools, next to the providers on":
+    "ハブがまとめるすべてのアカウントのクォータを、プロバイダーの横に表示します：",
+  "The key stays on that server.": "キーはそのサーバーに保存されます。",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {

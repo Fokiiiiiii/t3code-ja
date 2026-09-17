@@ -245,7 +245,7 @@ export default function ProjectScriptsControl({
               {importMenuItems}
               <MenuItem className={dropdownItemClassName} onClick={openAddDialog}>
                 <PlusIcon className="size-4" />
-                Add action
+                {localize("Add action")}
               </MenuItem>
             </MenuPopup>
           </Menu>
@@ -269,7 +269,7 @@ export default function ProjectScriptsControl({
             {importMenuItems}
             <MenuItem className={dropdownItemClassName} onClick={openAddDialog}>
               <PlusIcon className="size-4" />
-              Add action
+              {localize("Add action")}
             </MenuItem>
           </MenuPopup>
         </Menu>
