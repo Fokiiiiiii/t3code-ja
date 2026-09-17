@@ -6272,6 +6272,8 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   observed: "観測値",
   "thermal state": "温度状態",
   retained: "保持",
+  Avg: "平均",
+  "Max Mem": "最大メモリ",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {

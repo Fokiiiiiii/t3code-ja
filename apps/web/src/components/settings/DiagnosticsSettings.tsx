@@ -93,10 +93,12 @@ function StatBlock({
   tooltip?: ReactNode;
   tone?: "default" | "warning" | "danger";
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <div className="min-w-0 border-border/60 px-4 py-3 sm:px-5">
       <div className="flex min-w-0 items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground/70">
-        <span className="min-w-0 truncate">{label}</span>
+        <span className="min-w-0 truncate">{localize(label)}</span>
         {tooltip ? (
           <Tooltip>
             <TooltipTrigger
@@ -104,7 +106,7 @@ function StatBlock({
                 <button
                   type="button"
                   className="cursor-pointer inline-flex size-3.5 shrink-0 items-center justify-center rounded-sm text-muted-foreground/60 hover:text-foreground"
-                  aria-label={`${label} details`}
+                  aria-label={`${localize(label)} ${localize("details")}`}
                 >
                   <InfoIcon className="size-3" />
                 </button>
@@ -283,6 +285,8 @@ function ProcessNameCell({
   isExpanded: boolean;
   onToggle: (pid: number) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const name = formatProcessName(process.command);
   const hasChildren = process.childPids.length > 0;
   const ChevronIcon = isExpanded ? ChevronDownIcon : ChevronRightIcon;
@@ -296,7 +300,7 @@ function ProcessNameCell({
         <Button
           size="icon-micro"
           variant="ghost-muted"
-          aria-label={isExpanded ? `Collapse ${name}` : `Expand ${name}`}
+          aria-label={`${localize(isExpanded ? "Collapse" : "Expand")} ${name}`}
           onClick={() => onToggle(process.pid)}
         >
           <ChevronIcon className="size-3.5" />
@@ -329,6 +333,7 @@ function ProcessSignalActions({
   isSignaling: boolean;
   onSignal: (pid: number, signal: ServerProcessSignal) => void;
 }) {
+  const { locale } = useI18n();
   return (
     <div className="flex items-center justify-end gap-1.5">
       <Tooltip>
@@ -344,7 +349,7 @@ function ProcessSignalActions({
             </button>
           }
         />
-        <TooltipPopup side="top">Send SIGINT</TooltipPopup>
+        <TooltipPopup side="top">{translateWebSource(locale, "Send SIGINT")}</TooltipPopup>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger
@@ -359,7 +364,7 @@ function ProcessSignalActions({
             </button>
           }
         />
-        <TooltipPopup side="top">Send SIGKILL</TooltipPopup>
+        <TooltipPopup side="top">{translateWebSource(locale, "Send SIGKILL")}</TooltipPopup>
       </Tooltip>
     </div>
   );
@@ -376,6 +381,8 @@ function ProcessDiagnosticsTable({
   onSignal: (pid: number, signal: ServerProcessSignal) => void;
   emptyLabel?: string;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [collapsedPids, setCollapsedPids] = useState<ReadonlySet<number>>(() => new Set());
   const visibleProcesses = useMemo(() => {
     const visible: ServerProcessDiagnosticsEntry[] = [];
@@ -427,20 +434,20 @@ function ProcessDiagnosticsTable({
         </colgroup>
         <thead className="sticky top-0 z-10 border-b border-border/60 bg-card text-[11px] uppercase tracking-[0.08em] text-muted-foreground/70">
           <tr>
-            <th className="px-4 py-2 font-semibold sm:pl-5">Name</th>
-            <th className="px-3 py-2 text-right font-semibold">CPU</th>
-            <th className="px-3 py-2 text-right font-semibold">Memory</th>
-            <th className="px-3 py-2 font-semibold">Command</th>
-            <th className="px-3 py-2 text-right font-semibold">PID</th>
-            <th className="px-3 py-2 font-semibold">Type</th>
-            <th className="p-2 text-right font-semibold sm:pr-4">Kill</th>
+            <th className="px-4 py-2 font-semibold sm:pl-5">{localize("Name")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("CPU")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Memory")}</th>
+            <th className="px-3 py-2 font-semibold">{localize("Command")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("PID")}</th>
+            <th className="px-3 py-2 font-semibold">{localize("Type")}</th>
+            <th className="p-2 text-right font-semibold sm:pr-4">{localize("Kill")}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border/50">
           {visibleProcesses.length === 0 ? (
             <tr>
               <td colSpan={7} className="px-4 py-4 text-xs text-muted-foreground sm:px-5">
-                {emptyLabel ?? "No live descendant processes found."}
+                {localize(emptyLabel ?? "No live descendant processes found.")}
               </td>
             </tr>
           ) : null}
@@ -476,7 +483,7 @@ function ProcessDiagnosticsTable({
                 {process.pid}
               </td>
               <td className="truncate px-3 py-2 align-middle text-muted-foreground">
-                {formatProcessType(process)}
+                {localize(formatProcessType(process))}
               </td>
               <td className="p-2 align-middle sm:pr-4">
                 <ProcessSignalActions
@@ -519,13 +526,15 @@ function ResourceHistoryProcessNameCell({
   process: ServerProcessResourceHistorySummary;
   visualDepth: number;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const name = formatShortProcessName(process.command);
 
   return (
     <div
       className="grid min-w-0 grid-cols-[1.25rem_0.375rem_minmax(0,1fr)] items-center gap-2"
       style={{ paddingLeft: `${Math.min(visualDepth, 6) * 10}px` }}
-      aria-label={`${process.isServerRoot ? "Root" : "Child"} process ${name}`}
+      aria-label={`${localize(process.isServerRoot ? "Root" : "Child")} ${localize("process")} ${name}`}
     >
       <span className="size-5 shrink-0" aria-hidden="true" />
       <span
@@ -558,6 +567,8 @@ function ProcessResourceHistoryChart({
     readonly maxCpuPercent: number;
   }>;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const maxCpuPercent = Math.max(1, ...buckets.map((bucket) => bucket.maxCpuPercent));
 
   return (
@@ -573,7 +584,7 @@ function ProcessResourceHistoryChart({
                   <div className="flex h-full min-w-1 flex-1 items-end">
                     <div
                       className="relative h-full w-full"
-                      aria-label={`Average CPU ${bucket.avgCpuPercent.toFixed(1)}%, peak CPU ${bucket.maxCpuPercent.toFixed(1)}%`}
+                      aria-label={`${localize("Average CPU")} ${bucket.avgCpuPercent.toFixed(1)}%, ${localize("peak CPU")} ${bucket.maxCpuPercent.toFixed(1)}%`}
                     >
                       <div
                         className="absolute inset-x-0 bottom-0 rounded-t-sm bg-foreground/15 transition-colors"
@@ -588,7 +599,8 @@ function ProcessResourceHistoryChart({
                 }
               />
               <TooltipPopup side="top">
-                Avg {bucket.avgCpuPercent.toFixed(1)}%, peak {bucket.maxCpuPercent.toFixed(1)}%
+                {localize("Avg")} {bucket.avgCpuPercent.toFixed(1)}%, {localize("peak")}{" "}
+                {bucket.maxCpuPercent.toFixed(1)}%
               </TooltipPopup>
             </Tooltip>
           );
@@ -605,9 +617,10 @@ function ResourceHistoryWindowSelector({
   selectedWindowMs: number;
   onSelect: (windowMs: number) => void;
 }) {
+  const { locale } = useI18n();
   return (
     <ToggleGroup
-      aria-label="Process history period"
+      aria-label={translateWebSource(locale, "Process history period")}
       variant="segmented"
       value={[String(selectedWindowMs)]}
       onValueChange={(next) => {
@@ -633,6 +646,8 @@ function ProcessResourceHistoryTable({
   processes: ReadonlyArray<ServerProcessResourceHistorySummary>;
   emptyLabel: string;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const shallowestChildDepth = processes.reduce<number | null>((minDepth, process) => {
     if (process.isServerRoot) return minDepth;
     return minDepth === null ? process.depth : Math.min(minDepth, process.depth);
@@ -658,21 +673,21 @@ function ProcessResourceHistoryTable({
         </colgroup>
         <thead className="sticky top-0 z-10 border-b border-border/60 bg-card text-[11px] uppercase tracking-[0.08em] text-muted-foreground/70">
           <tr>
-            <th className="px-4 py-2 font-semibold sm:pl-5">Process</th>
-            <th className="px-3 py-2 text-right font-semibold">CPU Time</th>
-            <th className="px-3 py-2 text-right font-semibold">Current</th>
-            <th className="px-3 py-2 text-right font-semibold">Average</th>
-            <th className="px-3 py-2 text-right font-semibold">Peak</th>
-            <th className="px-3 py-2 text-right font-semibold">Max Mem</th>
-            <th className="px-3 py-2 font-semibold">Command</th>
-            <th className="px-3 py-2 text-right font-semibold sm:pr-5">PID</th>
+            <th className="px-4 py-2 font-semibold sm:pl-5">{localize("Process")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("CPU Time")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Current")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Average")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Peak")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Max Mem")}</th>
+            <th className="px-3 py-2 font-semibold">{localize("Command")}</th>
+            <th className="px-3 py-2 text-right font-semibold sm:pr-5">{localize("PID")}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border/50">
           {processes.length === 0 ? (
             <tr>
               <td colSpan={8} className="px-4 py-4 text-xs text-muted-foreground sm:px-5">
-                {emptyLabel}
+                {localize(emptyLabel)}
               </td>
             </tr>
           ) : null}
@@ -892,7 +907,7 @@ export function DiagnosticsSettingsPanel() {
         );
       }
     })();
-  }, [availableEditors, environmentId, observability?.logsDirectoryPath, openInEditor]);
+  }, [availableEditors, environmentId, localize, observability?.logsDirectoryPath, openInEditor]);
 
   const isInitialLoading = isPending && data === null;
   const isProcessInitialLoading = isProcessPending && processData === null;
@@ -912,7 +927,9 @@ export function DiagnosticsSettingsPanel() {
         let confirmed = false;
         try {
           confirmed = await ensureLocalApi().dialogs.confirm(
-            `Send SIGKILL to process ${pid}? This cannot be handled by the process.`,
+            localize(
+              "Send SIGKILL to process {pid}? This cannot be handled by the process.",
+            ).replace("{pid}", String(pid)),
             { variant: "destructive" },
           );
         } catch (error) {
@@ -952,8 +969,11 @@ export function DiagnosticsSettingsPanel() {
             const error = squashAtomCommandFailure(result);
             toastManager.add({
               type: "error",
-              title: `Could not send ${signal}`,
-              description: error instanceof Error ? error.message : `Failed to send ${signal}.`,
+              title: localize("Could not send {signal}").replace("{signal}", signal),
+              description:
+                error instanceof Error
+                  ? error.message
+                  : localize("Failed to send {signal}.").replace("{signal}", signal),
             });
           }
           return;
@@ -964,17 +984,19 @@ export function DiagnosticsSettingsPanel() {
           if (isStaleProcessSignalMessage(message)) {
             toastManager.add({
               type: "info",
-              title: "Process already exited",
-              description:
+              title: localize("Process already exited"),
+              description: localize(
                 "The process is not a child of the T3 Server. It might already have exited.",
+              ),
             });
             return;
           }
 
           toastManager.add({
             type: "error",
-            title: `Could not send ${signal}`,
-            description: message ?? `Failed to send ${signal}.`,
+            title: localize("Could not send {signal}").replace("{signal}", signal),
+            description:
+              message ?? localize("Failed to send {signal}.").replace("{signal}", signal),
           });
           return;
         }
@@ -983,7 +1005,7 @@ export function DiagnosticsSettingsPanel() {
         clearSignaling();
       }
     },
-    [refreshProcesses, signalServerProcess],
+    [localize, refreshProcesses, signalServerProcess],
   );
 
   const processDiagnosticsError = processData ? Option.getOrNull(processData.error) : null;
@@ -1301,7 +1323,7 @@ export function DiagnosticsSettingsPanel() {
         )}
       </SettingsSection>
 
-      <SettingsSection title="Span Logs">
+      <SettingsSection title={localize("Span Logs")}>
         {data && data.latestWarningAndErrorLogs.length > 0 ? (
           <ScrollArea
             chainVerticalScroll
@@ -1319,11 +1341,21 @@ export function DiagnosticsSettingsPanel() {
               </colgroup>
               <thead className="border-b border-border/60 text-[11px] uppercase tracking-[0.08em] text-muted-foreground/70">
                 <tr>
-                  <th className="whitespace-nowrap px-4 py-2.5 font-semibold sm:pl-5">Time</th>
-                  <th className="whitespace-nowrap px-4 py-2.5 font-semibold">Level</th>
-                  <th className="whitespace-nowrap px-4 py-2.5 font-semibold">Span</th>
-                  <th className="whitespace-nowrap px-4 py-2.5 font-semibold">Message</th>
-                  <th className="whitespace-nowrap px-4 py-2.5 font-semibold sm:pr-5">Trace</th>
+                  <th className="whitespace-nowrap px-4 py-2.5 font-semibold sm:pl-5">
+                    {localize("Time")}
+                  </th>
+                  <th className="whitespace-nowrap px-4 py-2.5 font-semibold">
+                    {localize("Level")}
+                  </th>
+                  <th className="whitespace-nowrap px-4 py-2.5 font-semibold">
+                    {localize("Span")}
+                  </th>
+                  <th className="whitespace-nowrap px-4 py-2.5 font-semibold">
+                    {localize("Message")}
+                  </th>
+                  <th className="whitespace-nowrap px-4 py-2.5 font-semibold sm:pr-5">
+                    {localize("Trace")}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60">
@@ -1346,7 +1378,7 @@ export function DiagnosticsSettingsPanel() {
                     <td className="px-4 py-3 align-top text-muted-foreground">
                       <ExpandableText
                         collapsedClassName="line-clamp-2"
-                        expandLabel="Show full message"
+                        expandLabel={localize("Show full message")}
                         text={event.message}
                       />
                     </td>
@@ -1365,7 +1397,7 @@ export function DiagnosticsSettingsPanel() {
         )}
       </SettingsSection>
 
-      <SettingsSection title="Top Span Names">
+      <SettingsSection title={localize("Top Span Names")}>
         {data && data.topSpansByCount.length > 0 ? (
           <DiagnosticsTable
             headers={["Span", "Count", "Failures", "Average", "Max"]}
