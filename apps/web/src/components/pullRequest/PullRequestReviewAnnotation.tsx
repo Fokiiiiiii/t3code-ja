@@ -18,6 +18,8 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { useRef, useState } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 import { formatRelativeTimeLabel } from "~/timestampFormat";
 import { cn } from "~/lib/utils";
@@ -65,6 +67,8 @@ export function PendingReviewCommentCard({
   comment: PendingReviewComment;
   onRemove: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <div
       className={cn(CARD_CLASS, "border-dashed")}
@@ -73,12 +77,12 @@ export function PendingReviewCommentCard({
     >
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <MessageSquareIcon className="size-3.5" />
-        <span>Pending — sent when you submit the review</span>
+        <span>{localize("Pending — sent when you submit the review")}</span>
         <Button
           size="icon-xs"
           variant="ghost"
           className="ml-auto"
-          aria-label="Discard this comment"
+          aria-label={localize("Discard this comment")}
           onClick={onRemove}
         >
           <Trash2Icon className="size-3.5" />
@@ -133,6 +137,8 @@ export function ReviewThreadCard({
   onToggleResolved: () => void;
   onReacted: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   // A resolved thread is finished work, so it opens collapsed and stays one line until asked for.
   const [expanded, setExpanded] = useState(!thread.isResolved);
   const [replying, setReplying] = useState(false);
@@ -230,10 +236,10 @@ export function ReviewThreadCard({
           aria-expanded={expanded}
           onClick={() => setExpanded((current) => !current)}
         >
-          {thread.isResolved ? "Resolved" : "Open"} · {commentCount}{" "}
-          {commentCount === 1 ? "comment" : "comments"}
+          {localize(thread.isResolved ? "Resolved" : "Open")} · {commentCount}{" "}
+          {localize(commentCount === 1 ? "comment" : "comments")}
         </button>
-        {thread.isOutdated ? <span>outdated</span> : null}
+        {thread.isOutdated ? <span>{localize("outdated")}</span> : null}
         {onFix ? (
           <Button
             size="xs"
@@ -243,7 +249,7 @@ export function ReviewThreadCard({
             onClick={onFix}
           >
             <HammerIcon className="size-3" />
-            {fixPending ? "Preparing..." : fixLabel}
+            {fixPending ? localize("Preparing...") : localize(fixLabel)}
           </Button>
         ) : null}
         {canResolve ? (
@@ -254,7 +260,7 @@ export function ReviewThreadCard({
             disabled={pending}
             onClick={onToggleResolved}
           >
-            {thread.isResolved ? "Unresolve" : "Resolve"}
+            {localize(thread.isResolved ? "Unresolve" : "Resolve")}
           </Button>
         ) : null}
       </div>
@@ -274,7 +280,7 @@ export function ReviewThreadCard({
                     value={comment.body}
                     cwd={workspaceRoot}
                     environmentId={environmentId}
-                    label="Edit comment"
+                    label={localize("Edit comment")}
                     saving={savingEdit}
                     onSave={(body) => void saveEdit(comment.id, body)}
                     onCancel={() => setEditingId(null)}
@@ -292,7 +298,7 @@ export function ReviewThreadCard({
                         size="icon-xs"
                         variant="ghost"
                         className="shrink-0 text-muted-foreground opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 focus-visible:opacity-100"
-                        aria-label="Edit comment"
+                        aria-label={localize("Edit comment")}
                         onClick={() => setEditingId(comment.id)}
                       >
                         <PencilIcon className="size-3" />
@@ -321,7 +327,7 @@ export function ReviewThreadCard({
                 disabled={loadingMore}
                 onClick={() => void loadMore()}
               >
-                {loadingMore ? "Loading..." : "Load more comments"}
+                {loadingMore ? localize("Loading...") : localize("Load more comments")}
               </Button>
             </div>
           ) : null}
@@ -333,8 +339,8 @@ export function ReviewThreadCard({
                   autoFocus
                   size="sm"
                   value={reply}
-                  placeholder="Reply"
-                  aria-label="Reply to this conversation"
+                  placeholder={localize("Reply")}
+                  aria-label={localize("Reply to this conversation")}
                   onChange={(event) => setReply(event.target.value)}
                   onKeyDown={submitKeys({
                     value: reply,
@@ -345,14 +351,14 @@ export function ReviewThreadCard({
                 />
                 <div className="mt-2 flex justify-end gap-2">
                   <Button size="xs" variant="ghost" onClick={() => setReplying(false)}>
-                    Cancel
+                    {localize("Cancel")}
                   </Button>
                   <Button
                     size="xs"
                     disabled={pending || reply.trim().length === 0}
                     onClick={() => void send()}
                   >
-                    Reply
+                    {localize("Reply")}
                   </Button>
                 </div>
               </div>
@@ -363,7 +369,7 @@ export function ReviewThreadCard({
                 className="mt-2 px-1"
                 onClick={() => setReplying(true)}
               >
-                Reply
+                {localize("Reply")}
               </Button>
             )
           ) : null}

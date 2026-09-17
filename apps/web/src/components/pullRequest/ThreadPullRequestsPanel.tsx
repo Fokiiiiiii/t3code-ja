@@ -11,6 +11,8 @@ import {
   PlusIcon,
 } from "lucide-react";
 import { useCallback, useMemo } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 import { writeTextToClipboard } from "~/hooks/useCopyToClipboard";
 import { useOpenPrLink } from "~/lib/openPullRequestLink";
@@ -47,17 +49,18 @@ function ChecksGlyph({
 }: {
   state: NonNullable<ThreadPullRequestLink["snapshot"]>["checksState"] & string;
 }) {
+  const { locale } = useI18n();
   const presentation = pullRequestChecksStatePresentation(state);
   return (
     <Tooltip>
       <TooltipTrigger render={<span className="inline-flex shrink-0" />}>
         <presentation.Icon
           role="img"
-          aria-label={presentation.label}
+          aria-label={translateWebSource(locale, presentation.label)}
           className={cn("size-3.5", presentation.toneClassName)}
         />
       </TooltipTrigger>
-      <TooltipPopup>{presentation.label}</TooltipPopup>
+      <TooltipPopup>{translateWebSource(locale, presentation.label)}</TooltipPopup>
     </Tooltip>
   );
 }
@@ -71,6 +74,8 @@ function LinkRow({
   threadRef: ScopedThreadRef;
   onUnlink: (link: ThreadPullRequestLink) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const openPrLink = useOpenPrLink(threadRef);
   const { link, depth, stack } = line;
   const snapshot = link.snapshot;
@@ -85,7 +90,7 @@ function LinkRow({
       {depth > 0 ? <span aria-hidden className="-ml-2 h-6 w-px shrink-0 bg-border/70" /> : null}
       {snapshot === null ? (
         <GitPullRequestArrow
-          aria-label="Waiting for host state"
+          aria-label={localize("Waiting for host state")}
           className="size-4 shrink-0 text-muted-foreground"
         />
       ) : (
@@ -106,7 +111,7 @@ function LinkRow({
               #{link.number}
             </TooltipTrigger>
             <TooltipPopup>
-              {SOURCE_LABELS[link.source]} · {formatRelativeTimeLabel(link.linkedAt)}
+              {localize(SOURCE_LABELS[link.source])} · {formatRelativeTimeLabel(link.linkedAt)}
             </TooltipPopup>
           </Tooltip>
           <span className="min-w-0 flex-1 truncate text-sm">
@@ -122,11 +127,13 @@ function LinkRow({
               snapshot.reviewDecision === "approved" ? (
                 <PullRequestApprovalGlyph />
               ) : (
-                <span className="text-amber-600/90 dark:text-amber-400/80">Changes requested</span>
+                <span className="text-amber-600/90 dark:text-amber-400/80">
+                  {localize("Changes requested")}
+                </span>
               )
             ) : null}
             {snapshot?.state === "open" && snapshot.mergeability === "conflicting" ? (
-              <span className="text-destructive">Conflicts</span>
+              <span className="text-destructive">{localize("Conflicts")}</span>
             ) : null}
             {snapshot?.checksState ? <ChecksGlyph state={snapshot.checksState} /> : null}
             <PullRequestDiffStat
@@ -153,8 +160,8 @@ function LinkRow({
               </TooltipTrigger>
               <TooltipPopup>
                 {stack.kind === "native"
-                  ? `GitHub stack of ${stack.size}: merging a layer lands the ones below it.`
-                  : `${stack.size} pull requests chained by base branch.`}
+                  ? `${localize("GitHub stack of")} ${stack.size}: ${localize("merging a layer lands the ones below it.")}`
+                  : `${stack.size} ${localize("pull requests chained by base branch.")}`}
               </TooltipPopup>
             </Tooltip>
           ) : null}
@@ -180,7 +187,7 @@ function LinkRow({
             <Button
               variant="ghost"
               size="icon-xs"
-              aria-label={`Actions for #${link.number}`}
+              aria-label={`${localize("Actions for")} #${link.number}`}
               className={cn(
                 "opacity-0 group-hover/pr-row:opacity-100 data-[popup-open]:opacity-100",
               )}
@@ -190,10 +197,14 @@ function LinkRow({
           }
         />
         <MenuPopup align="end" side="bottom">
-          <MenuItem onClick={() => void writeTextToClipboard(link.url, "link")}>Copy link</MenuItem>
-          <MenuItem onClick={(event) => openPrLink(event, link.url, threadRef)}>Open</MenuItem>
+          <MenuItem onClick={() => void writeTextToClipboard(link.url, "link")}>
+            {localize("Copy link")}
+          </MenuItem>
+          <MenuItem onClick={(event) => openPrLink(event, link.url, threadRef)}>
+            {localize("Open")}
+          </MenuItem>
           <MenuItem onClick={() => onUnlink(link)}>
-            {link.source === "stack" ? "Dismiss from thread" : "Unlink from thread"}
+            {localize(link.source === "stack" ? "Dismiss from thread" : "Unlink from thread")}
           </MenuItem>
         </MenuPopup>
       </Menu>
@@ -202,12 +213,14 @@ function LinkRow({
 }
 
 export function ThreadPullRequestsPanel({ threadRef }: { threadRef: ScopedThreadRef }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const configs = useServerConfigs();
   if (configs.get(threadRef.environmentId)?.environment.capabilities.threadPullRequests !== true) {
     return (
       <PullRequestsUnavailableState
-        title="Linked pull requests unavailable"
-        error="This environment does not support multiple linked pull requests."
+        title={localize("Linked pull requests unavailable")}
+        error={localize("This environment does not support multiple linked pull requests.")}
       />
     );
   }
@@ -215,6 +228,8 @@ export function ThreadPullRequestsPanel({ threadRef }: { threadRef: ScopedThread
 }
 
 function EnabledThreadPullRequestsPanel({ threadRef }: { threadRef: ScopedThreadRef }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const thread = useThreadShell(threadRef);
   const openLinkDialog = useCallback(() => openLinkPullRequestDialog(threadRef), [threadRef]);
   const unlink = useAtomCommand(threadEnvironment.unlinkPullRequest, { reportFailure: true });
@@ -251,14 +266,15 @@ function EnabledThreadPullRequestsPanel({ threadRef }: { threadRef: ScopedThread
     return (
       <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
         <LinkIcon aria-hidden className="size-6 text-muted-foreground/60" />
-        <p className="text-sm font-medium">No linked pull requests</p>
+        <p className="text-sm font-medium">{localize("No linked pull requests")}</p>
         <p className="max-w-60 text-xs text-muted-foreground">
-          Pull requests the agent opens from this thread land here. Link one yourself from a URL or
-          a number.
+          {localize(
+            "Pull requests the agent opens from this thread land here. Link one yourself from a URL or a number.",
+          )}
         </p>
         <Button size="sm" variant="outline" onClick={openLinkDialog}>
           <PlusIcon className="size-3.5" />
-          Link pull request
+          {localize("Link pull request")}
         </Button>
       </div>
     );
@@ -280,12 +296,12 @@ function EnabledThreadPullRequestsPanel({ threadRef }: { threadRef: ScopedThread
       </ScrollArea>
       <footer className="flex items-center justify-between border-t border-border/60 px-2 py-1.5 text-[.7rem] text-muted-foreground">
         <span>
-          {openCount} open · {links.length} linked
-          {lastSynced ? ` · synced ${formatRelativeTimeLabel(lastSynced)}` : ""}
+          {openCount} {localize("open")} · {links.length} {localize("linked")}
+          {lastSynced ? ` · ${localize("synced")} ${formatRelativeTimeLabel(lastSynced)}` : ""}
         </span>
         <Button size="xs" variant="ghost" onClick={openLinkDialog}>
           <PlusIcon className="size-3.5" />
-          Link
+          {localize("Link")}
         </Button>
       </footer>
     </div>

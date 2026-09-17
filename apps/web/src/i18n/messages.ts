@@ -6674,6 +6674,35 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "This conversation is longer than this page reads in one go. The most recent":
     "この会話はこのページで一度に表示できる長さを超えています。最新の",
   "Unable to open check details": "チェックの詳細を開けません",
+  "Discard this comment": "このコメントを破棄",
+  "Load more comments": "さらにコメントを読み込む",
+  outdated: "古い内容",
+  "Pending — sent when you submit the review": "保留中 — レビューを送信すると送信されます",
+  "Reply to this conversation": "この会話に返信",
+  "Close comment composer": "コメント入力欄を閉じる",
+  "Close with comment": "コメント付きで閉じる",
+  "Closing...": "閉じています…",
+  "Comment on pull request": "プルリクエストにコメント",
+  "Comment on this pull request": "このプルリクエストにコメント",
+  "Leave a comment": "コメントを入力",
+  "Posting...": "投稿中…",
+  "Reopen with comment": "コメント付きで再開",
+  "Reopening...": "再開中…",
+  "Loading people": "ユーザーを読み込み中",
+  "Loading pull request": "プルリクエストを読み込み中",
+  "Loading pull request conversation": "プルリクエストの会話を読み込み中",
+  "Loading pull requests": "プルリクエストを読み込み中",
+  "Loading timeline": "タイムラインを読み込み中",
+  "GitHub stack of": "GitHub スタック（",
+  "Linked pull requests unavailable": "紐づき済みプルリクエストを利用できません",
+  "merging a layer lands the ones below it.": "1 層をマージすると下位の層も反映されます。",
+  "pull requests chained by base branch.": "件のプルリクエストがベースブランチで連結されています。",
+  "Pull requests the agent opens from this thread land here. Link one yourself from a URL or a number.":
+    "エージェントがこのタスクから開いたプルリクエストがここに表示されます。URL または番号から自分でリンクすることもできます。",
+  synced: "同期済み",
+  "This environment does not support multiple linked pull requests.":
+    "この環境は複数の紐づき済みプルリクエストに対応していません。",
+  "Waiting for host state": "ホストの状態を待機中",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {

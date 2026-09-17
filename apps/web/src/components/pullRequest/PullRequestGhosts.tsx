@@ -12,6 +12,8 @@ import { ArrowLeftIcon } from "lucide-react";
 
 import { cn } from "~/lib/utils";
 import { formatRelativeTimeLabel } from "~/timestampFormat";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 import { pullRequestLabelColor } from "./pullRequestList.logic";
 import {
@@ -38,10 +40,11 @@ export function PullRequestListGhost({
   /** Said where the group headers speak, for the states with something to say — a search. */
   caption?: string;
 }) {
+  const { locale } = useI18n();
   return (
     <div
       role="status"
-      aria-label={caption ?? "Loading pull requests"}
+      aria-label={caption ?? translateWebSource(locale, "Loading pull requests")}
       className="motion-safe:animate-skeleton space-y-0.5"
     >
       {caption ? (
@@ -73,6 +76,7 @@ export function PullRequestListGhost({
  * another a moment later.
  */
 export function PullRequestDetailGhost({ seed }: { seed?: PullRequestListEntry | null }) {
+  const { locale } = useI18n();
   const statePresentation = seed
     ? resolvePullRequestState({
         state: seed.state,
@@ -86,7 +90,7 @@ export function PullRequestDetailGhost({ seed }: { seed?: PullRequestListEntry |
   return (
     <div
       role="status"
-      aria-label="Loading pull request"
+      aria-label={translateWebSource(locale, "Loading pull request")}
       className={cn(
         "flex h-full min-h-0 flex-col overflow-hidden bg-background",
         !seed && "motion-safe:animate-skeleton",
@@ -134,7 +138,7 @@ export function PullRequestDetailGhost({ seed }: { seed?: PullRequestListEntry |
                   tooltip={false}
                 />
                 <span className="text-xs text-muted-foreground">
-                  updated {formatRelativeTimeLabel(seed.updatedAt)}
+                  {translateWebSource(locale, "updated")} {formatRelativeTimeLabel(seed.updatedAt)}
                 </span>
               </>
             ) : (
@@ -149,7 +153,7 @@ export function PullRequestDetailGhost({ seed }: { seed?: PullRequestListEntry |
               <span className="flex min-w-0 flex-1 items-center gap-1.5 font-mono text-xs text-muted-foreground/70">
                 <code className="min-w-0 max-w-[40%] shrink-0 truncate">{seed.baseBranch}</code>
                 <ArrowLeftIcon
-                  aria-label="receives changes from"
+                  aria-label={translateWebSource(locale, "receives changes from")}
                   className="size-3.5 shrink-0 opacity-60"
                 />
                 <code className="min-w-0 flex-1 truncate">{seed.headBranch}</code>
@@ -270,10 +274,11 @@ export function PullRequestDetailGhost({ seed }: { seed?: PullRequestListEntry |
 
 /** People-shaped: an avatar and a name, in the reviewer picker's own row height. */
 export function PullRequestPeopleGhost({ rows = 4 }: { rows?: number }) {
+  const { locale } = useI18n();
   return (
     <div
       role="status"
-      aria-label="Loading people"
+      aria-label={translateWebSource(locale, "Loading people")}
       className="motion-safe:animate-skeleton space-y-1 p-1"
     >
       {Array.from({ length: rows }, (_, index) => (
@@ -288,10 +293,11 @@ export function PullRequestPeopleGhost({ rows = 4 }: { rows?: number }) {
 
 /** The timeline's own shape: dots on the rail, a line and a date to each. */
 export function PullRequestTimelineGhost({ rows = 6 }: { rows?: number }) {
+  const { locale } = useI18n();
   return (
     <div
       role="status"
-      aria-label="Loading timeline"
+      aria-label={translateWebSource(locale, "Loading timeline")}
       className="motion-safe:animate-skeleton px-4 py-5"
     >
       <div className="relative ml-2 border-l border-border/70 pl-5">
@@ -309,10 +315,11 @@ export function PullRequestTimelineGhost({ rows = 6 }: { rows?: number }) {
 
 /** A compact placeholder for the conversation while the core detail is already readable. */
 export function PullRequestConversationGhost({ rows = 3 }: { rows?: number }) {
+  const { locale } = useI18n();
   return (
     <div
       role="status"
-      aria-label="Loading pull request conversation"
+      aria-label={translateWebSource(locale, "Loading pull request conversation")}
       className="motion-safe:animate-skeleton space-y-4 py-2"
     >
       {Array.from({ length: rows }, (_, index) => (

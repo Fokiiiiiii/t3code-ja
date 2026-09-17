@@ -7,6 +7,8 @@ import {
   XIcon,
 } from "lucide-react";
 import { useRef, useState } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 import { useAtomCommand } from "~/state/use-atom-command";
 import { pullRequestEnvironment } from "~/state/pullRequests";
@@ -34,6 +36,8 @@ export function PullRequestCommentComposer({
   ) => Promise<{ readonly commentPosted: boolean }>;
   onCommented: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [open, setOpen] = useState(false);
   const [body, setBody] = useState("");
   const [submitting, setSubmitting] = useState<"comment" | "close" | "reopen" | null>(null);
@@ -91,7 +95,7 @@ export function PullRequestCommentComposer({
             className="rounded-full shadow-lg [--glass-opacity:50%]"
           />
         }
-        aria-label="Comment on pull request"
+        aria-label={localize("Comment on pull request")}
       >
         <MessageSquareIcon className="size-4" />
       </PopoverTrigger>
@@ -103,10 +107,10 @@ export function PullRequestCommentComposer({
         initialFocus={textareaRef}
       >
         <div className="mb-3 flex items-center justify-between gap-2">
-          <PopoverTitle className="text-sm">Comment on pull request</PopoverTitle>
+          <PopoverTitle className="text-sm">{localize("Comment on pull request")}</PopoverTitle>
           <PopoverClose
             render={<Button size="icon-xs" variant="ghost" />}
-            aria-label="Close comment composer"
+            aria-label={localize("Close comment composer")}
           >
             <XIcon className="size-3.5" />
           </PopoverClose>
@@ -120,8 +124,8 @@ export function PullRequestCommentComposer({
             disabled={submitting !== null || actionPending}
             value={body}
             rows={3}
-            placeholder="Leave a comment"
-            aria-label="Comment on this pull request"
+            placeholder={localize("Leave a comment")}
+            aria-label={localize("Comment on this pull request")}
             onChange={(event) => setBody(event.target.value)}
           />
           <div className="flex flex-wrap justify-end gap-2">
@@ -139,11 +143,11 @@ export function PullRequestCommentComposer({
                 )}
                 {submitting === followUpAction
                   ? followUpAction === "close"
-                    ? "Closing..."
-                    : "Reopening..."
+                    ? localize("Closing...")
+                    : localize("Reopening...")
                   : followUpAction === "close"
-                    ? "Close with comment"
-                    : "Reopen with comment"}
+                    ? localize("Close with comment")
+                    : localize("Reopen with comment")}
               </Button>
             )}
             <Button
@@ -153,7 +157,7 @@ export function PullRequestCommentComposer({
               onClick={() => void submit("comment")}
             >
               <SendIcon className="size-3.5" />
-              {submitting === "comment" ? "Posting..." : "Comment"}
+              {submitting === "comment" ? localize("Posting...") : localize("Comment")}
             </Button>
           </div>
         </div>
