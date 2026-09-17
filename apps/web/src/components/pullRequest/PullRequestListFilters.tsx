@@ -23,6 +23,8 @@ import {
   UserRoundIcon,
 } from "lucide-react";
 import { type ElementType, useState } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 import { getSourceControlPresentationForKind } from "~/sourceControlPresentation";
 import { ProjectFavicon, type ProjectFaviconProject } from "../ProjectFavicon";
@@ -105,6 +107,7 @@ export function PullRequestSearchInput({
   busy?: boolean;
   onChange: (value: string) => void;
 }) {
+  const { locale } = useI18n();
   return (
     <InputGroup className="min-w-0 flex-1 **:[input]:h-9 sm:**:[input]:h-8">
       <InputGroupAddon>
@@ -114,8 +117,8 @@ export function PullRequestSearchInput({
         type="search"
         value={value}
         onChange={(event) => onChange(event.currentTarget.value)}
-        placeholder="Search pull requests, or label:bug"
-        aria-label="Search pull requests"
+        placeholder={translateWebSource(locale, "Search pull requests, or label:bug")}
+        aria-label={translateWebSource(locale, "Search pull requests")}
       />
     </InputGroup>
   );
@@ -172,6 +175,8 @@ function PullRequestFilterRadioGroup<Value extends string>({
   options: ReadonlyArray<PullRequestFilterOption<Value>>;
   onChange: (value: Value) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <MenuRadioGroup
       value={value}
@@ -179,7 +184,7 @@ function PullRequestFilterRadioGroup<Value extends string>({
         if (next !== value) onChange(next as Value);
       }}
     >
-      <MenuGroupLabel>{label}</MenuGroupLabel>
+      <MenuGroupLabel>{localize(label)}</MenuGroupLabel>
       {options.map((option) => {
         // A host the server has already said it cannot read is not a choice here: offering
         // it would answer the press by replacing a working list with that failure.
@@ -192,8 +197,10 @@ function PullRequestFilterRadioGroup<Value extends string>({
           >
             <span className="flex min-w-0 items-center gap-2">
               <PullRequestFilterOptionIcon option={option} />
-              <span className="min-w-0 flex-1 truncate">{option.label}</span>
-              {option.unavailable ? <span className="shrink-0">· Unavailable</span> : null}
+              <span className="min-w-0 flex-1 truncate">{localize(option.label)}</span>
+              {option.unavailable ? (
+                <span className="shrink-0">· {localize("Unavailable")}</span>
+              ) : null}
               <MenuRadioItemIndicator />
             </span>
           </MenuRadioItem>
@@ -203,7 +210,7 @@ function PullRequestFilterRadioGroup<Value extends string>({
           <Tooltip key={option.value}>
             <TooltipTrigger render={item} />
             <TooltipPopup side="top" className="max-w-80">
-              {option.unavailable}
+              {localize(option.unavailable)}
             </TooltipPopup>
           </Tooltip>
         );
@@ -223,15 +230,17 @@ function PullRequestFilterRadioSubmenu<Value extends string>({
   options: ReadonlyArray<PullRequestFilterOption<Value>>;
   onChange: (value: Value) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const current = options.find((option) => option.value === value) ?? options[0];
   if (!current) return null;
   return (
     <MenuSub>
       <MenuSubTrigger>
         <PullRequestFilterOptionIcon option={current} />
-        <span className="flex-1">{label}</span>
+        <span className="flex-1">{localize(label)}</span>
         <span className="min-w-0 max-w-32 truncate text-xs text-muted-foreground">
-          {current.label}
+          {localize(current.label)}
         </span>
       </MenuSubTrigger>
       <MenuSubPopup className="min-w-56">
@@ -255,6 +264,8 @@ function PullRequestAuthorFilter({
   options: ReadonlyArray<PullRequestAuthorFacet>;
   onChange: (author: string | undefined) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [query, setQuery] = useState("");
   const needle = query.trim().toLowerCase();
   const login = value?.toLowerCase() ?? "";
@@ -274,9 +285,9 @@ function PullRequestAuthorFilter({
     <MenuSub>
       <MenuSubTrigger>
         <UserRoundIcon aria-hidden className="size-3.5" />
-        <span className="flex-1">Author</span>
+        <span className="flex-1">{localize("Author")}</span>
         <span className="min-w-0 max-w-32 truncate text-xs text-muted-foreground">
-          {value ?? "Anyone"}
+          {value ?? localize("Anyone")}
         </span>
       </MenuSubTrigger>
       <MenuSubPopup className="w-80">
@@ -293,8 +304,8 @@ function PullRequestAuthorFilter({
               onKeyDown={(event) => {
                 if (event.key !== "ArrowDown" && event.key !== "Escape") event.stopPropagation();
               }}
-              placeholder="Search authors"
-              aria-label="Search authors"
+              placeholder={localize("Search authors")}
+              aria-label={localize("Search authors")}
             />
           </InputGroup>
         </div>
@@ -302,7 +313,7 @@ function PullRequestAuthorFilter({
           <MenuRadioItem value="">
             <span className="flex min-w-0 items-center gap-2">
               <LayersIcon aria-hidden className="size-3.5" />
-              Anyone
+              {localize("Anyone")}
             </span>
           </MenuRadioItem>
           {visible.map((option) => (
@@ -311,12 +322,14 @@ function PullRequestAuthorFilter({
                 <PullRequestActorAvatar actor={option.actor} />
                 <span className="min-w-0 flex-1 truncate">{option.actor.login}</span>
                 <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                  {option.mergedCount} merges loaded
+                  {option.mergedCount} {localize("merges loaded")}
                 </span>
               </span>
             </MenuRadioItem>
           ))}
-          {visible.length === 0 ? <MenuItem disabled>No authors found</MenuItem> : null}
+          {visible.length === 0 ? (
+            <MenuItem disabled>{localize("No authors found")}</MenuItem>
+          ) : null}
         </MenuRadioGroup>
       </MenuSubPopup>
     </MenuSub>
@@ -332,6 +345,8 @@ function PullRequestLabelFilter({
   options: ReadonlyArray<PullRequestLabelFacet>;
   onChange: (labels: ReadonlyArray<string>) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const selected = new Set(value.map((name) => name.toLowerCase()));
   const visible = [
     ...value
@@ -343,14 +358,14 @@ function PullRequestLabelFilter({
     <MenuSub>
       <MenuSubTrigger>
         <TagIcon aria-hidden className="size-3.5" />
-        <span className="flex-1">Labels</span>
+        <span className="flex-1">{localize("Labels")}</span>
         <span className="text-xs text-muted-foreground">
-          {value.length === 0 ? "Any" : `${value.length} selected`}
+          {value.length === 0 ? localize("Any") : `${value.length} ${localize("selected")}`}
         </span>
       </MenuSubTrigger>
       <MenuSubPopup className="w-72">
         {visible.length === 0 ? (
-          <MenuItem disabled>No labels in this view</MenuItem>
+          <MenuItem disabled>{localize("No labels in this view")}</MenuItem>
         ) : (
           visible.map((option) => {
             const key = option.name.toLowerCase();
@@ -456,6 +471,8 @@ export function PullRequestFiltersMenu({
   /** The environment comes with the project id, since picking a row picks a specific server's copy of it. */
   onProject: (projectId: ProjectId | undefined, environmentId: EnvironmentId | undefined) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const selectedLabels = (filters.labels ?? []).flatMap((group) => group);
   const filterCount = [
     state !== "open",
@@ -484,7 +501,7 @@ export function PullRequestFiltersMenu({
       ? ALL_PROJECTS_VALUE
       : pullRequestProjectKey({ id: projectId, environmentId: projectEnvironmentId });
   const projectOptions: ReadonlyArray<PullRequestFilterOption<string>> = [
-    { value: ALL_PROJECTS_VALUE, label: "All projects", Icon: LayersIcon },
+    { value: ALL_PROJECTS_VALUE, label: localize("All projects"), Icon: LayersIcon },
     ...projects
       .toSorted(
         (left, right) =>
@@ -512,7 +529,7 @@ export function PullRequestFiltersMenu({
         }
       >
         <ListFilterIcon className="size-4" />
-        <span>Filters</span>
+        <span>{localize("Filters")}</span>
         {filterCount > 0 ? (
           <span className="rounded-full bg-muted px-1.5 text-xs text-muted-foreground tabular-nums">
             {filterCount}
@@ -521,13 +538,13 @@ export function PullRequestFiltersMenu({
       </MenuTrigger>
       <MenuPopup align="end" side="bottom" className="w-56">
         <PullRequestFilterRadioSubmenu
-          label="State"
+          label={localize("State")}
           value={state}
           options={stateOptions}
           onChange={onState}
         />
         <PullRequestFilterRadioSubmenu
-          label="Involvement"
+          label={localize("Involvement")}
           value={involvement}
           options={involvementOptions}
           onChange={onInvolvement}
@@ -548,19 +565,19 @@ export function PullRequestFiltersMenu({
           }
         />
         <PullRequestFilterRadioSubmenu
-          label="Draft"
+          label={localize("Draft")}
           value={filters.draft ?? UNFILTERED_VALUE}
           options={DRAFT_OPTIONS}
           onChange={(draft) => updateFilter("draft", draft)}
         />
         <PullRequestFilterRadioSubmenu
-          label="Review"
+          label={localize("Review")}
           value={filters.review ?? UNFILTERED_VALUE}
           options={REVIEW_OPTIONS}
           onChange={(review) => updateFilter("review", review)}
         />
         <PullRequestFilterRadioSubmenu
-          label="Checks"
+          label={localize("Checks")}
           value={filters.checks ?? UNFILTERED_VALUE}
           options={CHECKS_OPTIONS}
           onChange={(checks) => updateFilter("checks", checks)}
@@ -569,7 +586,7 @@ export function PullRequestFiltersMenu({
           <>
             <MenuSeparator />
             <PullRequestFilterRadioSubmenu
-              label="Host"
+              label={localize("Host")}
               value={host ?? ALL_HOSTS_VALUE}
               options={hostOptions}
               onChange={(next) => onHost(next === ALL_HOSTS_VALUE ? undefined : next)}
@@ -580,7 +597,7 @@ export function PullRequestFiltersMenu({
           <>
             <MenuSeparator />
             <PullRequestFilterRadioSubmenu
-              label="Server"
+              label={localize("Server")}
               value={server ?? ALL_SERVERS_VALUE}
               options={serverOptions}
               onChange={(next) =>
@@ -591,7 +608,7 @@ export function PullRequestFiltersMenu({
         ) : null}
         <MenuSeparator />
         <PullRequestFilterRadioSubmenu
-          label="Project"
+          label={localize("Project")}
           value={projectValue}
           options={projectOptions}
           onChange={(next) => {

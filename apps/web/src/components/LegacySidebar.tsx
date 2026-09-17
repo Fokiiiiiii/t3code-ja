@@ -66,6 +66,8 @@ import {
   squashAtomCommandFailure,
 } from "@t3tools/client-runtime/state/runtime";
 import { useNavigate, useParams, useRouter } from "@tanstack/react-router";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 import {
   MAX_SIDEBAR_THREAD_PREVIEW_COUNT,
   MIN_SIDEBAR_THREAD_PREVIEW_COUNT,
@@ -354,6 +356,8 @@ interface SidebarThreadRowProps {
 }
 
 const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const {
     orderedProjectThreadKeys,
     isActive,
@@ -449,9 +453,9 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Unable to open preview",
+            title: localize("Unable to open preview"),
             description:
-              error instanceof Error ? error.message : "The preview could not be opened.",
+              error instanceof Error ? error.message : localize("The preview could not be opened."),
           }),
         );
       })();
@@ -841,12 +845,12 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
                 type="button"
                 data-thread-selection-safe
                 data-testid={`thread-archive-confirm-${thread.id}`}
-                aria-label={`Confirm archive ${thread.title}`}
+                aria-label={`${localize("Confirm archive")} ${thread.title}`}
                 className="absolute top-1/2 right-1 inline-flex h-5 -translate-y-1/2 cursor-pointer items-center rounded-md bg-destructive/12 px-2 text-[10px] font-medium text-destructive transition-colors hover:bg-destructive/18 focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-destructive/40"
                 onPointerDown={stopPropagationOnPointerDown}
                 onClick={handleConfirmArchiveClick}
               >
-                Confirm
+                {localize("Confirm")}
               </button>
             ) : !isThreadRunning ? (
               appSettingsConfirmThreadArchive ? (
@@ -855,7 +859,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
                     type="button"
                     data-thread-selection-safe
                     data-testid={`thread-archive-${thread.id}`}
-                    aria-label={`Archive ${thread.title}`}
+                    aria-label={`${localize("Archive")} ${thread.title}`}
                     className={SIDEBAR_ICON_ACTION_BUTTON_CLASS}
                     onPointerDown={stopPropagationOnPointerDown}
                     onClick={handleStartArchiveConfirmation}
@@ -872,7 +876,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
                           type="button"
                           data-thread-selection-safe
                           data-testid={`thread-archive-${thread.id}`}
-                          aria-label={`Archive ${thread.title}`}
+                          aria-label={`${localize("Archive")} ${thread.title}`}
                           className={SIDEBAR_ICON_ACTION_BUTTON_CLASS}
                           onPointerDown={stopPropagationOnPointerDown}
                           onClick={handleArchiveImmediateClick}
@@ -882,7 +886,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
                       </div>
                     }
                   />
-                  <TooltipPopup side="top">Archive</TooltipPopup>
+                  <TooltipPopup side="top">{localize("Archive")}</TooltipPopup>
                 </Tooltip>
               )
             ) : null}
@@ -996,6 +1000,8 @@ interface SidebarProjectThreadListProps {
 const SidebarProjectThreadList = memo(function SidebarProjectThreadList(
   props: SidebarProjectThreadListProps,
 ) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const {
     projectKey,
     projectExpanded,
@@ -1047,7 +1053,7 @@ const SidebarProjectThreadList = memo(function SidebarProjectThreadList(
             data-thread-selection-safe
             className="flex h-8 w-full translate-x-0 items-center px-2 text-left text-xs text-sidebar-muted-foreground/75"
           >
-            <span>No threads yet</span>
+            <span>{localize("No threads yet")}</span>
           </div>
         </SidebarMenuSubItem>
       ) : null}
@@ -1099,7 +1105,7 @@ const SidebarProjectThreadList = memo(function SidebarProjectThreadList(
           >
             <span className="flex min-w-0 flex-1 items-center gap-2">
               {hiddenThreadStatus && <ThreadStatusLabel status={hiddenThreadStatus} compact />}
-              <span>Show more</span>
+              <span>{localize("Show more")}</span>
             </span>
           </SidebarMenuSubButton>
         </SidebarMenuSubItem>
@@ -1115,7 +1121,7 @@ const SidebarProjectThreadList = memo(function SidebarProjectThreadList(
               collapseThreadListForProject(projectKey);
             }}
           >
-            <span>Show less</span>
+            <span>{localize("Show less")}</span>
           </SidebarMenuSubButton>
         </SidebarMenuSubItem>
       )}
@@ -1144,6 +1150,8 @@ interface SidebarProjectItemProps {
 }
 
 const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjectItemProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const {
     project,
     isThreadListExpanded,
@@ -2508,18 +2516,20 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
       >
         <DialogPopup className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Rename project</DialogTitle>
+            <DialogTitle>{localize("Rename project")}</DialogTitle>
             <DialogDescription>
               {projectRenameTarget
-                ? `Update the title for ${projectRenameTarget.workspaceRoot}.`
-                : "Update the project title."}
+                ? `${localize("Update the title for")} ${projectRenameTarget.workspaceRoot}.`
+                : localize("Update the project title.")}
             </DialogDescription>
           </DialogHeader>
           <DialogPanel className="space-y-4">
             <div className="grid gap-1.5">
-              <span className="text-xs font-medium text-foreground">Project title</span>
+              <span className="text-xs font-medium text-foreground">
+                {localize("Project title")}
+              </span>
               <Input
-                aria-label="Project title"
+                aria-label={localize("Project title")}
                 value={projectRenameTitle}
                 onChange={(event) => setProjectRenameTitle(event.target.value)}
                 onKeyDown={(event) => {
@@ -2532,15 +2542,15 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
             </div>
             {projectRenameTarget?.environmentLabel ? (
               <p className="text-xs text-muted-foreground">
-                Environment: {projectRenameTarget.environmentLabel}
+                {localize("Environment:")} {projectRenameTarget.environmentLabel}
               </p>
             ) : null}
           </DialogPanel>
           <DialogFooter>
             <Button variant="outline" onClick={closeProjectRenameDialog}>
-              Cancel
+              {localize("Cancel")}
             </Button>
-            <Button onClick={() => void submitProjectRename()}>Save</Button>
+            <Button onClick={() => void submitProjectRename()}>{localize("Save")}</Button>
           </DialogFooter>
         </DialogPopup>
       </Dialog>
@@ -2555,16 +2565,18 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
       >
         <DialogPopup className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Project grouping</DialogTitle>
+            <DialogTitle>{localize("Project grouping")}</DialogTitle>
             <DialogDescription>
               {projectGroupingTarget
-                ? `Choose how ${projectGroupingTarget.workspaceRoot} should be grouped in the sidebar.`
-                : "Choose how this project should be grouped in the sidebar."}
+                ? `${localize("Choose how")} ${projectGroupingTarget.workspaceRoot} ${localize("should be grouped in the sidebar.")}`
+                : localize("Choose how this project should be grouped in the sidebar.")}
             </DialogDescription>
           </DialogHeader>
           <DialogPanel className="space-y-4">
             <div className="grid gap-1.5">
-              <span className="text-xs font-medium text-foreground">Grouping rule</span>
+              <span className="text-xs font-medium text-foreground">
+                {localize("Grouping rule")}
+              </span>
               <Select
                 value={projectGroupingSelection}
                 onValueChange={(value) => {
@@ -2578,40 +2590,44 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
                   }
                 }}
               >
-                <SelectTrigger className="w-full" aria-label="Project grouping rule">
+                <SelectTrigger className="w-full" aria-label={localize("Project grouping rule")}>
                   <SelectValue>
                     {projectGroupingSelection === "inherit"
-                      ? `Use global default (${PROJECT_GROUPING_MODE_LABELS[projectGroupingSettings.sidebarProjectGroupingMode]})`
-                      : PROJECT_GROUPING_MODE_LABELS[projectGroupingSelection]}
+                      ? `${localize("Use global default")} (${localize(PROJECT_GROUPING_MODE_LABELS[projectGroupingSettings.sidebarProjectGroupingMode])})`
+                      : localize(PROJECT_GROUPING_MODE_LABELS[projectGroupingSelection])}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectPopup align="end" alignItemWithTrigger={false}>
                   <SelectItem hideIndicator value="inherit">
-                    Use global default
+                    {localize("Use global default")}
                   </SelectItem>
                   <SelectItem hideIndicator value="repository">
-                    {PROJECT_GROUPING_MODE_LABELS.repository}
+                    {localize(PROJECT_GROUPING_MODE_LABELS.repository)}
                   </SelectItem>
                   <SelectItem hideIndicator value="repository_path">
-                    {PROJECT_GROUPING_MODE_LABELS.repository_path}
+                    {localize(PROJECT_GROUPING_MODE_LABELS.repository_path)}
                   </SelectItem>
                   <SelectItem hideIndicator value="separate">
-                    {PROJECT_GROUPING_MODE_LABELS.separate}
+                    {localize(PROJECT_GROUPING_MODE_LABELS.separate)}
                   </SelectItem>
                 </SelectPopup>
               </Select>
             </div>
             <p className="text-xs text-muted-foreground">
               {projectGroupingSelection === "inherit"
-                ? projectGroupingModeDescription(projectGroupingSettings.sidebarProjectGroupingMode)
-                : projectGroupingModeDescription(projectGroupingSelection)}
+                ? localize(
+                    projectGroupingModeDescription(
+                      projectGroupingSettings.sidebarProjectGroupingMode,
+                    ),
+                  )
+                : localize(projectGroupingModeDescription(projectGroupingSelection))}
             </p>
           </DialogPanel>
           <DialogFooter>
             <Button variant="outline" onClick={closeProjectGroupingDialog}>
-              Cancel
+              {localize("Cancel")}
             </Button>
-            <Button onClick={saveProjectGroupingPreference}>Save</Button>
+            <Button onClick={saveProjectGroupingPreference}>{localize("Save")}</Button>
           </DialogFooter>
         </DialogPopup>
       </Dialog>
@@ -2628,6 +2644,8 @@ const SidebarProjectListRow = memo(function SidebarProjectListRow(props: Sidebar
 });
 
 function LocalSecondaryStatus() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { environments } = useEnvironments();
   // The desktop reports which local secondary backends (e.g. the WSL backend)
   // exist; the hook polls because the bridge has no change event. A backend that
@@ -2682,19 +2700,21 @@ function LocalSecondaryStatus() {
         >
           <Spinner />
           <AlertTitle className="text-xs font-medium text-foreground">
-            Connecting {connecting.join(", ")}
+            {localize("Connecting")} {connecting.join(", ")}
           </AlertTitle>
         </Alert>
       ) : null}
       {failed.length > 0 ? (
         <Alert variant="warning" className="rounded-2xl border-warning/40 bg-warning/8">
           <TriangleAlertIcon />
-          <AlertTitle>Couldn't connect {failed.map((entry) => entry.label).join(", ")}</AlertTitle>
+          <AlertTitle>
+            {localize("Couldn't connect")} {failed.map((entry) => entry.label).join(", ")}
+          </AlertTitle>
           <AlertDescription>
             {failed
               .map((entry) => entry.error)
               .filter(Boolean)
-              .join("; ") || "The backend didn't respond."}
+              .join("; ") || localize("The backend didn't respond.")}
           </AlertDescription>
         </Alert>
       ) : null}
@@ -2722,6 +2742,8 @@ function ProjectSortMenu({
   onThreadSortOrderChange: (sortOrder: SidebarThreadSortOrder) => void;
   onThreadPreviewCountChange: (count: SidebarThreadPreviewCount) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const handleThreadPreviewCountChange = useCallback(
     (nextValue: number | null) => {
       if (nextValue === null) {
@@ -2746,12 +2768,12 @@ function ProjectSortMenu({
         >
           <ArrowUpDownIcon className="size-3.5" />
         </TooltipTrigger>
-        <TooltipPopup side="right">Sidebar options</TooltipPopup>
+        <TooltipPopup side="right">{localize("Sidebar options")}</TooltipPopup>
       </Tooltip>
       <MenuPopup align="end" side="bottom" className="min-w-52">
         <MenuGroup>
           <div className="px-2 py-1 sm:text-xs font-medium text-muted-foreground">
-            Sort projects
+            {localize("Sort projects")}
           </div>
           <MenuRadioGroup
             value={projectSortOrder}
@@ -2762,7 +2784,7 @@ function ProjectSortMenu({
             {(Object.entries(SIDEBAR_SORT_LABELS) as Array<[SidebarProjectSortOrder, string]>).map(
               ([value, label]) => (
                 <MenuRadioItem key={value} value={value} className="min-h-7 py-1 sm:text-xs">
-                  {label}
+                  {localize(label)}
                 </MenuRadioItem>
               ),
             )}
@@ -2770,7 +2792,7 @@ function ProjectSortMenu({
         </MenuGroup>
         <MenuGroup>
           <div className="px-2 pt-2 pb-1 sm:text-xs font-medium text-muted-foreground">
-            Sort threads
+            {localize("Sort threads")}
           </div>
           <MenuRadioGroup
             value={threadSortOrder}
@@ -2782,18 +2804,18 @@ function ProjectSortMenu({
               Object.entries(SIDEBAR_THREAD_SORT_LABELS) as Array<[SidebarThreadSortOrder, string]>
             ).map(([value, label]) => (
               <MenuRadioItem key={value} value={value} className="min-h-7 py-1 sm:text-xs">
-                {label}
+                {localize(label)}
               </MenuRadioItem>
             ))}
           </MenuRadioGroup>
         </MenuGroup>
         <MenuGroup>
           <div className="px-2 pt-2 pb-1 text-muted-foreground sm:text-xs font-medium">
-            Visible threads
+            {localize("Visible threads")}
           </div>
           <div className="px-2 py-1">
             <NumberField
-              aria-label="Visible thread count"
+              aria-label={localize("Visible thread count")}
               className="w-28 gap-0"
               max={MAX_SIDEBAR_THREAD_PREVIEW_COUNT}
               min={MIN_SIDEBAR_THREAD_PREVIEW_COUNT}
@@ -2804,11 +2826,11 @@ function ProjectSortMenu({
             >
               <NumberFieldGroup className="h-7 rounded-md sm:h-6.5">
                 <NumberFieldDecrement
-                  aria-label="Decrease visible thread count"
+                  aria-label={localize("Decrease visible thread count")}
                   className="px-2 sm:px-2 [&_svg]:size-3.5"
                 />
                 <NumberFieldInput
-                  aria-label="Visible thread count"
+                  aria-label={localize("Visible thread count")}
                   className="h-7 w-9 grow-0 px-0 text-xs leading-7 sm:h-6.5 sm:leading-6.5"
                   inputMode="numeric"
                   onKeyDownCapture={(event) => {
@@ -2816,7 +2838,7 @@ function ProjectSortMenu({
                   }}
                 />
                 <NumberFieldIncrement
-                  aria-label="Increase visible thread count"
+                  aria-label={localize("Increase visible thread count")}
                   className="px-2 sm:px-2 [&_svg]:size-3.5"
                 />
               </NumberFieldGroup>
@@ -2907,6 +2929,8 @@ interface SidebarProjectsContentProps {
 const SidebarProjectsContent = memo(function SidebarProjectsContent(
   props: SidebarProjectsContentProps,
 ) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const {
     showArm64IntelBuildWarning,
     arm64IntelBuildWarningDescription,
@@ -2983,7 +3007,7 @@ const SidebarProjectsContent = memo(function SidebarProjectsContent(
                 }
               >
                 <SearchIcon />
-                <span className="flex-1 truncate">Search</span>
+                <span className="flex-1 truncate">{localize("Search")}</span>
                 {commandPaletteShortcutLabel ? (
                   <Kbd className="h-4 min-w-0 rounded-sm px-1.5 text-[10px]">
                     {commandPaletteShortcutLabel}
@@ -2999,7 +3023,7 @@ const SidebarProjectsContent = memo(function SidebarProjectsContent(
         <SidebarGroup className="px-2 pt-2 pb-0">
           <Alert variant="warning" className="rounded-2xl border-warning/40 bg-warning/8">
             <TriangleAlertIcon />
-            <AlertTitle>Intel build on Apple Silicon</AlertTitle>
+            <AlertTitle>{localize("Intel build on Apple Silicon")}</AlertTitle>
             <AlertDescription>{arm64IntelBuildWarningDescription}</AlertDescription>
             {desktopUpdateButtonAction !== "none" ? (
               <AlertAction>
@@ -3010,8 +3034,8 @@ const SidebarProjectsContent = memo(function SidebarProjectsContent(
                   onClick={handleDesktopUpdateButtonClick}
                 >
                   {desktopUpdateButtonAction === "download"
-                    ? "Download ARM build"
-                    : "Install ARM build"}
+                    ? localize("Download ARM build")
+                    : localize("Install ARM build")}
                 </Button>
               </AlertAction>
             ) : null}
@@ -3021,7 +3045,9 @@ const SidebarProjectsContent = memo(function SidebarProjectsContent(
       <LocalSecondaryStatus />
       <SidebarGroup className="px-2 py-2">
         <div className="mb-1 flex items-center justify-between pl-2 pr-1.5">
-          <span className="text-xs font-medium text-sidebar-muted-foreground/80">Projects</span>
+          <span className="text-xs font-medium text-sidebar-muted-foreground/80">
+            {localize("Projects")}
+          </span>
           <div className="flex items-center gap-1">
             <ProjectSortMenu
               projectSortOrder={projectSortOrder}
@@ -3037,7 +3063,7 @@ const SidebarProjectsContent = memo(function SidebarProjectsContent(
                   <Button
                     size="icon-xs"
                     variant="ghost-muted"
-                    aria-label="Add project"
+                    aria-label={localize("Add project")}
                     data-testid="sidebar-add-project-trigger"
                     className="size-6 [--control-icon-color:currentColor] text-icon-muted"
                     onClick={openAddProject}
@@ -3046,7 +3072,7 @@ const SidebarProjectsContent = memo(function SidebarProjectsContent(
               >
                 <FolderPlusIcon className="size-3.5" />
               </TooltipTrigger>
-              <TooltipPopup side="right">Add project</TooltipPopup>
+              <TooltipPopup side="right">{localize("Add project")}</TooltipPopup>
             </Tooltip>
           </div>
         </div>
@@ -3127,7 +3153,9 @@ const SidebarProjectsContent = memo(function SidebarProjectsContent(
         )}
 
         {projectsLength === 0 && (
-          <div className="px-2 pt-4 text-center text-secondary-label text-xs">No projects yet</div>
+          <div className="px-2 pt-4 text-center text-secondary-label text-xs">
+            {localize("No projects yet")}
+          </div>
         )}
       </SidebarGroup>
     </SidebarContent>
