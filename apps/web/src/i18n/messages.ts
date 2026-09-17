@@ -6373,6 +6373,15 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Options shown in the composer": "入力欄に表示するオプション",
   "Remove choice": "選択肢を削除",
   "Remove option": "オプションを削除",
+  "Mark environment variable as sensitive": "環境変数を機密扱いにする",
+  "Stored secret, enter a new value to replace":
+    "保存済みの秘密値です。置き換える新しい値を入力してください",
+  "This instance uses": "このインスタンスは",
+  ", which is not available in this build. Its configuration is preserved.":
+    "を使用します。このビルドでは利用できないため、設定は保持されます。",
+  "Favorites, visibility, and ordering are saved on this device. Custom models are saved on the selected environment.":
+    "お気に入り、表示状態、並び順はこのデバイスに保存されます。カスタムモデルは選択した環境に保存されます。",
+  "Update available — view details": "更新があります — 詳細を表示",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {

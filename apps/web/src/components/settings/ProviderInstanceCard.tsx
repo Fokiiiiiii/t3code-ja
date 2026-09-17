@@ -15,6 +15,8 @@ import {
 import * as Arr from "effect/Array";
 import * as Result from "effect/Result";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 import {
   isProviderDriverKind,
   resolveProviderInstanceEnabled,
@@ -156,15 +158,17 @@ export function deriveProviderModelsForDisplay(input: {
 }
 
 function ProviderAuthEmail(props: { readonly email: string | undefined }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const email = props.email?.trim();
   if (!email) return null;
 
   return (
     <RedactedSensitiveText
       value={email}
-      ariaLabel="Toggle account email visibility"
-      revealTooltip="Click to reveal email"
-      hideTooltip="Click to hide email"
+      ariaLabel={localize("Toggle account email visibility")}
+      revealTooltip={localize("Click to reveal email")}
+      hideTooltip={localize("Click to hide email")}
       className="max-w-full truncate"
     />
   );
@@ -174,6 +178,8 @@ function ProviderEnvironmentSection(props: {
   readonly environment: ReadonlyArray<ProviderInstanceEnvironmentVariable>;
   readonly onChange: (environment: ReadonlyArray<ProviderInstanceEnvironmentVariable>) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [rows, setRows] = useState<ReadonlyArray<EnvironmentDraftRow>>(() =>
     props.environment.map(makeEnvironmentDraftRow),
   );
@@ -253,12 +259,12 @@ function ProviderEnvironmentSection(props: {
 
   return (
     <SettingsRow
-      title="Variables"
-      description="API keys, base URLs, and other per-instance CLI settings."
+      title={localize("Variables")}
+      description={localize("API keys, base URLs, and other per-instance CLI settings.")}
       control={
         <Button type="button" size="sm" variant="outline" onClick={addVariable}>
           <PlusIcon className="size-3" />
-          Add variable
+          {localize("Add variable")}
         </Button>
       }
     >
@@ -273,7 +279,7 @@ function ProviderEnvironmentSection(props: {
                 onCommit={(name) => updateVariable(variable.id, { name: name.trim() })}
                 placeholder="VARIABLE_NAME"
                 spellCheck={false}
-                aria-label={`Environment variable name ${index + 1}`}
+                aria-label={`${localize("Environment variable name")} ${index + 1}`}
               />
               <span className="hidden text-xs text-muted-foreground sm:inline" aria-hidden>
                 =
@@ -286,10 +292,12 @@ function ProviderEnvironmentSection(props: {
                 type={variable.sensitive ? "password" : undefined}
                 autoComplete="off"
                 placeholder={
-                  variable.valueRedacted ? "Stored secret, enter a new value to replace" : "value"
+                  variable.valueRedacted
+                    ? localize("Stored secret, enter a new value to replace")
+                    : localize("value")
                 }
                 spellCheck={false}
-                aria-label={`Environment variable value ${index + 1}`}
+                aria-label={`${localize("Environment variable value")} ${index + 1}`}
               />
               <Tooltip>
                 <TooltipTrigger
@@ -312,7 +320,7 @@ function ProviderEnvironmentSection(props: {
                         });
                       }}
                       aria-pressed={variable.sensitive}
-                      aria-label={`Mark environment variable ${variable.name || index + 1} as sensitive`}
+                      aria-label={`${localize("Mark environment variable as sensitive")} ${variable.name || index + 1}`}
                     >
                       {variable.sensitive ? (
                         <LockIcon className="size-3" />
@@ -323,7 +331,7 @@ function ProviderEnvironmentSection(props: {
                   }
                 />
                 <TooltipPopup side="top">
-                  {variable.sensitive ? "Sensitive, stored separately" : "Plain text"}
+                  {localize(variable.sensitive ? "Sensitive, stored separately" : "Plain text")}
                 </TooltipPopup>
               </Tooltip>
               <Button
@@ -332,14 +340,14 @@ function ProviderEnvironmentSection(props: {
                 variant="ghost-muted"
                 className="[--control-icon-color:currentColor] hover:text-destructive"
                 onClick={() => removeVariable(variable.id)}
-                aria-label={`Remove environment variable ${variable.name || index + 1}`}
+                aria-label={`${localize("Remove environment variable")} ${variable.name || index + 1}`}
               >
                 <XIcon className="size-3" />
               </Button>
             </div>
           ))}
           <p className="text-xs text-muted-foreground">
-            Sensitive values are stored separately and never returned to the app.
+            {localize("Sensitive values are stored separately and never returned to the app.")}
           </p>
         </div>
       ) : null}
@@ -424,6 +432,8 @@ export function ProviderInstanceCard({
   onRunUpdate,
   isUpdating = false,
 }: ProviderInstanceCardProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const enabled = resolveProviderInstanceEnabled(instance);
   // A locally disabled provider reads "Disabled" with a muted dot even if its
   // last server status is stale. Enabled providers use the server status.
@@ -452,7 +462,7 @@ export function ProviderInstanceCard({
       toastManager.add({
         type: "success",
         title: `${providerName} update command copied`,
-        description: "Run it in a terminal when you are ready to update.",
+        description: localize("Run it in a terminal when you are ready to update."),
       });
     },
     onError: (error, { providerName }) => {
@@ -579,7 +589,7 @@ export function ProviderInstanceCard({
     isAuthenticated && authEmail ? (
       <>
         {needsAttention ? statusDotNode : null}
-        <span>Authenticated as</span>
+        <span>{localize("Authenticated as")}</span>
         <ProviderAuthEmail email={authEmail} />
         {authLabel ? <span>· {authLabel}</span> : null}
         {summary.detail ? (
@@ -614,7 +624,7 @@ export function ProviderInstanceCard({
             type="button"
             className="pointer-events-auto absolute inset-0 cursor-pointer rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
             onClick={onSelect}
-            aria-label={`Select ${displayName}`}
+            aria-label={`${localize("Select")} ${displayName}`}
             aria-pressed={selected}
           />
           {titleIconNode}
@@ -641,7 +651,7 @@ export function ProviderInstanceCard({
                           size="icon-micro"
                           variant="ghost-muted"
                           className="pointer-events-auto relative shrink-0"
-                          aria-label={`Copy ${displayName} update command`}
+                          aria-label={`${localize("Copy")} ${displayName} ${localize("update command")}`}
                           onClick={() =>
                             copyToClipboard(updateCommand, { providerName: displayName })
                           }
@@ -650,10 +660,14 @@ export function ProviderInstanceCard({
                         </Button>
                       }
                     />
-                    <TooltipPopup side="top">Copy update command</TooltipPopup>
+                    <TooltipPopup side="top">{localize("Copy update command")}</TooltipPopup>
                   </Tooltip>
                 ) : (
-                  <span role="img" aria-label="Update available" className="inline-flex shrink-0">
+                  <span
+                    role="img"
+                    aria-label={localize("Update available")}
+                    className="inline-flex shrink-0"
+                  >
                     <ArrowUpCircleIcon className="size-3.5 text-muted-foreground" />
                   </span>
                 )
@@ -709,7 +723,7 @@ export function ProviderInstanceCard({
                       ? "text-warning hover:text-warning"
                       : "text-muted-foreground hover:text-foreground",
                   )}
-                  aria-label="Update available — view details"
+                  aria-label={localize("Update available — view details")}
                 >
                   <ArrowUpCircleIcon />
                 </Button>
@@ -723,7 +737,7 @@ export function ProviderInstanceCard({
               <div className="grid min-w-0 gap-3">
                 <div className="grid gap-0.5">
                   <p className="text-[13px] font-semibold leading-tight text-foreground">
-                    Update available
+                    {localize("Update available")}
                   </p>
                   <p
                     className={cn(
@@ -746,13 +760,13 @@ export function ProviderInstanceCard({
                     onClick={onRunUpdate}
                   >
                     {isUpdating ? <Spinner /> : <DownloadIcon />}
-                    {isUpdating ? "Updating" : "Update now"}
+                    {localize(isUpdating ? "Updating" : "Update now")}
                   </Button>
                 ) : null}
                 {onRunUpdate && updateCommand ? (
                   <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                     <span aria-hidden className="h-px flex-1 bg-border" />
-                    or, update manually using
+                    {localize("or, update manually using")}
                     <span aria-hidden className="h-px flex-1 bg-border" />
                   </div>
                 ) : null}
@@ -772,13 +786,13 @@ export function ProviderInstanceCard({
                             onClick={() =>
                               copyToClipboard(updateCommand, { providerName: displayName })
                             }
-                            aria-label="Copy update command"
+                            aria-label={localize("Copy update command")}
                           >
                             <CopyIcon className="size-3" />
                           </Button>
                         }
                       />
-                      <TooltipPopup side="top">Copy command</TooltipPopup>
+                      <TooltipPopup side="top">{localize("Copy command")}</TooltipPopup>
                     </Tooltip>
                   </div>
                 ) : null}
@@ -795,7 +809,7 @@ export function ProviderInstanceCard({
             disabled={readOnly}
             className="[--control-icon-color:currentColor] hover:text-destructive"
             onClick={onDelete}
-            aria-label={`Delete instance ${instanceId}`}
+            aria-label={`${localize("Delete instance")} ${instanceId}`}
           >
             <Trash2Icon />
           </Button>
@@ -808,7 +822,7 @@ export function ProviderInstanceCard({
     <>
       <SettingsSection title={displayName} icon={titleIconNode} headerAction={editorHeaderAction}>
         <SettingsRow
-          title="Display name"
+          title={localize("Display name")}
           status={
             <div className="flex min-w-0 flex-wrap items-center gap-x-1.5">{editorStatusNode}</div>
           }
@@ -834,7 +848,7 @@ export function ProviderInstanceCard({
                 className="min-w-0 flex-1 sm:w-56 sm:flex-none"
                 value={instance.displayName ?? ""}
                 onCommit={updateDisplayName}
-                placeholder={driverOption?.label ?? "Instance label"}
+                placeholder={driverOption?.label ?? localize("Instance label")}
                 spellCheck={false}
               />
             </div>
@@ -842,10 +856,10 @@ export function ProviderInstanceCard({
         />
       </SettingsSection>
 
-      {setup ? <SettingsSection title="Setup">{setup}</SettingsSection> : null}
+      {setup ? <SettingsSection title={localize("Setup")}>{setup}</SettingsSection> : null}
 
       <SettingsSection
-        title="Runtime"
+        title={localize("Runtime")}
         inert={readOnly}
         aria-disabled={readOnly || undefined}
         className={readOnly ? "opacity-50 select-none" : undefined}
@@ -860,12 +874,14 @@ export function ProviderInstanceCard({
           />
         ) : (
           <SettingsRow
-            title="Driver"
+            title={localize("Driver")}
             description={
               <span>
-                This instance uses{" "}
-                <code className="text-foreground">{String(instance.driver)}</code>, which is not
-                available in this build. Its configuration is preserved.
+                {localize("This instance uses")}{" "}
+                <code className="text-foreground">{String(instance.driver)}</code>
+                {localize(
+                  ", which is not available in this build. Its configuration is preserved.",
+                )}
               </span>
             }
           />
@@ -873,7 +889,7 @@ export function ProviderInstanceCard({
       </SettingsSection>
 
       <SettingsSection
-        title="Environment"
+        title={localize("Environment")}
         inert={readOnly}
         aria-disabled={readOnly || undefined}
         className={readOnly ? "opacity-50 select-none" : undefined}
@@ -886,15 +902,16 @@ export function ProviderInstanceCard({
 
       {driverOption !== undefined ? (
         <SettingsSection
-          title="Models"
+          title={localize("Models")}
           inert={readOnly}
           aria-disabled={readOnly || undefined}
           className={readOnly ? "opacity-50 select-none" : undefined}
         >
           <div className="px-3 py-3 sm:px-4">
             <p className="mb-3 text-xs text-muted-foreground">
-              Favorites, visibility, and ordering are saved on this device. Custom models are saved
-              on the selected environment.
+              {localize(
+                "Favorites, visibility, and ordering are saved on this device. Custom models are saved on the selected environment.",
+              )}
             </p>
             <ProviderModelsSection
               instanceId={instanceId}
