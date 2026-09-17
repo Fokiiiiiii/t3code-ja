@@ -6466,6 +6466,30 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Shown in picker": "モデル選択に表示",
   "for example, a second Codex install pointed at a different workspace.":
     "たとえば、別のワークスペースを指定した 2 つ目の Codex インストールです。",
+  "Add project base directory": "プロジェクトのベースディレクトリを追加",
+  "Adjust the contrast of colors and borders across the interface.":
+    "インターフェース全体の色と境界線のコントラストを調整します。",
+  "All selected connected environments must support restart continuation.":
+    "選択した接続済み環境がすべて再起動後の継続に対応している必要があります。",
+  "Background activity profile": "バックグラウンドアクティビティのプロファイル",
+  "Blue & orange": "青とオレンジ",
+  "Check provider versions": "プロバイダーのバージョンを確認",
+  "Collapse composer on scroll": "スクロール時に入力欄を折りたたむ",
+  Collapsed: "折りたたみ",
+  "Confirm thread archiving": "タスクのアーカイブを確認",
+  "Confirm thread deletion": "タスクの削除を確認",
+  "Confirm thread unpinning": "タスクのピン留め解除を確認",
+  "Continue threads after restarts": "再起動後もタスクを継続",
+  Contrast: "コントラスト",
+  "Default diff file state": "既定の差分ファイル状態",
+  "Diff colors": "差分の色",
+  "Panel animation duration": "パネルアニメーションの時間",
+  "Quit shortcut behavior": "終了ショートカットの動作",
+  "Red & green (default)": "赤と緑（既定）",
+  "Show skills in slash menu": "スラッシュメニューにスキルを表示",
+  "Start new worktrees from origin by default": "既定で origin から新しい worktree を開始",
+  "The selected targets use different streaming modes.":
+    "選択した対象で異なるストリーミングモードが使われています。",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
