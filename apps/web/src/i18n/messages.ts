@@ -6658,6 +6658,22 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "The conversation could not be updated": "会話を更新できませんでした",
   "The host withheld part of this diff — a binary file, or a change too large to inline.":
     "ホストが差分の一部を省略しました — バイナリファイル、またはインライン表示には大きすぎる変更です。",
+  "are here; open it on the host to read the rest.":
+    "件が表示されています。残りはホストで開いて確認してください。",
+  "Could not save the comment": "コメントを保存できませんでした",
+  "Could not save the description": "説明を保存できませんでした",
+  "Describe this pull request": "このプルリクエストを説明してください",
+  "Edit comment": "コメントを編集",
+  "Edit description": "説明を編集",
+  "No checks reported.": "チェック結果はありません。",
+  "No comments yet.": "コメントはまだありません。",
+  "Preparing...": "準備中…",
+  "Pull request description": "プルリクエストの説明",
+  "Show newest comments first": "新しいコメントを先に表示",
+  "Show oldest comments first": "古いコメントを先に表示",
+  "This conversation is longer than this page reads in one go. The most recent":
+    "この会話はこのページで一度に表示できる長さを超えています。最新の",
+  "Unable to open check details": "チェックの詳細を開けません",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
