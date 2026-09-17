@@ -1,5 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 import type {
   ProviderInstanceId,
   ServerSettings,
@@ -58,6 +60,8 @@ const MODE_OPTIONS: Record<SourceControlWritingStyleMode, { label: string; descr
   };
 
 export function SourceControlWritingSettingsSection() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const settings = useScopedSettings();
   const updateSettings = useUpdateScopedSettings();
   const navigate = useNavigate();
@@ -125,13 +129,13 @@ export function SourceControlWritingSettingsSection() {
   const writerModelDisabledReason = useScopedModelDisabledReason(settings, instanceEntries);
 
   return (
-    <SettingsSection id="source-control-text-generation" title="Text generation">
+    <SettingsSection id="source-control-text-generation" title={localize("Text generation")}>
       <SettingsRow
         serverScoped
         settingKeys={["sourceControlWritingStyle"]}
         mixed={writingStyleMixed}
         {...searchableSetting("source-control-writing-style")}
-        description={MODE_OPTIONS[style.mode].description}
+        description={localize(MODE_OPTIONS[style.mode].description)}
         resetAction={
           isSourceControlWritingStyleDirty ? (
             <SettingResetButton
@@ -163,18 +167,18 @@ export function SourceControlWritingSettingsSection() {
             <SelectTrigger
               size="sm"
               className="w-full sm:w-56"
-              aria-label="Source control writing style"
+              aria-label={localize("Source control writing style")}
             >
               <SelectValue>
                 {(value: SourceControlWritingStyleMode | null) =>
-                  value === null ? "Mixed" : MODE_OPTIONS[value].label
+                  value === null ? localize("Mixed") : localize(MODE_OPTIONS[value].label)
                 }
               </SelectValue>
             </SelectTrigger>
             <SelectPopup align="end" alignItemWithTrigger={false}>
               {(Object.keys(MODE_OPTIONS) as SourceControlWritingStyleMode[]).map((mode) => (
                 <SelectItem key={mode} hideIndicator value={mode}>
-                  {MODE_OPTIONS[mode].label}
+                  {localize(MODE_OPTIONS[mode].label)}
                 </SelectItem>
               ))}
             </SelectPopup>
@@ -189,8 +193,12 @@ export function SourceControlWritingSettingsSection() {
                   value={allInstructions ?? ""}
                   onChange={(event) => setAllInstructions(event.target.value)}
                   rows={4}
-                  aria-label="Custom source control instructions for all selected environments"
-                  placeholder="Write the instructions each selected environment should use."
+                  aria-label={localize(
+                    "Custom source control instructions for all selected environments",
+                  )}
+                  placeholder={localize(
+                    "Write the instructions each selected environment should use.",
+                  )}
                 />
                 <Button
                   size="sm"
@@ -207,7 +215,7 @@ export function SourceControlWritingSettingsSection() {
                     setEditingAllInstructions(false);
                   }}
                 >
-                  Apply instructions to all
+                  {localize("Apply instructions to all")}
                 </Button>
               </>
             ) : (
@@ -219,7 +227,7 @@ export function SourceControlWritingSettingsSection() {
                   setEditingAllInstructions(true);
                 }}
               >
-                Write custom instructions for all
+                {localize("Write custom instructions for all")}
               </Button>
             )}
           </div>
@@ -236,8 +244,10 @@ export function SourceControlWritingSettingsSection() {
                 }
               }}
               rows={4}
-              placeholder="Keep titles concise. Use short bullet points in descriptions."
-              aria-label="Custom source control writing instructions"
+              placeholder={localize(
+                "Keep titles concise. Use short bullet points in descriptions.",
+              )}
+              aria-label={localize("Custom source control writing instructions")}
             />
           </div>
         ) : null}
@@ -248,7 +258,9 @@ export function SourceControlWritingSettingsSection() {
         settingKeys={["sourceControlWritingStyle"]}
         mixed={templatesMixed}
         {...searchableSetting("follow-change-request-templates")}
-        description="Use the repository's template for change request descriptions when available."
+        description={localize(
+          "Use the repository's template for change request descriptions when available.",
+        )}
         resetAction={
           templatesMixed ||
           style.followChangeRequestTemplates !== defaults.followChangeRequestTemplates ? (
@@ -275,7 +287,7 @@ export function SourceControlWritingSettingsSection() {
                 },
               })
             }
-            aria-label="Follow change request templates"
+            aria-label={localize("Follow change request templates")}
           />
         }
       />
@@ -284,17 +296,19 @@ export function SourceControlWritingSettingsSection() {
         serverScoped
         settingKeys={["sourceControlWriterModelSelection"]}
         {...searchableSetting("source-control-writer-model")}
-        description="Model for source control text and branch or bookmark names. Off uses the environment's text generation model."
+        description={localize(
+          "Model for source control text and branch or bookmark names. Off uses the environment's text generation model.",
+        )}
         control={
           !hasServerTargets ? (
             <span className="text-sm text-muted-foreground">
-              Connect an environment to choose its source control writer model.
+              {localize("Connect an environment to choose its source control writer model.")}
             </span>
           ) : (
             <div className="flex flex-wrap items-center justify-end gap-2">
               {usesDedicatedModel && !canEnableDedicatedModel ? (
                 <span className="text-sm text-muted-foreground">
-                  No text generation providers available.
+                  {localize("No text generation providers available.")}
                 </span>
               ) : null}
               {usesDedicatedModel && canEnableDedicatedModel ? (
@@ -306,8 +320,8 @@ export function SourceControlWritingSettingsSection() {
                   modelOptionsByInstance={modelOptionsByInstance}
                   triggerVariant="outline"
                   triggerClassName={SETTINGS_PICKER_TRIGGER_CLASSNAME}
-                  triggerAriaLabel="Source control writer model"
-                  {...(mixedWriterModel ? { triggerLabel: "Mixed" } : {})}
+                  triggerAriaLabel={localize("Source control writer model")}
+                  {...(mixedWriterModel ? { triggerLabel: localize("Mixed") } : {})}
                   {...(environmentId
                     ? {
                         onOpenProviderSetup: (instanceId: ProviderInstanceId) => {
@@ -324,7 +338,7 @@ export function SourceControlWritingSettingsSection() {
                     if (reason) {
                       toastManager.add({
                         type: "error",
-                        title: "Source control writer model not saved",
+                        title: localize("Source control writer model not saved"),
                         description: reason,
                       });
                       return;
@@ -349,7 +363,7 @@ export function SourceControlWritingSettingsSection() {
                       : null,
                   })
                 }
-                aria-label="Use a separate source control writer model"
+                aria-label={localize("Use a separate source control writer model")}
               />
             </div>
           )

@@ -3,6 +3,8 @@ import { ChevronDownIcon, GitPullRequestIcon } from "lucide-react";
 import * as Duration from "effect/Duration";
 import * as Option from "effect/Option";
 import { useEffect, useState, type ReactNode } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 import type {
   BackgroundActivitySettings,
   SourceControlProviderKind,
@@ -156,12 +158,14 @@ function authPresentation(auth: SourceControlProviderAuth): {
 }
 
 function RedactedAccount(props: { readonly account: string | null }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <RedactedSensitiveText
       value={props.account}
-      ariaLabel="Toggle source control account visibility"
-      revealTooltip="Click to reveal account"
-      hideTooltip="Click to hide account"
+      ariaLabel={localize("Toggle source control account visibility")}
+      revealTooltip={localize("Click to reveal account")}
+      hideTooltip={localize("Click to hide account")}
     />
   );
 }
@@ -205,27 +209,37 @@ function itemSummary({
   item,
   auth,
   authAccount,
+  localize,
 }: {
   readonly item: VcsDiscoveryItem | SourceControlProviderDiscoveryItem;
   readonly auth: SourceControlProviderAuth | null;
   readonly authAccount: string | null;
+  readonly localize: (value: string) => string;
 }) {
   if (isVcsNotReady(item)) {
-    return <span>Support for {item.label} is coming soon.</span>;
+    return (
+      <span>
+        {localize("Support for")} {item.label} {localize("is coming soon.")}
+      </span>
+    );
   }
 
   if (item.status !== "available") {
-    return <span>Not available on this server: {item.installHint}</span>;
+    return (
+      <span>
+        {localize("Not available on this server:")} {item.installHint}
+      </span>
+    );
   }
 
   if (auth) {
     if (auth.status === "authenticated") {
       return (
         <>
-          <span>Authenticated</span>
+          <span>{localize("Authenticated")}</span>
           {authAccount ? (
             <>
-              <span aria-hidden>as</span>
+              <span aria-hidden>{localize("as")}</span>
               <RedactedAccount account={authAccount} />
             </>
           ) : null}
@@ -234,27 +248,34 @@ function itemSummary({
     }
 
     if (!item.executable) {
-      return <span>Available. {item.installHint}</span>;
+      return (
+        <span>
+          {localize("Available.")} {item.installHint}
+        </span>
+      );
     }
 
     if (auth.status === "unauthenticated") {
       return (
         <span>
-          {item.label} is not authenticated on this server. Sign in or configure credentials using
-          the <code className="rounded bg-muted px-1 py-px text-[11px]">{item.executable}</code>{" "}
-          tool on the server host to enable change request features.
+          {item.label}{" "}
+          {localize(
+            "is not authenticated on this server. Sign in or configure credentials using the",
+          )}{" "}
+          <code className="rounded bg-muted px-1 py-px text-[11px]">{item.executable}</code>{" "}
+          {localize("tool on the server host to enable change request features.")}
         </span>
       );
     }
     const authDetail = optionLabel(auth.detail);
     return (
       <span>
-        Could not verify {item.label}. {authDetail ?? item.installHint}
+        {localize("Could not verify")} {item.label}. {authDetail ?? item.installHint}
       </span>
     );
   }
 
-  return <span>Available</span>;
+  return <span>{localize("Available")}</span>;
 }
 
 function DiscoveryItemRow({
@@ -264,6 +285,8 @@ function DiscoveryItemRow({
   readonly item: VcsDiscoveryItem | SourceControlProviderDiscoveryItem;
   readonly children?: ReactNode;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const version = optionLabel(item.version);
   const enabled = isProviderDiscoveryItem(item)
     ? item.status === "available" && item.auth.status === "authenticated"
@@ -299,17 +322,17 @@ function DiscoveryItemRow({
               {version ? <code className="text-xs text-muted-foreground">{version}</code> : null}
               {isVcsNotReady(item) ? (
                 <Badge variant="warning" size="sm">
-                  Coming Soon
+                  {localize("Coming Soon")}
                 </Badge>
               ) : null}
               {authStatus?.badge ? (
                 <Badge variant={authStatus.badge} size="sm">
-                  {authStatus.label}
+                  {localize(authStatus.label)}
                 </Badge>
               ) : null}
             </div>
             <p className="flex min-w-0 flex-wrap items-center gap-x-1 text-[13px] leading-[1.45] text-muted-foreground/80">
-              {itemSummary({ item, auth, authAccount })}
+              {itemSummary({ item, auth, authAccount, localize })}
             </p>
           </div>
           <div className="flex w-full shrink-0 items-center gap-2 sm:w-auto sm:justify-end">
@@ -319,7 +342,7 @@ function DiscoveryItemRow({
                 variant="ghost-muted"
                 onClick={() => setIsExpanded((open) => !open)}
                 aria-expanded={isExpanded}
-                aria-label={`Toggle ${item.label} details`}
+                aria-label={`${localize("Toggle")} ${item.label} ${localize("details")}`}
               >
                 <ChevronDownIcon
                   className={cn("size-3.5 transition-transform", isExpanded && "rotate-180")}
@@ -327,7 +350,11 @@ function DiscoveryItemRow({
               </Button>
             ) : null}
             {!isVcsNotReady(item) ? (
-              <Switch checked={enabled} disabled aria-label={`${item.label} availability`} />
+              <Switch
+                checked={enabled}
+                disabled
+                aria-label={`${item.label} ${localize("availability")}`}
+              />
             ) : null}
           </div>
         </div>
@@ -345,6 +372,8 @@ function DiscoveryItemRow({
 }
 
 function GitFetchIntervalSettings() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const settings = useScopedSettings();
   const updateSettings = useUpdateScopedSettings();
   const resolvedBackgroundActivity = resolveServerBackgroundActivitySettings(settings);
@@ -367,9 +396,9 @@ function GitFetchIntervalSettings() {
           <div className="flex min-w-0 items-center gap-1">
             <span className="text-xs font-medium text-foreground">{setting.title}</span>
             <PolicyTooltip>
-              This interval is configured for Git only. The shared Background activity policy still
-              decides whether Git refreshes may run when the timer fires. Custom intervals appear as
-              Advanced in General settings.
+              {localize(
+                "This interval is configured for Git only. The shared Background activity policy still decides whether Git refreshes may run when the timer fires. Custom intervals appear as Advanced in General settings.",
+              )}
             </PolicyTooltip>
             <span
               className={cn(
@@ -393,7 +422,9 @@ function GitFetchIntervalSettings() {
             </span>
           </div>
           <p className="max-w-2xl text-xs leading-relaxed text-muted-foreground">
-            Refresh remote branches in the background. Set to 0 to avoid automatic Git prompts.
+            {localize(
+              "Refresh remote branches in the background. Set to 0 to avoid automatic Git prompts.",
+            )}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
@@ -412,12 +443,12 @@ function GitFetchIntervalSettings() {
             }
           >
             <NumberFieldGroup>
-              <NumberFieldDecrement aria-label="Decrease fetch interval" />
-              <NumberFieldInput aria-label="Automatic Git fetch interval in seconds" />
-              <NumberFieldIncrement aria-label="Increase fetch interval" />
+              <NumberFieldDecrement aria-label={localize("Decrease fetch interval")} />
+              <NumberFieldInput aria-label={localize("Automatic Git fetch interval in seconds")} />
+              <NumberFieldIncrement aria-label={localize("Increase fetch interval")} />
             </NumberFieldGroup>
           </NumberField>
-          <span className="text-xs text-muted-foreground">seconds</span>
+          <span className="text-xs text-muted-foreground">{localize("seconds")}</span>
         </div>
       </div>
     </SettingsSearchTarget>
@@ -431,8 +462,9 @@ function SourceControlSectionSkeleton({
   readonly title: string;
   readonly headerAction?: ReactNode;
 }) {
+  const { locale } = useI18n();
   return (
-    <SettingsSection title={title} headerAction={headerAction}>
+    <SettingsSection title={translateWebSource(locale, title)} headerAction={headerAction}>
       {SOURCE_CONTROL_SKELETON_ROWS.map((row) => (
         <div key={row} className="first:rounded-t-xl last:rounded-b-xl px-3 py-3 sm:px-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -470,28 +502,37 @@ function EmptySourceControlDiscovery({
   readonly isPending: boolean;
   readonly onScan: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const hasError = error !== null;
 
   return (
-    <SettingsSection id={searchableSetting("source-control").id} title="Server environment">
+    <SettingsSection
+      id={searchableSetting("source-control").id}
+      title={localize("Server environment")}
+    >
       <Empty className="min-h-88">
         <EmptyMedia variant="icon">
           <GitPullRequestIcon />
         </EmptyMedia>
         <EmptyHeader>
           <EmptyTitle>
-            {hasError ? "Could not scan the server environment" : "Nothing detected yet"}
+            {hasError
+              ? localize("Could not scan the server environment")
+              : localize("Nothing detected yet")}
           </EmptyTitle>
           <EmptyDescription>
             {hasError
               ? error
-              : "Install Git on the server, add optional hosting integrations or credentials your workspace needs, then rescan."}
+              : localize(
+                  "Install Git on the server, add optional hosting integrations or credentials your workspace needs, then rescan.",
+                )}
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
           <Button size="sm" variant="outline" onClick={onScan} disabled={isPending}>
             <RefreshIcon className="size-3.5" refreshing={isPending} />
-            Scan
+            {localize("Scan")}
           </Button>
         </EmptyContent>
       </Empty>
@@ -500,6 +541,8 @@ function EmptySourceControlDiscovery({
 }
 
 export function SourceControlSettingsPanel() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { scope, environment, connectedEnvironments } = useSettingsScope();
   // Discovery scans one machine's tools, so it shows the representative
   // environment (named in the section title when several are selected);
@@ -532,13 +575,13 @@ export function SourceControlSettingsPanel() {
             variant="ghost-muted"
             onClick={handleScan}
             disabled={discovery.isPending}
-            aria-label="Rescan server environment"
+            aria-label={localize("Rescan server environment")}
           >
             <RefreshIcon refreshing={discovery.isPending} />
           </Button>
         }
       />
-      <TooltipPopup side="top">Rescan Git and hosting integrations</TooltipPopup>
+      <TooltipPopup side="top">{localize("Rescan Git and hosting integrations")}</TooltipPopup>
     </Tooltip>
   );
 
@@ -546,25 +589,30 @@ export function SourceControlSettingsPanel() {
     <SettingsPageContainer>
       <ProjectDefaultsSettings category="source-control" />
       {environmentId === null ? (
-        <SettingsSection id={searchableSetting("source-control").id} title="Server environment">
+        <SettingsSection
+          id={searchableSetting("source-control").id}
+          title={localize("Server environment")}
+        >
           <p className="px-4 py-3 text-sm text-muted-foreground">
-            Connect an environment to inspect its version control tools and hosting integrations.
+            {localize(
+              "Connect an environment to inspect its version control tools and hosting integrations.",
+            )}
           </p>
         </SettingsSection>
       ) : isInitialScanPending ? (
         <>
           <SourceControlSectionSkeleton
-            title={`Version Control${environmentSuffix}`}
+            title={`${localize("Version Control")}${environmentSuffix}`}
             headerAction={scanButton}
           />
-          <SourceControlSectionSkeleton title="Source Control Providers" />
+          <SourceControlSectionSkeleton title={localize("Source Control Providers")} />
         </>
       ) : hasDiscoveryItems ? (
         <>
           {hasVersionControlSystems ? (
             <SettingsSection
               id={searchableSetting("source-control").id}
-              title={`Version Control${environmentSuffix}`}
+              title={`${localize("Version Control")}${environmentSuffix}`}
               headerAction={scanButton}
             >
               {result.versionControlSystems.map((item) => (
@@ -580,8 +628,8 @@ export function SourceControlSettingsPanel() {
               id={hasVersionControlSystems ? undefined : searchableSetting("source-control").id}
               title={
                 hasVersionControlSystems
-                  ? "Source Control Providers"
-                  : `Source Control Providers${environmentSuffix}`
+                  ? localize("Source Control Providers")
+                  : `${localize("Source Control Providers")}${environmentSuffix}`
               }
               headerAction={hasVersionControlSystems ? null : scanButton}
             >

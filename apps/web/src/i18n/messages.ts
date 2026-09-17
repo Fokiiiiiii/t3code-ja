@@ -6520,6 +6520,23 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Test connection": "接続をテスト",
   "user@host or SSH alias": "user@host または SSH エイリアス",
   "Connecting…": "接続中…",
+  "Connect an environment to inspect its version control tools and hosting integrations.":
+    "バージョン管理ツールとホスティング連携を確認するには環境に接続してください。",
+  "Refresh remote branches in the background. Set to 0 to avoid automatic Git prompts.":
+    "リモートブランチをバックグラウンドで更新します。自動 Git プロンプトを避けるには 0 に設定してください。",
+  "Apply instructions to all": "すべてに指示を適用",
+  "Connect an environment to choose its source control writer model.":
+    "ソース管理の文章作成モデルを選ぶには環境に接続してください。",
+  "Custom source control instructions for all selected environments":
+    "選択したすべての環境に使うカスタムソース管理指示",
+  "Custom source control writing instructions": "カスタムソース管理文章作成指示",
+  "Model for source control text and branch or bookmark names. Off uses the environment's text generation model.":
+    "ソース管理の文章とブランチ名・ブックマーク名に使うモデルです。オフの場合は環境のテキスト生成モデルを使います。",
+  "Source control writer model not saved": "ソース管理の文章作成モデルを保存できませんでした",
+  "Use a separate source control writer model": "専用のソース管理文章作成モデルを使う",
+  "Write custom instructions for all": "すべてにカスタム指示を書く",
+  "Write the instructions each selected environment should use.":
+    "選択した各環境で使う指示を入力してください。",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
