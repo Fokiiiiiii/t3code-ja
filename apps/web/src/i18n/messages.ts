@@ -6560,6 +6560,54 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Repository default:": "リポジトリの既定値：",
   "Where new threads in this project start. A t3.json preference applies when the project has no override.":
     "このプロジェクトで新しいタスクを開始する場所です。プロジェクトに上書きがない場合は t3.json の設定が適用されます。",
+  "Add a computer": "コンピューターを追加",
+  "Agents available on your selected computers.":
+    "選択したコンピューターで利用できるエージェントです。",
+  "Choose one or more computers. We’ll set up agents and projects on each.":
+    "1 台以上のコンピューターを選択してください。それぞれにエージェントとプロジェクトを設定します。",
+  "Choose your projects": "プロジェクトを選択",
+  Computer: "コンピューター",
+  "Computers to set up": "設定するコンピューター",
+  "Connect your computers": "コンピューターを接続",
+  "Could not check projects.": "プロジェクトを確認できませんでした。",
+  "Could not open the setup terminal.": "設定ターミナルを開けませんでした。",
+  "Do not import projects": "プロジェクトをインポートしない",
+  "Import projects and conversations from your selected computers.":
+    "選択したコンピューターからプロジェクトと会話をインポートします。",
+  "in this terminal.": "このターミナルで実行してください。",
+  "Keep T3 Code running. Select the computers you want to set up above.":
+    "T3 Code を起動したままにしてください。上で設定するコンピューターを選択します。",
+  "Loading computers…": "コンピューターを読み込み中…",
+  "Loading sign-in…": "サインインを読み込み中…",
+  "Looking for projects from Claude Code and Codex…":
+    "Claude Code と Codex のプロジェクトを検索中…",
+  "Looking for projects…": "プロジェクトを検索中…",
+  "Need a pairing link?": "ペアリングリンクが必要ですか？",
+  "No computers linked yet.": "リンク済みのコンピューターはまだありません。",
+  "No existing Claude Code or Codex projects found.":
+    "既存の Claude Code または Codex プロジェクトは見つかりませんでした。",
+  "Other folders": "その他のフォルダー",
+  "Pairing failed.": "ペアリングに失敗しました。",
+  "Preparing command...": "コマンドを準備中…",
+  "Review the command, then press Enter to run it.":
+    "コマンドを確認して Enter キーで実行してください。",
+  "Run this on each computer you want to connect.": "接続する各コンピューターで実行してください。",
+  "Run this on the computer with your code.": "コードがあるコンピューターで実行してください。",
+  "Select all": "すべて選択",
+  "Select none": "選択を解除",
+  "Set up T3 Code": "T3 Code を設定",
+  "Start T3 Code first, or run": "先に T3 Code を起動するか、次を実行してください：",
+  "Your agents": "エージェント",
+  "Your projects": "プロジェクト",
+  "could not be imported.": "インポートできませんでした。",
+  "Could not import thread history.": "タスク履歴をインポートできませんでした。",
+  Imported: "インポート済み：",
+  "not be imported.": "インポートできませんでした。",
+  "Some thread history could not be imported.": "一部のタスク履歴をインポートできませんでした。",
+  "thread could": "タスクを",
+  "threads could": "タスクを",
+  "Scan limit reached. Some projects or conversations may be missing.":
+    "スキャン上限に達しました。一部のプロジェクトまたは会話が見つからない可能性があります。",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
