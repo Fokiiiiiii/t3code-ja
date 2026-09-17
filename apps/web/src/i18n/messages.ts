@@ -6259,6 +6259,19 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Your session does not have permission to manage T3 Connect access.":
     "このセッションには T3 Connect アクセスを管理する権限がありません。",
   server: "サーバー",
+  "CPU avg": "CPU 平均",
+  "CPU peak": "CPU ピーク",
+  Enabled: "有効",
+  "External power": "外部電源",
+  Suspended: "一時停止",
+  Unlocked: "ロック解除",
+  "observed CPU time": "観測 CPU 時間",
+  "combined process peaks": "プロセスピーク合計",
+  starts: "起動",
+  exits: "終了",
+  observed: "観測値",
+  "thermal state": "温度状態",
+  retained: "保持",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {

@@ -401,9 +401,10 @@ function HistoryWindowSelector({
   selectedWindowMs: number;
   onSelect: (windowMs: number) => void;
 }) {
+  const { locale } = useI18n();
   return (
     <ToggleGroup
-      aria-label="Resource history period"
+      aria-label={translateWebSource(locale, "Resource history period")}
       variant="segmented"
       value={[String(selectedWindowMs)]}
       onValueChange={(next) => {
@@ -425,6 +426,8 @@ function ResourceHistoryChart({
 }: {
   buckets: ReadonlyArray<ResourceTelemetryHistoryBucket>;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const maxCpu = resourceHistoryCpuScaleMax(buckets);
   const maxIo = Math.max(1, ...buckets.map((bucket) => bucket.ioReadBytes + bucket.ioWriteBytes));
 
@@ -432,13 +435,13 @@ function ResourceHistoryChart({
     <div className="border-t border-border/60 px-4 py-4 sm:px-5">
       <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-muted-foreground/65">
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-1.5 w-3 rounded-full bg-foreground/70" /> CPU average
+          <span className="h-1.5 w-3 rounded-full bg-foreground/70" /> {localize("CPU average")}
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-1.5 w-3 rounded-full bg-sky-500/70" /> I/O reads
+          <span className="h-1.5 w-3 rounded-full bg-sky-500/70" /> {localize("I/O reads")}
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-1.5 w-3 rounded-full bg-amber-500/80" /> I/O writes
+          <span className="h-1.5 w-3 rounded-full bg-amber-500/80" /> {localize("I/O writes")}
         </span>
       </div>
       <div className="flex h-32 items-end gap-1 overflow-hidden rounded-lg border border-border/40 bg-muted/8 px-2 pt-3 pb-2">
@@ -479,10 +482,18 @@ function ResourceHistoryChart({
                 }
               />
               <TooltipPopup side="top" className="space-y-0.5 text-left">
-                <div>CPU avg {bucket.avgCpuPercent.toFixed(1)}%</div>
-                <div>CPU peak {bucket.maxCpuPercent.toFixed(1)}%</div>
-                <div>Read {formatBytes(bucket.ioReadBytes)}</div>
-                <div>Write {formatBytes(bucket.ioWriteBytes)}</div>
+                <div>
+                  {localize("CPU avg")} {bucket.avgCpuPercent.toFixed(1)}%
+                </div>
+                <div>
+                  {localize("CPU peak")} {bucket.maxCpuPercent.toFixed(1)}%
+                </div>
+                <div>
+                  {localize("Read")} {formatBytes(bucket.ioReadBytes)}
+                </div>
+                <div>
+                  {localize("Write")} {formatBytes(bucket.ioWriteBytes)}
+                </div>
               </TooltipPopup>
             </Tooltip>
           );
@@ -501,6 +512,8 @@ function ProcessTreeName({
   collapsed: boolean;
   onToggle: (process: ResourceTelemetryProcess) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const name = formatProcessName(process);
   const hasChildren = process.childPids.length > 0;
   const ChevronIcon = collapsed ? ChevronRightIcon : ChevronDownIcon;
@@ -514,7 +527,7 @@ function ProcessTreeName({
           size="icon-micro"
           variant="ghost-muted"
           onClick={() => onToggle(process)}
-          aria-label={collapsed ? `Expand ${name}` : `Collapse ${name}`}
+          aria-label={`${localize(collapsed ? "Expand" : "Collapse")} ${name}`}
         >
           <ChevronIcon className="size-3.5" />
         </Button>
@@ -589,6 +602,8 @@ function ProcessTable({
   signalingKeys: ReadonlySet<string>;
   onSignal: (process: ResourceTelemetryProcess, signal: ServerProcessSignal) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(() => new Set());
   const visible = useMemo(
     () => visibleResourceTelemetryProcesses(processes, collapsed),
@@ -630,24 +645,24 @@ function ProcessTable({
         </colgroup>
         <thead className="sticky top-0 z-10 border-b border-border/60 bg-card text-[10px] uppercase tracking-[0.08em] text-muted-foreground/65">
           <tr>
-            <th className="px-4 py-2 font-semibold sm:pl-5">Process</th>
-            <th className="px-3 py-2 font-semibold">Category</th>
-            <th className="px-3 py-2 text-right font-semibold">CPU</th>
-            <th className="px-3 py-2 text-right font-semibold">CPU Time</th>
-            <th className="px-3 py-2 text-right font-semibold">Memory</th>
-            <th className="px-3 py-2 text-right font-semibold">Read/s</th>
-            <th className="px-3 py-2 text-right font-semibold">Write/s</th>
-            <th className="px-3 py-2 text-right font-semibold">Read Total</th>
-            <th className="px-3 py-2 text-right font-semibold">Write Total</th>
-            <th className="px-3 py-2 text-right font-semibold">PID</th>
-            <th className="px-2 py-2 text-right font-semibold sm:pr-4">Kill</th>
+            <th className="px-4 py-2 font-semibold sm:pl-5">{localize("Process")}</th>
+            <th className="px-3 py-2 font-semibold">{localize("Category")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("CPU")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("CPU Time")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Memory")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Read/s")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Write/s")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Read Total")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Write Total")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("PID")}</th>
+            <th className="px-2 py-2 text-right font-semibold sm:pr-4">{localize("Kill")}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border/50">
           {visible.length === 0 ? (
             <tr>
               <td colSpan={11} className="px-4 py-5 text-xs text-muted-foreground sm:px-5">
-                Waiting for the native process monitor.
+                {localize("Waiting for the native process monitor.")}
               </td>
             </tr>
           ) : null}
@@ -661,7 +676,7 @@ function ProcessTable({
                 />
               </td>
               <td className="truncate px-3 py-2 text-[11px] text-muted-foreground">
-                {categoryLabel(process.category)}
+                {localize(categoryLabel(process.category))}
               </td>
               <td className="px-3 py-2 text-right font-mono tabular-nums">
                 {process.cpuPercent.toFixed(1)}%
@@ -684,7 +699,9 @@ function ProcessTable({
               <td className="px-3 py-2 text-right font-mono tabular-nums text-muted-foreground">
                 <Tooltip>
                   <TooltipTrigger render={<span>{formatBytes(process.ioWriteBytes)}</span>} />
-                  <TooltipPopup side="top">{ioSemanticsLabel(process.ioSemantics)}</TooltipPopup>
+                  <TooltipPopup side="top">
+                    {localize(ioSemanticsLabel(process.ioSemantics))}
+                  </TooltipPopup>
                 </Tooltip>
               </td>
               <td className="px-3 py-2 text-right font-mono tabular-nums text-muted-foreground">
@@ -710,6 +727,8 @@ function HistoryProcessTable({
 }: {
   processes: ReadonlyArray<ResourceTelemetryProcessSummary>;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <ScrollArea
       chainVerticalScroll
@@ -731,22 +750,22 @@ function HistoryProcessTable({
         </colgroup>
         <thead className="sticky top-0 z-10 border-b border-border/60 bg-card text-[10px] uppercase tracking-[0.08em] text-muted-foreground/65">
           <tr>
-            <th className="px-4 py-2 font-semibold sm:pl-5">Process</th>
-            <th className="px-3 py-2 font-semibold">Category</th>
-            <th className="px-3 py-2 text-right font-semibold">CPU Time</th>
-            <th className="px-3 py-2 text-right font-semibold">Peak CPU</th>
-            <th className="px-3 py-2 text-right font-semibold">Peak Mem</th>
-            <th className="px-3 py-2 text-right font-semibold">Read</th>
-            <th className="px-3 py-2 text-right font-semibold">Write</th>
-            <th className="px-3 py-2 text-right font-semibold">Samples</th>
-            <th className="px-3 py-2 text-right font-semibold sm:pr-5">PID</th>
+            <th className="px-4 py-2 font-semibold sm:pl-5">{localize("Process")}</th>
+            <th className="px-3 py-2 font-semibold">{localize("Category")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("CPU Time")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Peak CPU")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Peak Mem")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Read")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Write")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Samples")}</th>
+            <th className="px-3 py-2 text-right font-semibold sm:pr-5">{localize("PID")}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border/50">
           {processes.length === 0 ? (
             <tr>
               <td colSpan={9} className="px-4 py-5 text-xs text-muted-foreground sm:px-5">
-                No retained process samples in this window.
+                {localize("No retained process samples in this window.")}
               </td>
             </tr>
           ) : null}
@@ -770,7 +789,7 @@ function HistoryProcessTable({
                 </Tooltip>
               </td>
               <td className="truncate px-3 py-2 text-[11px] text-muted-foreground">
-                {categoryLabel(process.category)}
+                {localize(categoryLabel(process.category))}
               </td>
               <td className="px-3 py-2 text-right font-mono tabular-nums">
                 {formatCpuTime(process.cpuTimeMs)}
@@ -802,6 +821,8 @@ function HistoryProcessTable({
 }
 
 function AttributionTable({ entries }: { entries: ReadonlyArray<ResourceAttributionEntry> }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <div className="overflow-x-auto border-t border-border/60">
       <table className="w-full min-w-[720px] table-fixed text-left text-xs">
@@ -815,19 +836,19 @@ function AttributionTable({ entries }: { entries: ReadonlyArray<ResourceAttribut
         </colgroup>
         <thead className="border-b border-border/60 text-[10px] uppercase tracking-[0.08em] text-muted-foreground/65">
           <tr>
-            <th className="px-4 py-2 font-semibold sm:pl-5">Component</th>
-            <th className="px-3 py-2 font-semibold">Operation</th>
-            <th className="px-3 py-2 text-right font-semibold">Logical Read</th>
-            <th className="px-3 py-2 text-right font-semibold">Logical Write</th>
-            <th className="px-3 py-2 text-right font-semibold">Count</th>
-            <th className="px-3 py-2 text-right font-semibold sm:pr-5">Time</th>
+            <th className="px-4 py-2 font-semibold sm:pl-5">{localize("Component")}</th>
+            <th className="px-3 py-2 font-semibold">{localize("Operation")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Logical Read")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Logical Write")}</th>
+            <th className="px-3 py-2 text-right font-semibold">{localize("Count")}</th>
+            <th className="px-3 py-2 text-right font-semibold sm:pr-5">{localize("Time")}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border/50">
           {entries.length === 0 ? (
             <tr>
               <td colSpan={6} className="px-4 py-5 text-xs text-muted-foreground sm:px-5">
-                No instrumented application I/O has been recorded yet.
+                {localize("No instrumented application I/O has been recorded yet.")}
               </td>
             </tr>
           ) : null}
@@ -860,6 +881,8 @@ export function ResourceTelemetryDiagnostics({
 }: {
   environmentId: EnvironmentId | null;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [windowMs, setWindowMs] = useState(15 * 60_000);
   const selectedWindow =
     HISTORY_WINDOWS.find((option) => option.windowMs === windowMs) ?? HISTORY_WINDOWS[1];
@@ -908,15 +931,18 @@ export function ResourceTelemetryDiagnostics({
         let confirmed = false;
         try {
           confirmed = await ensureLocalApi().dialogs.confirm(
-            `Send SIGKILL to process ${process.identity.pid}? This cannot be handled by the process.`,
+            `${localize("Send SIGKILL to process {pid}? This cannot be handled by the process.").replace("{pid}", String(process.identity.pid))}`,
             { variant: "destructive" },
           );
         } catch (error) {
           clearSignaling();
           toastManager.add({
             type: "error",
-            title: "Could not confirm signal",
-            description: error instanceof Error ? error.message : `Failed to send ${signal}.`,
+            title: localize("Could not confirm signal"),
+            description:
+              error instanceof Error
+                ? error.message
+                : `${localize("Failed to send {signal}.").replace("{signal}", signal)}`,
           });
           return;
         }
@@ -945,25 +971,29 @@ export function ResourceTelemetryDiagnostics({
           if (result.value.signaled) return;
           toastManager.add({
             type: "error",
-            title: `Could not send ${signal}`,
-            description: Option.getOrElse(
-              result.value.message,
-              () => `Failed to send ${signal} to process ${process.identity.pid}.`,
+            title: localize("Could not send {signal}").replace("{signal}", signal),
+            description: Option.getOrElse(result.value.message, () =>
+              localize("Failed to send {signal} to process {pid}.")
+                .replace("{signal}", signal)
+                .replace("{pid}", String(process.identity.pid)),
             ),
           });
         })
         .catch((error: unknown) => {
           toastManager.add({
             type: "error",
-            title: `Could not send ${signal}`,
-            description: error instanceof Error ? error.message : `Failed to send ${signal}.`,
+            title: localize("Could not send {signal}").replace("{signal}", signal),
+            description:
+              error instanceof Error
+                ? error.message
+                : localize("Failed to send {signal}.").replace("{signal}", signal),
           });
         })
         .finally(() => {
           clearSignaling();
         });
     },
-    [signalServerProcess],
+    [localize, signalServerProcess],
   );
 
   const retryCollector = useCallback(() => {
@@ -972,15 +1002,15 @@ export function ResourceTelemetryDiagnostics({
       .catch((error: unknown) => {
         toastManager.add({
           type: "error",
-          title: "Could not restart resource monitor",
+          title: localize("Could not restart resource monitor"),
           description:
-            error instanceof Error ? error.message : "The resource monitor retry failed.",
+            error instanceof Error ? error.message : localize("The resource monitor retry failed."),
         });
       })
       .finally(() => {
         setIsRetrying(false);
       });
-  }, [retryTelemetry]);
+  }, [localize, retryTelemetry]);
 
   const speedLimit = snapshot ? Option.getOrNull(snapshot.speedLimitPercent) : null;
   const collectorNeedsRetry = shouldShowResourceMonitorRetry({
@@ -998,12 +1028,15 @@ export function ResourceTelemetryDiagnostics({
   return (
     <>
       <SettingsSection
-        title="Resource monitor"
+        title={localize("Resource monitor")}
         icon={<ActivityIcon className="size-4 text-muted-foreground" />}
         headerAction={
           <div className="flex items-center gap-2">
             {snapshot ? (
-              <SourceStatusBadge label="Native" status={snapshot.health.native.status} />
+              <SourceStatusBadge
+                label={localize("Native")}
+                status={snapshot.health.native.status}
+              />
             ) : null}
             <LastSampleLabel sampledAt={snapshot?.readAt ?? null} />
             <Tooltip>
@@ -1014,13 +1047,13 @@ export function ResourceTelemetryDiagnostics({
                     variant="ghost"
                     disabled={telemetry.isPending}
                     onClick={telemetry.refresh}
-                    aria-label="Refresh resource telemetry"
+                    aria-label={localize("Refresh resource telemetry")}
                   >
                     <RefreshIcon className="size-3" refreshing={telemetry.isPending} />
                   </Button>
                 }
               />
-              <TooltipPopup side="top">Refresh telemetry snapshot</TooltipPopup>
+              <TooltipPopup side="top">{localize("Refresh telemetry snapshot")}</TooltipPopup>
             </Tooltip>
           </div>
         }
@@ -1029,16 +1062,18 @@ export function ResourceTelemetryDiagnostics({
           <div className="flex flex-col gap-3 border-b border-border/60 bg-linear-to-r from-muted/45 via-muted/20 to-transparent px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
             <div>
               <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/70">
-                T3 system footprint
+                {localize("T3 system footprint")}
               </div>
               <p className="mt-1 max-w-xl text-xs leading-relaxed text-muted-foreground">
-                Live native counters for the server, providers, terminals, desktop processes, and
-                the monitor itself.
+                {localize(
+                  "Live native counters for the server, providers, terminals, desktop processes, and the monitor itself.",
+                )}
               </p>
             </div>
             <div className="flex items-center gap-2 text-[10px] text-muted-foreground/65">
               <span className="size-1.5 rounded-full bg-emerald-500" />
-              Sampling every {snapshot ? formatSampleInterval(snapshot.sampleIntervalMs) : "..."}
+              {localize("Sampling every")}{" "}
+              {snapshot ? formatSampleInterval(snapshot.sampleIntervalMs) : "..."}
             </div>
           </div>
           <div className="grid grid-cols-2 divide-x divide-y divide-border/55 md:grid-cols-3">
@@ -1046,14 +1081,20 @@ export function ResourceTelemetryDiagnostics({
               icon={<CpuIcon className="size-3.5" />}
               label="Current CPU"
               value={allT3 ? `${allT3.currentCpuPercent.toFixed(1)}%` : "..."}
-              detail={allT3 ? `${formatCpuTime(allT3.cpuTimeMs)} observed CPU time` : undefined}
+              detail={
+                allT3
+                  ? `${formatCpuTime(allT3.cpuTimeMs)} ${localize("observed CPU time")}`
+                  : undefined
+              }
             />
             <IconStat
               icon={<MemoryStickIcon className="size-3.5" />}
               label="Resident memory"
               value={allT3 ? formatBytes(allT3.currentRssBytes) : "..."}
               detail={
-                allT3 ? `${formatBytes(allT3.peakRssBytes)} combined process peaks` : undefined
+                allT3
+                  ? `${formatBytes(allT3.peakRssBytes)} ${localize("combined process peaks")}`
+                  : undefined
               }
             />
             <IconStat
@@ -1061,20 +1102,26 @@ export function ResourceTelemetryDiagnostics({
               label="Process count"
               value={allT3 ? String(allT3.processCount) : "..."}
               detail={
-                allT3 ? `${allT3.processStarts} starts · ${allT3.processExits} exits` : undefined
+                allT3
+                  ? `${allT3.processStarts} ${localize("starts")} · ${allT3.processExits} ${localize("exits")}`
+                  : undefined
               }
             />
             <IconStat
               icon={<HardDriveIcon className="size-3.5" />}
               label="Read throughput"
               value={allT3 ? formatRate(allT3.ioReadBytesPerSecond) : "..."}
-              detail={allT3 ? `${formatBytes(allT3.ioReadBytes)} observed` : undefined}
+              detail={
+                allT3 ? `${formatBytes(allT3.ioReadBytes)} ${localize("observed")}` : undefined
+              }
             />
             <IconStat
               icon={<DatabaseIcon className="size-3.5" />}
               label="Write throughput"
               value={allT3 ? formatRate(allT3.ioWriteBytesPerSecond) : "..."}
-              detail={allT3 ? `${formatBytes(allT3.ioWriteBytes)} observed` : undefined}
+              detail={
+                allT3 ? `${formatBytes(allT3.ioWriteBytes)} ${localize("observed")}` : undefined
+              }
               tone={
                 allT3 && allT3.ioWriteBytesPerSecond >= 10 * 1_024 * 1_024
                   ? "danger"
@@ -1087,9 +1134,17 @@ export function ResourceTelemetryDiagnostics({
               icon={<GaugeIcon className="size-3.5" />}
               label="CPU speed limit"
               value={
-                snapshot ? (speedLimit === null ? "Unknown" : `${speedLimit.toFixed(0)}%`) : "..."
+                snapshot
+                  ? speedLimit === null
+                    ? localize("Unknown")
+                    : `${speedLimit.toFixed(0)}%`
+                  : "..."
               }
-              detail={snapshot ? `${snapshot.power.thermalState} thermal state` : undefined}
+              detail={
+                snapshot
+                  ? `${localize(snapshot.power.thermalState)} ${localize("thermal state")}`
+                  : undefined
+              }
               tone={speedLimit !== null && speedLimit < 80 ? "warning" : "default"}
             />
           </div>
@@ -1122,13 +1177,13 @@ export function ResourceTelemetryDiagnostics({
       </SettingsSection>
 
       <SettingsSection
-        title="Host & collection"
+        title={localize("Host & collection")}
         icon={<GaugeIcon className="size-4 text-muted-foreground" />}
         headerAction={
           collectorNeedsRetry ? (
             <Button size="xs" variant="outline" disabled={isRetrying} onClick={retryCollector}>
               <RefreshIcon className="size-3" refreshing={isRetrying} />
-              Retry monitor
+              {localize("Retry monitor")}
             </Button>
           ) : null
         }
@@ -1139,29 +1194,29 @@ export function ResourceTelemetryDiagnostics({
               <span className="flex size-6 items-center justify-center rounded-md bg-muted/60">
                 <BatteryIcon className="size-3.5" />
               </span>
-              Host state
+              {localize("Host state")}
             </div>
             {hasHostPowerSignal && snapshot ? (
               <>
                 <DetailRow
                   label="Power source"
                   value={booleanStateLabel(snapshot.power.onBattery, {
-                    true: "Battery",
-                    false: "External power",
+                    true: localize("Battery"),
+                    false: localize("External power"),
                   })}
                 />
                 <DetailRow
                   label="Low power mode"
                   value={booleanStateLabel(snapshot.power.lowPowerMode, {
-                    true: "Enabled",
-                    false: "Disabled",
+                    true: localize("Enabled"),
+                    false: localize("Disabled"),
                   })}
                 />
                 <DetailRow
                   label="Idle"
                   value={`${booleanStateLabel(snapshot.power.idle, {
-                    true: "Idle",
-                    false: "Active",
+                    true: localize("Idle"),
+                    false: localize("Active"),
                   })}${
                     snapshot.power.idleSeconds === null
                       ? ""
@@ -1172,10 +1227,10 @@ export function ResourceTelemetryDiagnostics({
                   label="Session"
                   value={
                     snapshot.power.suspended
-                      ? "Suspended"
+                      ? localize("Suspended")
                       : booleanStateLabel(snapshot.power.locked, {
-                          true: "Locked",
-                          false: "Unlocked",
+                          true: localize("Locked"),
+                          false: localize("Unlocked"),
                         })
                   }
                 />
@@ -1193,11 +1248,12 @@ export function ResourceTelemetryDiagnostics({
             ) : (
               <div className="rounded-xl border border-dashed border-border/70 bg-muted/20 px-4 py-5">
                 <div className="text-[13px] font-medium text-foreground">
-                  Desktop host signals not connected
+                  {localize("Desktop host signals not connected")}
                 </div>
                 <p className="mt-1.5 max-w-sm text-[11px] leading-relaxed text-muted-foreground/70">
-                  Power, idle, lock, and thermal state are supplied by the desktop host. Process
-                  telemetry remains fully active in this browser session.
+                  {localize(
+                    "Power, idle, lock, and thermal state are supplied by the desktop host. Process telemetry remains fully active in this browser session.",
+                  )}
                 </p>
               </div>
             )}
@@ -1207,7 +1263,7 @@ export function ResourceTelemetryDiagnostics({
               <span className="flex size-6 items-center justify-center rounded-md bg-muted/60">
                 <GaugeIcon className="size-3.5" />
               </span>
-              Collection health
+              {localize("Collection health")}
             </div>
             {snapshot ? (
               <>
@@ -1219,7 +1275,7 @@ export function ResourceTelemetryDiagnostics({
                 />
                 <DetailRow
                   label="Process scan"
-                  value={`${snapshot.health.retainedProcessCount}/${snapshot.health.scannedProcessCount} retained`}
+                  value={`${snapshot.health.retainedProcessCount}/${snapshot.health.scannedProcessCount} ${localize("retained")}`}
                 />
                 <DetailRow
                   label="Inaccessible"
@@ -1233,7 +1289,7 @@ export function ResourceTelemetryDiagnostics({
                 <DetailRow
                   label="Sidecar"
                   value={Option.match(snapshot.health.sidecarVersion, {
-                    onNone: () => "Unavailable",
+                    onNone: () => localize("Unavailable"),
                     onSome: (version) =>
                       `${version}${Option.match(snapshot.health.sidecarPid, {
                         onNone: () => "",
@@ -1245,7 +1301,7 @@ export function ResourceTelemetryDiagnostics({
               </>
             ) : (
               <div className="py-4 text-xs text-muted-foreground">
-                Waiting for collector health.
+                {localize("Waiting for collector health.")}
               </div>
             )}
           </div>
@@ -1253,7 +1309,7 @@ export function ResourceTelemetryDiagnostics({
       </SettingsSection>
 
       <SettingsSection
-        title="Resource timeline"
+        title={localize("Resource timeline")}
         icon={<HardDriveIcon className="size-4 text-muted-foreground" />}
         headerAction={
           <div className="flex items-center gap-2">
@@ -1263,7 +1319,7 @@ export function ResourceTelemetryDiagnostics({
               variant="ghost"
               disabled={history.isPending}
               onClick={history.refresh}
-              aria-label="Refresh resource history"
+              aria-label={localize("Refresh resource history")}
             >
               <RefreshIcon className="size-3" refreshing={history.isPending} />
             </Button>
@@ -1283,12 +1339,12 @@ export function ResourceTelemetryDiagnostics({
       </SettingsSection>
 
       <SettingsSection
-        title="Live process tree"
+        title={localize("Live process tree")}
         icon={<CpuIcon className="size-4 text-muted-foreground" />}
         headerAction={
           snapshot ? (
             <span className="text-[10px] text-muted-foreground/55">
-              Identity: <span className="font-mono">PID + start time</span>
+              {localize("Identity")}: <span className="font-mono">PID + start time</span>
             </span>
           ) : null
         }
@@ -1303,17 +1359,19 @@ export function ResourceTelemetryDiagnostics({
       </SettingsSection>
 
       <SettingsSection
-        title="Instrumented application I/O"
+        title={localize("Instrumented application I/O")}
         icon={<DatabaseIcon className="size-4 text-muted-foreground" />}
         headerAction={
-          <span className="text-[10px] text-muted-foreground/55">Logical bytes by operation</span>
+          <span className="text-[10px] text-muted-foreground/55">
+            {localize("Logical bytes by operation")}
+          </span>
         }
       >
         <div className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_1px_1px_rgb(0_0_0/0.03)]">
           <div className="bg-muted/15 px-4 py-3 text-[11px] leading-relaxed text-muted-foreground sm:px-5">
-            Native counters identify which process is reading or writing. These application-level
-            counters identify known T3 operations so process spikes can be correlated with specific
-            persistence and logging paths.
+            {localize(
+              "Native counters identify which process is reading or writing. These application-level counters identify known T3 operations so process spikes can be correlated with specific persistence and logging paths.",
+            )}
           </div>
           <AttributionTable entries={snapshot?.attribution.entries ?? []} />
         </div>
