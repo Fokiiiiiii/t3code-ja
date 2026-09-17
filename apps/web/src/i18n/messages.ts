@@ -6456,6 +6456,14 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
     "Antigravity を管理するにはこの環境を更新してください。",
   "Uses the custom binary path below. Installation keeps that path.":
     "以下のカスタムバイナリパスを使用します。インストール後もこのパスを保持します。",
+  "Add custom model": "カスタムモデルを追加",
+  "Custom models are always shown in the picker": "カスタムモデルは常にモデル選択に表示されます",
+  "Edit name and options": "名前とオプションを編集",
+  "Filter models": "モデルを絞り込む",
+  "Hidden from picker": "モデル選択に非表示",
+  "in the model picker": "モデル選択に",
+  "model-slug": "model-slug",
+  "Shown in picker": "モデル選択に表示",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {

@@ -2,6 +2,8 @@
 
 import { ArrowDownIcon, ArrowUpIcon, PencilIcon, PlusIcon, StarIcon, XIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 import {
   ProviderDriverKind,
   type ProviderInstanceId,
@@ -171,6 +173,8 @@ export function ProviderModelsSection({
   onFavoriteModelsChange,
   onModelOrderChange,
 }: ProviderModelsSectionProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [input, setInput] = useState("");
   const [isAdding, setIsAdding] = useState(false);
   const [filter, setFilter] = useState("");
@@ -226,19 +230,24 @@ export function ProviderModelsSection({
     if (driverKind === "antigravity") return;
     const normalized = normalizeCustomModelSlug(input);
     if (!normalized) {
-      setError("Enter a model slug.");
+      setError(localize("Enter a model slug."));
       return;
     }
     if (models.some((model) => !model.isCustom && model.slug === normalized)) {
-      setError("That model is already built in.");
+      setError(localize("That model is already built in."));
       return;
     }
     if (normalized.length > MAX_CUSTOM_MODEL_LENGTH) {
-      setError(`Model slugs must be ${MAX_CUSTOM_MODEL_LENGTH} characters or less.`);
+      setError(
+        localize("Model slugs must be {count} characters or less.").replace(
+          "{count}",
+          String(MAX_CUSTOM_MODEL_LENGTH),
+        ),
+      );
       return;
     }
     if (customModels.some((entry) => entry.slug === normalized)) {
-      setError("That custom model is already saved.");
+      setError(localize("That custom model is already saved."));
       return;
     }
 
@@ -320,16 +329,16 @@ export function ProviderModelsSection({
                 : "text-muted-foreground/40 hover:text-muted-foreground",
             )}
             onClick={() => handleToggleFavorite(model.slug)}
-            aria-label={`${isFavorite ? "Remove" : "Add"} ${model.name} ${
-              isFavorite ? "from" : "to"
-            } favorites`}
+            aria-label={`${localize(isFavorite ? "Remove" : "Add")} ${model.name} ${localize(
+              isFavorite ? "from" : "to",
+            )} ${localize("favorites")}`}
           />
         }
       >
         <StarIcon className={cn("size-3", isFavorite && "fill-current")} />
       </TooltipTrigger>
       <TooltipPopup side="top">
-        {isFavorite ? "Remove from favorites" : "Add to favorites"}
+        {localize(isFavorite ? "Remove from favorites" : "Add to favorites")}
       </TooltipPopup>
     </Tooltip>
   );
@@ -355,13 +364,13 @@ export function ProviderModelsSection({
                   variant="ghost-muted"
                   disabled={!options.canMoveUp}
                   onClick={() => handleMove(model.slug, -1)}
-                  aria-label={`Move ${model.name} up`}
+                  aria-label={`${localize("Move")} ${model.name} ${localize("up")}`}
                 />
               }
             >
               <ArrowUpIcon className="size-3" />
             </TooltipTrigger>
-            <TooltipPopup side="top">Move up</TooltipPopup>
+            <TooltipPopup side="top">{localize("Move up")}</TooltipPopup>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger
@@ -371,13 +380,13 @@ export function ProviderModelsSection({
                   variant="ghost-muted"
                   disabled={!options.canMoveDown}
                   onClick={() => handleMove(model.slug, 1)}
-                  aria-label={`Move ${model.name} down`}
+                  aria-label={`${localize("Move")} ${model.name} ${localize("down")}`}
                 />
               }
             >
               <ArrowDownIcon className="size-3" />
             </TooltipTrigger>
-            <TooltipPopup side="top">Move down</TooltipPopup>
+            <TooltipPopup side="top">{localize("Move down")}</TooltipPopup>
           </Tooltip>
         </>
       ) : null}
@@ -389,7 +398,7 @@ export function ProviderModelsSection({
                 <Button
                   size="icon-micro"
                   variant="ghost-muted"
-                  aria-label={`Edit ${model.slug}`}
+                  aria-label={`${localize("Edit")} ${model.slug}`}
                   onClick={() =>
                     setEditingSlug((current) => (current === model.slug ? null : model.slug))
                   }
@@ -398,7 +407,7 @@ export function ProviderModelsSection({
             >
               <PencilIcon className="size-3" />
             </TooltipTrigger>
-            <TooltipPopup side="top">Edit name and options</TooltipPopup>
+            <TooltipPopup side="top">{localize("Edit name and options")}</TooltipPopup>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger
@@ -406,14 +415,14 @@ export function ProviderModelsSection({
                 <Button
                   size="icon-micro"
                   variant="ghost-muted"
-                  aria-label={`Remove ${model.slug}`}
+                  aria-label={`${localize("Remove")} ${model.slug}`}
                   onClick={() => handleRemove(model.slug)}
                 />
               }
             >
               <XIcon className="size-3" />
             </TooltipTrigger>
-            <TooltipPopup side="top">Remove custom model</TooltipPopup>
+            <TooltipPopup side="top">{localize("Remove custom model")}</TooltipPopup>
           </Tooltip>
         </>
       ) : null}
@@ -422,10 +431,10 @@ export function ProviderModelsSection({
 
   const pickerTooltip = (model: DisplayModel, isHidden: boolean) =>
     model.isCustom
-      ? "Custom models are always shown in the picker"
+      ? localize("Custom models are always shown in the picker")
       : isHidden
-        ? "Hidden from picker"
-        : "Shown in picker";
+        ? localize("Hidden from picker")
+        : localize("Shown in picker");
 
   // The trigger is a wrapper span: a disabled switch gets no pointer events,
   // so it could not open the tooltip itself.
@@ -437,7 +446,7 @@ export function ProviderModelsSection({
           checked={!isHidden}
           disabled={model.isCustom}
           onCheckedChange={(checked) => setHidden(model.slug, !checked)}
-          aria-label={`Show ${model.name} in the model picker`}
+          aria-label={`${localize("Show")} ${model.name} ${localize("in the model picker")}`}
         />
       </TooltipTrigger>
       <TooltipPopup side="top">{pickerTooltip(model, isHidden)}</TooltipPopup>
@@ -490,7 +499,9 @@ export function ProviderModelsSection({
         */}
         <span className="text-[11px] text-muted-foreground/70">
           {capLabels.length > 0 ? (
-            <span className="hidden sm:inline">{capLabels.join(" · ")}</span>
+            <span className="hidden sm:inline">
+              {capLabels.map((label) => localize(label)).join(" · ")}
+            </span>
           ) : null}
         </span>
         {rowActions(model, { isHidden, canMoveUp, canMoveDown })}
@@ -501,7 +512,7 @@ export function ProviderModelsSection({
 
   const groupLabel = (label: string, isFirst: boolean) => (
     <div className={cn("px-2 pb-1.5 text-[11px] text-muted-foreground", isFirst ? "pt-1" : "pt-5")}>
-      {label}
+      {localize(label)}
     </div>
   );
 
@@ -512,11 +523,11 @@ export function ProviderModelsSection({
           <Input
             value={filter}
             onChange={(event) => setFilter(event.target.value)}
-            placeholder="Filter models"
+            placeholder={localize("Filter models")}
             size="sm"
             className="w-56 max-w-full"
             spellCheck={false}
-            aria-label="Filter models"
+            aria-label={localize("Filter models")}
           />
         ) : null}
         <div className="flex items-center gap-2">
@@ -529,15 +540,15 @@ export function ProviderModelsSection({
                 onHiddenModelsChange(nextHiddenModelsForBulkToggle(models, hiddenModels))
               }
             >
-              {allBuiltInModelsHidden ? "Enable all" : "Disable all"}
+              {localize(allBuiltInModelsHidden ? "Enable all" : "Disable all")}
             </Button>
           ) : null}
           <span className="text-xs text-muted-foreground">
-            {models.length} model{models.length === 1 ? "" : "s"}
+            {models.length} {localize(models.length === 1 ? "model" : "models")}
             {favoriteCount > 0
-              ? ` · ${favoriteCount} favorite${favoriteCount === 1 ? "" : "s"}`
+              ? ` · ${favoriteCount} ${localize(favoriteCount === 1 ? "favorite" : "favorites")}`
               : ""}
-            {hiddenCount > 0 ? ` · ${hiddenCount} hidden` : ""}
+            {hiddenCount > 0 ? ` · ${hiddenCount} ${localize("hidden")}` : ""}
           </span>
         </div>
         {driverKind !== "antigravity" && !isAdding ? (
@@ -549,7 +560,7 @@ export function ProviderModelsSection({
             onClick={() => setIsAdding(true)}
           >
             <PlusIcon className="size-3" />
-            Add custom model
+            {localize("Add custom model")}
           </Button>
         ) : null}
       </div>
@@ -559,7 +570,9 @@ export function ProviderModelsSection({
       >
         {visibleModels.length === 0 ? (
           <p className="px-2 py-2 text-xs text-muted-foreground">
-            {isFiltering ? "No models match." : "No models reported for this provider yet."}
+            {localize(
+              isFiltering ? "No models match." : "No models reported for this provider yet.",
+            )}
           </p>
         ) : null}
         {visibleModels.map((model, index) => {
@@ -573,13 +586,13 @@ export function ProviderModelsSection({
           return (
             <div key={`${instanceId}:${model.slug}:group`}>
               {startsGroup && favoriteCount > 0 && group === "favorite"
-                ? groupLabel("Favorites", index === 0)
+                ? groupLabel(localize("Favorites"), index === 0)
                 : null}
               {startsGroup && favoriteCount > 0 && group === "visible"
-                ? groupLabel("All", index === 0)
+                ? groupLabel(localize("All"), index === 0)
                 : null}
               {startsGroup && group === "hidden"
-                ? groupLabel("Hidden from picker", index === 0)
+                ? groupLabel(localize("Hidden from picker"), index === 0)
                 : null}
               {renderRow(model)}
               {editingEntry ? (
@@ -619,15 +632,17 @@ export function ProviderModelsSection({
               event.preventDefault();
               handleAdd();
             }}
-            placeholder={driverKind ? CUSTOM_MODEL_PLACEHOLDER_BY_KIND[driverKind] : "model-slug"}
+            placeholder={
+              driverKind ? CUSTOM_MODEL_PLACEHOLDER_BY_KIND[driverKind] : localize("model-slug")
+            }
             spellCheck={false}
           />
           <div className="flex shrink-0 gap-2">
             <Button size="sm" variant="outline" onClick={handleAdd}>
-              Add
+              {localize("Add")}
             </Button>
             <Button size="sm" variant="ghost" onClick={cancelAdd}>
-              Cancel
+              {localize("Cancel")}
             </Button>
           </div>
         </div>
