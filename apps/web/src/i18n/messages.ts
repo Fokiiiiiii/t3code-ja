@@ -6537,6 +6537,29 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Write custom instructions for all": "すべてにカスタム指示を書く",
   "Write the instructions each selected environment should use.":
     "選択した各環境で使う指示を入力してください。",
+  "Agent browser access": "エージェントのブラウザーアクセス",
+  "Allow agents in this project to use the shared browser. Applies when the agent session next starts.":
+    "このプロジェクトのエージェントが共有ブラウザーを使えるようにします。次のエージェントセッション開始時に適用されます。",
+  "Allow agents to use the shared browser. Projects can override it.":
+    "エージェントが共有ブラウザーを使えるようにします。プロジェクトごとに上書きできます。",
+  "Automatically pull": "自動でプル",
+  "Default automatic pull": "自動プルの既定値",
+  "Default pull request merge method": "プルリクエストの既定マージ方法",
+  "Default workspace": "既定のワークスペース",
+  "Keeps the default branch current when the checkout has no local changes or commits. Projects can override it.":
+    "チェックアウトにローカルの変更やコミットがない場合、既定ブランチを最新に保ちます。プロジェクトごとに上書きできます。",
+  "Keeps this project's default branch current when the checkout has no local changes or commits.":
+    "チェックアウトにローカルの変更やコミットがない場合、このプロジェクトの既定ブランチを最新に保ちます。",
+  "Last selected": "最後に選択したもの",
+  "Model for new threads in this project.": "このプロジェクトで新しいタスクに使うモデルです。",
+  "Permissions for new threads in this project.": "このプロジェクトで新しいタスクに使う権限です。",
+  "Pull requests in this project start with this method.":
+    "このプロジェクトのプルリクエストはこの方法で開始します。",
+  "Pull requests start with this method. Last selected reuses whatever you chose most recently on this device.":
+    "プルリクエストはこの方法で開始します。「最後に選択したもの」はこのデバイスで直近に選んだ方法を再利用します。",
+  "Repository default:": "リポジトリの既定値：",
+  "Where new threads in this project start. A t3.json preference applies when the project has no override.":
+    "このプロジェクトで新しいタスクを開始する場所です。プロジェクトに上書きがない場合は t3.json の設定が適用されます。",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
