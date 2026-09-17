@@ -6185,6 +6185,21 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Close others": "他を閉じる",
   "Close to the right": "右側を閉じる",
   "Close all": "すべて閉じる",
+  Pin: "ピン留め",
+  Unpin: "ピン留めを解除",
+  Settle: "整理する",
+  Wake: "再開",
+  "Unsent draft": "未送信の下書き",
+  "Wake thread now": "タスクを今すぐ再開",
+  "Un-settle thread": "タスクの整理を取り消す",
+  "Settle thread": "タスクを整理",
+  "Regenerating title": "タスク名を再生成中",
+  "Thread search results": "タスクの検索結果",
+  "Show {count} more": "さらに {count} 件表示",
+  "Custom…": "カスタム…",
+  Active: "アクティブ",
+  Snoozed: "スヌーズ中",
+  Settled: "整理済み",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
