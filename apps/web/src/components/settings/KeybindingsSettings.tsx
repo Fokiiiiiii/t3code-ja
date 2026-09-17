@@ -1277,16 +1277,20 @@ function NewKeybindingCancelIcon({
 
 /** Add-binding form shaped like the binding rows below it. */
 function NewKeybindingSettingsRow(props: NewKeybindingProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { commandOptions, allRows, variables, isSaving, onSave, onCancel } = props;
   const draft = useNewKeybindingDraft({ allRows, onSave });
 
   return (
     <SettingsRow
       className="rounded-none bg-muted/15"
-      title="New keybinding"
+      title={localize("New keybinding")}
       description={
         <span className="flex h-6 items-center gap-1.5">
-          <span className="text-[12px] leading-none text-muted-foreground/70">When</span>
+          <span className="text-[12px] leading-none text-muted-foreground/70">
+            {localize("When")}
+          </span>
           <NewKeybindingWhen draft={draft} variables={variables} />
         </span>
       }
@@ -1300,7 +1304,7 @@ function NewKeybindingSettingsRow(props: NewKeybindingProps) {
           <KeybindingConflictWarning labels={draft.conflictLabels} />
           <NewKeybindingKeyInput draft={draft} className="w-44" />
           <Button size="sm" disabled={isSaving || !draft.canSave} onClick={draft.save}>
-            {isSaving ? "Saving" : "Save"}
+            {localize(isSaving ? "Saving" : "Save")}
           </Button>
           <NewKeybindingCancelIcon isSaving={isSaving} onCancel={onCancel} />
         </div>

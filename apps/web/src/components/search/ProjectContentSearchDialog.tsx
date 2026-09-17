@@ -90,7 +90,7 @@ function EmptyContentSearchDialog() {
   const localize = (value: string) => translateWebSource(locale, value);
   return (
     <CommandPaletteContent
-      aria-label="Search project contents"
+      aria-label={localize("Search project contents")}
       escapeLabel="Back"
       footerActionLabel="Open file"
       inputProps={{ disabled: true, placeholder: "Search project contents…" }}

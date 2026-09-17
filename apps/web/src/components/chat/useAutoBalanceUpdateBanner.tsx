@@ -24,11 +24,15 @@ import {
 import { Popover, PopoverPopup, PopoverTrigger } from "../ui/popover";
 import type { ComposerBannerStackItem } from "./ComposerBannerStack";
 import { ComposerServerUpdateIcon } from "./ComposerServerUpdateStatus";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 /** Keep every machine's update visible while auto balance has no single update target. */
 export function useAutoBalanceUpdateBanner(
   environments: readonly EnvironmentPresentation[],
 ): ComposerBannerStackItem | null {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const statesAtom = useMemo(
     () =>
       Atom.make((get) =>
@@ -86,7 +90,7 @@ export function useAutoBalanceUpdateBanner(
   const count = running || failed || machines.length;
   const status = running ? "running" : failed ? "failed" : "idle";
   const prefix = running ? "Updating" : failed ? "Could not update" : "Update available for";
-  const title = `${prefix} ${count} ${count === 1 ? "machine" : "machines"}`;
+  const title = `${localize(prefix)} ${count} ${localize(count === 1 ? "machine" : "machines")}`;
   return {
     id: `auto-balance-server-updates-${dismissedNotices.size}`,
     variant: failed ? "error" : "default",
@@ -96,7 +100,7 @@ export function useAutoBalanceUpdateBanner(
       <Popover>
         <PopoverTrigger
           className="block max-w-full truncate rounded-sm text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          aria-label={`${title}. View machines`}
+          aria-label={`${title}. ${localize("View machines")}`}
         >
           {title}
         </PopoverTrigger>
@@ -109,14 +113,16 @@ export function useAutoBalanceUpdateBanner(
                   <ServerUpdateProgress state={machine.state} />
                 ) : !machine.remoteUpdate ? (
                   <>
-                    <div className="text-muted-foreground">Manual update required</div>
+                    <div className="text-muted-foreground">
+                      {localize("Manual update required")}
+                    </div>
                     <ServerUpdateAction {...machine} />
                   </>
                 ) : (
                   <div className="text-muted-foreground">
                     {machine.connected
-                      ? `Ready to update to ${machine.targetVersion}`
-                      : "Reconnect this machine to update"}
+                      ? `${localize("Ready to update to")} ${machine.targetVersion}`
+                      : localize("Reconnect this machine to update")}
                   </div>
                 )}
               </div>
@@ -126,7 +132,9 @@ export function useAutoBalanceUpdateBanner(
       </Popover>
     ),
     description:
-      manual > 0 ? `${manual} ${manual === 1 ? "needs" : "need"} a manual update` : undefined,
+      manual > 0
+        ? `${manual} ${localize(manual === 1 ? "needs" : "need")} ${localize("a manual update")}`
+        : undefined,
     actions:
       running === 0 && targets.length > 0 ? (
         <ServerUpdatesAction
@@ -134,14 +142,14 @@ export function useAutoBalanceUpdateBanner(
           variant="ghost"
           label={
             failed > 0
-              ? "Retry"
+              ? localize("Retry")
               : targets.length === machines.length
-                ? "Update all"
-                : `Update ${targets.length} ${targets.length === 1 ? "machine" : "machines"}`
+                ? localize("Update all")
+                : `${localize("Update")} ${targets.length} ${localize(targets.length === 1 ? "machine" : "machines")}`
           }
         />
       ) : undefined,
-    dismissLabel: "Dismiss update notice",
+    dismissLabel: localize("Dismiss update notice"),
     ...(running
       ? {}
       : {

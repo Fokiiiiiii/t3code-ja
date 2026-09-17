@@ -22,6 +22,8 @@ import { toastManager } from "../ui/toast";
 import { PullRequestCandidatePicker } from "./PullRequestCandidatePicker";
 import { PullRequestActorLabel } from "./pullRequestPresentation";
 import { readableFailure } from "./pullRequestDetail.logic";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 /** Long lists are common — an organisation repository lists everyone — so what arrived can be
  * narrowed here. It narrows only what arrived: the host is asked once, when the menu opens. */
@@ -45,6 +47,8 @@ export function PullRequestReviewerPicker({
    * hiding: the control disabled with a reason answers the question its absence would raise. */
   allowed: boolean;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [pending, setPending] = useState<string | null>(null);
@@ -125,7 +129,7 @@ export function PullRequestReviewerPicker({
             <span className="shrink-0 text-muted-foreground">team</span>
           ) : null}
           {candidate.isRequested ? (
-            <CheckIcon aria-label="Already asked" className="size-3.5 shrink-0" />
+            <CheckIcon aria-label={localize("Already asked")} className="size-3.5 shrink-0" />
           ) : null}
         </>
       )}

@@ -18,6 +18,8 @@ import { toastManager } from "../ui/toast";
 import { PullRequestCandidatePicker } from "./PullRequestCandidatePicker";
 import { readableFailure } from "./pullRequestDetail.logic";
 import { pullRequestLabelColor } from "./pullRequestList.logic";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 /** Narrows only what arrived: the host is asked once, when the menu opens. */
 function matches(candidate: PullRequestLabelCandidate, query: string): boolean {
@@ -40,6 +42,8 @@ export function PullRequestLabelPicker({
    * than hidden, like the reviewer control beside it. */
   allowed: boolean;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [pending, setPending] = useState<string | null>(null);
@@ -117,7 +121,7 @@ export function PullRequestLabelPicker({
               ) : null}
             </span>
             {candidate.isApplied ? (
-              <CheckIcon aria-label="Applied" className="size-3.5 shrink-0" />
+              <CheckIcon aria-label={localize("Applied")} className="size-3.5 shrink-0" />
             ) : null}
           </>
         );
