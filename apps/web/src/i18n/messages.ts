@@ -6274,6 +6274,19 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   retained: "保持",
   Avg: "平均",
   "Max Mem": "最大メモリ",
+  "Back to pull requests": "プルリクエストに戻る",
+  "Back to this thread's pull requests": "このタスクのプルリクエストに戻る",
+  "Check out this pull request": "このプルリクエストをチェックアウト",
+  "Collapse pull request panel": "プルリクエストパネルを折りたたむ",
+  "Edit title": "タイトルを編集",
+  "In a separate worktree": "別の worktree で",
+  "In this repository": "このリポジトリで",
+  "More pull request actions": "プルリクエストのその他の操作",
+  "Pull request tabs": "プルリクエストのタブ",
+  "Pull request title": "プルリクエストのタイトル",
+  "Ready for review": "レビュー可能",
+  "receives changes from": "変更元：",
+  "Stacked pull request": "積み重ねたプルリクエスト",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
