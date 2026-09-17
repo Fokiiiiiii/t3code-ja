@@ -6742,6 +6742,23 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Search Lucide icons": "Lucide アイコンを検索",
   "Could not open image picker": "画像ピッカーを開けませんでした",
   "Search image files…": "画像ファイルを検索…",
+  "’s cookies": "の Cookie",
+  "’s cookies for this import.": "の Cookie（このインポート用）です。",
+  "Access is still required. Quit and reopen T3 Code if you just allowed it, then retry the import.":
+    "アクセスがまだ必要です。許可した直後の場合は T3 Code を終了して再起動し、インポートを再試行してください。",
+  "Could not open System Settings. Try Allow again.":
+    "システム設定を開けませんでした。「許可」をもう一度試してください。",
+  "Created for these cookies": "これらの Cookie 用に作成",
+  "Existing profile": "既存のプロファイル",
+  "I’ve quit it": "終了しました",
+  "If access doesn't update after you allow it, quit and reopen T3 Code, then retry the import.":
+    "許可してもアクセス状態が更新されない場合は、T3 Code を終了して再起動し、インポートを再試行してください。",
+  "Importing cookies": "Cookie をインポート中",
+  "Let T3 Code read": "T3 Code に読み取りを許可：",
+  "New profile": "新しいプロファイル",
+  "T3 Code needs Full Disk Access. Turn it on in System Settings, then come back to finish the import — you can revoke it again once the import is done.":
+    "T3 Code にはフルディスクアクセスが必要です。システム設定で有効にしてから戻り、インポートを完了してください。完了後は再び取り消せます。",
+  "To import cookies from": "Cookie のインポート元：",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
