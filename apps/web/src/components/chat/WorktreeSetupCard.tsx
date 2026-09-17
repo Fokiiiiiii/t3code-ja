@@ -21,6 +21,8 @@ import { Button } from "~/components/ui/button";
 import { Spinner } from "~/components/ui/spinner";
 import { observeVisibleAnimation } from "~/lib/visibleAnimation";
 import { cn } from "~/lib/utils";
+import { useI18n } from "~/i18n/WebI18nProvider";
+import { translateWebSource } from "~/i18n/messages";
 
 interface WorktreeSetupCardProps {
   snapshot: WorktreeSetupSnapshot;
@@ -127,11 +129,12 @@ function SetupHeaderRow({
   snapshot: WorktreeSetupSnapshot;
   totalElapsed: number | null;
 }) {
+  const { locale } = useI18n();
   const running = snapshot.phase === "running";
   const failed = snapshot.phase === "failed";
   const finishedWithFailedStage =
     snapshot.phase === "done" && snapshot.stages.some((stage) => stage.status === "failed");
-  const text = headerLabel(snapshot);
+  const text = translateWebSource(locale, headerLabel(snapshot));
   const tone = failed
     ? "text-destructive-foreground"
     : finishedWithFailedStage
@@ -172,9 +175,12 @@ function StageRow({
   nowMs: number;
   scriptName: string | null;
 }) {
+  const { locale } = useI18n();
   const elapsed = stageElapsedMs(stage, nowMs);
   const label =
-    stage.id === "setup-script" && scriptName ? scriptName : worktreeSetupStageLabel(stage.id);
+    stage.id === "setup-script" && scriptName
+      ? scriptName
+      : translateWebSource(locale, worktreeSetupStageLabel(stage.id));
   const running = stage.status === "running";
   const trailing =
     stage.status === "pending"
@@ -239,29 +245,31 @@ function OutputTail({ lines, failed }: { lines: ReadonlyArray<string>; failed: b
 }
 
 function SetupDetails({ snapshot }: { snapshot: WorktreeSetupSnapshot }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <dl className="mt-1 mb-1.5 ml-8 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
       {snapshot.branch ? (
         <>
-          <dt className="text-foreground/80">Branch</dt>
+          <dt className="text-foreground/80">{localize("Branch")}</dt>
           <dd className="truncate font-mono">{snapshot.branch}</dd>
         </>
       ) : null}
       {snapshot.baseRef ? (
         <>
-          <dt className="text-foreground/80">Base</dt>
+          <dt className="text-foreground/80">{localize("Base")}</dt>
           <dd className="truncate font-mono">{snapshot.baseRef}</dd>
         </>
       ) : null}
       {snapshot.worktreePath ? (
         <>
-          <dt className="text-foreground/80">Path</dt>
+          <dt className="text-foreground/80">{localize("Path")}</dt>
           <dd className="truncate font-mono">{snapshot.worktreePath}</dd>
         </>
       ) : null}
       {snapshot.setupScript ? (
         <>
-          <dt className="text-foreground/80">Setup</dt>
+          <dt className="text-foreground/80">{localize("Setup")}</dt>
           <dd className="truncate font-mono">{snapshot.setupScript.command}</dd>
         </>
       ) : null}
@@ -282,6 +290,8 @@ export function WorktreeSetupCard({
    */
   embedded?: boolean;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const running = snapshot.phase === "running";
   const nowMs = useNowWhile(running);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -297,7 +307,7 @@ export function WorktreeSetupCard({
     : snapshot.stages;
 
   return (
-    <section aria-label="Worktree setup" data-worktree-setup-phase={snapshot.phase}>
+    <section aria-label={localize("Worktree setup")} data-worktree-setup-phase={snapshot.phase}>
       {embedded ? null : <SetupHeaderRow snapshot={snapshot} totalElapsed={totalElapsed} />}
       <div className={embedded ? undefined : "pt-1.5"}>
         {stages.map((stage) => (
@@ -328,24 +338,24 @@ export function WorktreeSetupCard({
           onClick={() => setDetailsOpen((open) => !open)}
         >
           {detailsOpen ? <ChevronDownIcon aria-hidden /> : <ChevronRightIcon aria-hidden />}
-          Details
+          {localize("Details")}
         </Button>
         {showTerminal ? (
           <Button type="button" size="xs" variant="ghost-muted" onClick={onOpenTerminal}>
             <TerminalIcon aria-hidden />
-            Open terminal
+            {localize("Open terminal")}
           </Button>
         ) : null}
         {onWorkLocally ? (
           <Button type="button" size="xs" variant="ghost-muted" onClick={onWorkLocally}>
             <LaptopIcon aria-hidden />
-            Work locally
+            {localize("Work locally")}
           </Button>
         ) : null}
         {onCancel && running ? (
           <Button type="button" size="xs" variant="ghost-muted" onClick={onCancel}>
             <XIcon aria-hidden />
-            Cancel
+            {localize("Cancel")}
           </Button>
         ) : null}
       </div>

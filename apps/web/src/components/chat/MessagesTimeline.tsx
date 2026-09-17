@@ -70,6 +70,8 @@ import {
   type MouseEvent,
   type ReactNode,
 } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 import {
   LegendList,
   type LegendListRef,
@@ -326,6 +328,7 @@ function TimelineLoadEarlierHeader({
   onLoadEarlier: () => void;
   fade: boolean;
 }) {
+  const { locale } = useI18n();
   return (
     <div className={fade ? "pt-[var(--workspace-titlebar-scroll-fade-height)]" : "pt-3 sm:pt-4"}>
       <div className="mx-auto w-full max-w-3xl pb-2">
@@ -335,7 +338,7 @@ function TimelineLoadEarlierHeader({
           disabled={loading}
           className="w-full py-1.5 text-xs text-muted-foreground/60 hover:text-foreground disabled:cursor-default"
         >
-          {loading ? "Loading earlier turns…" : "Load earlier turns"}
+          {translateWebSource(locale, loading ? "Loading earlier turns…" : "Load earlier turns")}
         </button>
       </div>
     </div>
@@ -503,6 +506,7 @@ export const MessagesTimeline = memo(function MessagesTimeline({
   onSteerQueuedMessage = NOOP_QUEUED_MESSAGE_ACTION,
   onRemoveQueuedMessage = NOOP_QUEUED_MESSAGE_ACTION,
 }: MessagesTimelineProps) {
+  const { locale } = useI18n();
   const [expandedTurnIds, setExpandedTurnIds] = useState<ReadonlySet<TurnId>>(new Set());
   const [expandedWorkGroupIds, setExpandedWorkGroupIds] = useState<ReadonlySet<string>>(new Set());
   // Preserve member disclosure state across virtualization.
@@ -1012,7 +1016,9 @@ export const MessagesTimeline = memo(function MessagesTimeline({
     }
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-placeholder text-sm">Send a message to start the conversation.</p>
+        <p className="text-placeholder text-sm">
+          {translateWebSource(locale, "Send a message to start the conversation.")}
+        </p>
       </div>
     );
   }
@@ -1148,6 +1154,7 @@ function TimelineMinimap({
   stripMap: Map<string, HTMLSpanElement>;
   onSelect: (item: TimelineMinimapItem) => void;
 }) {
+  const { locale } = useI18n();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const resolvedActiveIndex =
@@ -1244,7 +1251,7 @@ function TimelineMinimap({
             }}
           />
           <button
-            aria-label={`Jump to message: ${activeItem?.userText ?? "User message"}`}
+            aria-label={`${translateWebSource(locale, "Jump to message")}: ${activeItem?.userText ?? translateWebSource(locale, "User message")}`}
             className="absolute inset-y-0 left-0 w-full cursor-pointer bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70"
             onBlur={() => setActiveIndex(null)}
             onClick={(event) => {
@@ -1333,7 +1340,7 @@ function TimelineMinimap({
               >
                 <span className="dropdown-glass block rounded-xl p-3 text-left text-popover-foreground shadow-xl shadow-black/25">
                   <span className="block max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium leading-5">
-                    {activeItem.userText ?? "User message"}
+                    {activeItem.userText ?? translateWebSource(locale, "User message")}
                   </span>
                   {activeItem.assistantText ? (
                     <span
@@ -1373,8 +1380,9 @@ function TimelineMinimapNavigationButton({
   disabled: boolean;
   onClick: () => void;
 }) {
+  const { locale } = useI18n();
   const previous = direction === "previous";
-  const label = previous ? "Previous turn" : "Next turn";
+  const label = translateWebSource(locale, previous ? "Previous turn" : "Next turn");
   const Icon = previous ? ChevronUpIcon : ChevronDownIcon;
 
   return (
@@ -1507,6 +1515,8 @@ function QueuedMessageTimelineRow({
 }: {
   row: Extract<TimelineRow, { kind: "queued-message" }>;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const ctx = use(TimelineRowCtx);
   const { queuedMessage } = row;
   const attachmentCount = queuedMessage.images.length + queuedMessage.files.length;
@@ -1547,12 +1557,12 @@ function QueuedMessageTimelineRow({
           <Tooltip>
             <TooltipTrigger
               render={<span className="inline-flex h-6 items-center gap-1" />}
-              aria-label={`Queued. ${statusLabel}.`}
+              aria-label={`${localize("Queued.")} ${localize(statusLabel)}`}
             >
               <ClockIcon className="size-3.5" aria-hidden />
-              Queued
+              {localize("Queued")}
             </TooltipTrigger>
-            <TooltipPopup side="bottom">{statusLabel}</TooltipPopup>
+            <TooltipPopup side="bottom">{localize(statusLabel)}</TooltipPopup>
           </Tooltip>
           <div className="ml-auto flex items-center gap-0.5">
             <Tooltip>
@@ -1565,13 +1575,13 @@ function QueuedMessageTimelineRow({
                     className="size-6"
                     onPointerDown={(event) => event.preventDefault()}
                     onClick={() => ctx.onSteerQueuedMessage(queuedMessage.id)}
-                    aria-label="Send now"
+                    aria-label={localize("Send now")}
                   />
                 }
               >
                 <ArrowUpIcon className="size-3.5" aria-hidden />
               </TooltipTrigger>
-              <TooltipPopup side="bottom">Send now</TooltipPopup>
+              <TooltipPopup side="bottom">{localize("Send now")}</TooltipPopup>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger
@@ -1583,13 +1593,15 @@ function QueuedMessageTimelineRow({
                     className="size-6"
                     onPointerDown={(event) => event.preventDefault()}
                     onClick={() => ctx.onRemoveQueuedMessage(queuedMessage.id)}
-                    aria-label="Cancel and return to the composer"
+                    aria-label={localize("Cancel and return to the composer")}
                   />
                 }
               >
                 <XIcon className="size-3.5" aria-hidden />
               </TooltipTrigger>
-              <TooltipPopup side="bottom">Cancel and return to the composer</TooltipPopup>
+              <TooltipPopup side="bottom">
+                {localize("Cancel and return to the composer")}
+              </TooltipPopup>
             </Tooltip>
           </div>
         </div>
@@ -1669,10 +1681,13 @@ function UserVideoAttachment({ file }: { readonly file: ChatFileAttachment }) {
 const MESSAGE_HEADING_LEVEL = 3;
 
 function MessageAuthorHeading({ children }: { children: string }) {
-  return <h3 className="sr-only select-none">{children}</h3>;
+  const { locale } = useI18n();
+  return <h3 className="sr-only select-none">{translateWebSource(locale, children)}</h3>;
 }
 
 function UserTimelineRow({ row }: { row: Extract<TimelineRow, { kind: "message" }> }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const ctx = use(TimelineRowCtx);
   const { onImageExpand, onFileOpen } = ctx;
   const resources = useMemo(
@@ -1848,7 +1863,7 @@ function UserTimelineRow({ row }: { row: Extract<TimelineRow, { kind: "message" 
                   <button
                     type="button"
                     className="block h-full w-full cursor-zoom-in"
-                    aria-label={`Preview ${image.name}`}
+                    aria-label={`${localize("Preview")} ${image.name}`}
                     onClick={() => {
                       const preview = buildExpandedImagePreview(regularImages, image.id);
                       if (!preview) return;
@@ -1890,7 +1905,7 @@ function UserTimelineRow({ row }: { row: Extract<TimelineRow, { kind: "message" 
                   <div key={file.id} className="flex min-w-0 items-center gap-1">
                     <button
                       type="button"
-                      aria-label={`Preview ${file.name}`}
+                      aria-label={`${localize("Preview")} ${file.name}`}
                       onClick={() => ctx.onFileOpen(file)}
                       className="focus-visible:ring-ring/70 flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-md py-1 text-left text-sm hover:underline focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-inset"
                     >
@@ -1903,14 +1918,16 @@ function UserTimelineRow({ row }: { row: Extract<TimelineRow, { kind: "message" 
                           <Button
                             size="icon-xs"
                             variant="ghost-muted"
-                            aria-label={`Download ${file.name}`}
+                            aria-label={`${localize("Download")} ${file.name}`}
                             onClick={() => ctx.onFileDownload(file)}
                           />
                         }
                       >
                         <DownloadIcon />
                       </TooltipTrigger>
-                      <TooltipPopup side="top">Download {file.name}</TooltipPopup>
+                      <TooltipPopup side="top">
+                        {localize("Download")} {file.name}
+                      </TooltipPopup>
                     </Tooltip>
                   </div>
                 );
@@ -2012,6 +2029,7 @@ function RevertUserMessageButton({
   turnCount: number;
   messageId: MessageId;
 }) {
+  const { locale } = useI18n();
   const ctx = use(TimelineRowCtx);
   const activity = use(TimelineRowActivityCtx);
 
@@ -2025,13 +2043,13 @@ function RevertUserMessageButton({
             variant="ghost"
             disabled={activity.isRevertingCheckpoint || activity.isWorking}
             onClick={() => ctx.onRevertToTurnCount(turnCount, messageId)}
-            aria-label="Edit from here"
+            aria-label={translateWebSource(locale, "Edit from here")}
           />
         }
       >
         <Undo2Icon className="size-3" />
       </TooltipTrigger>
-      <TooltipPopup side="top">Edit from here</TooltipPopup>
+      <TooltipPopup side="top">{translateWebSource(locale, "Edit from here")}</TooltipPopup>
     </Tooltip>
   );
 }
@@ -2167,15 +2185,16 @@ function AssistantMessageMeta({
 }
 
 function AssistantTurnUsage({ usage }: { readonly usage: ContextWindowSnapshot }) {
+  const { locale } = useI18n();
   const formatTurnTokens = (value: number) =>
     value < 1_000 ? `${value}` : `${(value / 1_000).toFixed(1).replace(/\.0$/, "")}k`;
   const metrics = [
     usage.lastInputTokens != null ? `↑ ${formatTurnTokens(usage.lastInputTokens)}` : null,
     usage.lastOutputTokens != null ? `↓ ${formatTurnTokens(usage.lastOutputTokens)}` : null,
     usage.lastReasoningOutputTokens != null
-      ? `${formatTurnTokens(usage.lastReasoningOutputTokens)} reasoning`
+      ? `${formatTurnTokens(usage.lastReasoningOutputTokens)} ${translateWebSource(locale, "reasoning")}`
       : null,
-    usage.toolUses != null ? `${usage.toolUses} tools` : null,
+    usage.toolUses != null ? `${usage.toolUses} ${translateWebSource(locale, "tools")}` : null,
   ].filter((metric): metric is string => metric !== null);
   if (metrics.length === 0) return null;
   return <span className="truncate text-muted-foreground">{metrics.join(" · ")}</span>;
@@ -2224,6 +2243,8 @@ function ProposedPlanTimelineRow({
 }
 
 function WorkingTimelineRow({ row }: { row: Extract<TimelineRow, { kind: "working" }> }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { isCompacting, isPreparingWorktree } = use(TimelineRowActivityCtx);
   return (
     <div className="border-b border-border/60 pb-2 pt-1">
@@ -2235,8 +2256,8 @@ function WorkingTimelineRow({ row }: { row: Extract<TimelineRow, { kind: "workin
         >
           {isPreparingWorktree ? (
             <>
-              Setting up worktree…
-              <ActivityShimmerOverlay>Setting up worktree…</ActivityShimmerOverlay>
+              {localize("Setting up worktree…")}
+              <ActivityShimmerOverlay>{localize("Setting up worktree…")}</ActivityShimmerOverlay>
             </>
           ) : isCompacting ? (
             <>
@@ -2247,10 +2268,10 @@ function WorkingTimelineRow({ row }: { row: Extract<TimelineRow, { kind: "workin
             </>
           ) : row.createdAt ? (
             <>
-              Working for <WorkingTimer createdAt={row.createdAt} />
+              {localize("Working for")} <WorkingTimer createdAt={row.createdAt} />
             </>
           ) : (
-            "Working..."
+            localize("Working...")
           )}
         </span>
       </div>
@@ -2259,22 +2280,29 @@ function WorkingTimelineRow({ row }: { row: Extract<TimelineRow, { kind: "workin
 }
 
 function ThinkingTimelineRow() {
+  const { locale } = useI18n();
   const { isCompacting, isPreparingWorktree } = use(TimelineRowActivityCtx);
   // Reserve the activity row during setup so the handoff keeps the same height.
   return (
     <div className="min-h-7">
       {isPreparingWorktree || isCompacting ? null : (
-        <LiveActivityRow label="Thinking" iconName="brain" active shimmer />
+        <LiveActivityRow
+          label={translateWebSource(locale, "Thinking")}
+          iconName="brain"
+          active
+          shimmer
+        />
       )}
     </div>
   );
 }
 
 function CompactingLabel() {
+  const { locale } = useI18n();
   return (
     <span className="inline-flex items-center gap-1.5">
       <Minimize2Icon aria-hidden="true" className="size-3" />
-      Compacting…
+      {translateWebSource(locale, "Compacting…")}
     </span>
   );
 }
@@ -2324,6 +2352,7 @@ const WorkGroupSection = memo(function WorkGroupSection({
   isExpandedToolGroup: boolean;
   displayLabel?: string | undefined;
 }) {
+  const { locale } = useI18n();
   const { workspaceRoot, routeThreadKey, onToggleWorkEntry } = use(TimelineRowCtx);
   const onToggleStandaloneEntry = useCallback(
     (collapsed: boolean) => onToggleWorkEntry(anchorKey, collapsed),
@@ -2347,7 +2376,10 @@ const WorkGroupSection = memo(function WorkGroupSection({
   }
 
   return (
-    <section className="-mx-1 space-y-0.5 px-1 py-0.5" aria-label="Activity">
+    <section
+      className="-mx-1 space-y-0.5 px-1 py-0.5"
+      aria-label={translateWebSource(locale, "Activity")}
+    >
       <div className="space-y-px">
         {nonEmptyEntries.map((workEntry) => (
           <SimpleWorkEntryRow
@@ -2373,6 +2405,7 @@ function ExpandedWorkGroupEntries({
   entries: TimelineWorkEntry[];
   workspaceRoot: string | undefined;
 }) {
+  const { locale } = useI18n();
   const { workGroupViewState: viewState, onToggleWorkEntry } = use(TimelineRowCtx);
   const [initialScrollIndex] = useState(() =>
     resolveWorkGroupScrollIndex(entries, viewState.scrollPositions.get(anchorKey)),
@@ -2493,7 +2526,7 @@ function ExpandedWorkGroupEntries({
         onLayout={updateScrollFades}
         tabIndex={0}
         role="region"
-        aria-label="Tool calls"
+        aria-label={translateWebSource(locale, "Tool calls")}
         data-tool-group-scroll
         className={cn(
           "scrollbar-gutter-stable max-h-[min(18rem,50dvh)] scroll-py-6 overflow-x-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/70",
@@ -2586,6 +2619,7 @@ function LiveActivityContent({
   active?: boolean;
   highlighted?: boolean;
 }) {
+  const { locale } = useI18n();
   const showTrailingFailureMark =
     failed && iconName !== undefined && !toolIconAcceptsTint(iconName, toolIcon);
 
@@ -2604,7 +2638,7 @@ function LiveActivityContent({
             failed ? failedToolIconClassName : highlighted ? "text-foreground" : "text-icon-muted",
           )}
           role={announceFailure ? "img" : undefined}
-          aria-label={announceFailure ? "Tool call failed" : undefined}
+          aria-label={announceFailure ? translateWebSource(locale, "Tool call failed") : undefined}
         >
           <ToolActivityIconView
             icon={toolIcon}
@@ -2623,6 +2657,7 @@ function LiveActivityContent({
 }
 
 function LiveWorkEntryTimelineRow({ row }: { row: Extract<TimelineRow, { kind: "work-live" }> }) {
+  const { locale } = useI18n();
   const ctx = use(TimelineRowCtx);
   if (row.entry.agentSpawn) {
     return (
@@ -2640,7 +2675,9 @@ function LiveWorkEntryTimelineRow({ row }: { row: Extract<TimelineRow, { kind: "
     <button
       type="button"
       className="group/live-work flex min-h-6 w-full max-w-full cursor-pointer items-center rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/70"
-      aria-label={failed ? `${label}, tool call failed` : undefined}
+      aria-label={
+        failed ? `${label}, ${translateWebSource(locale, "Tool call failed")}` : undefined
+      }
       aria-expanded={row.expanded}
       onClick={() => ctx.onToggleWorkGroup(row.groupId, row.id)}
     >
@@ -2715,12 +2752,17 @@ function WorkGroupToggleTimelineRow({
 }: {
   row: Extract<TimelineRow, { kind: "work-toggle" }>;
 }) {
+  const { locale } = useI18n();
   const ctx = use(TimelineRowCtx);
   return (
     <button
       type="button"
       className="group/tool-group flex min-h-6 w-full cursor-pointer items-center gap-1.5 rounded-md px-0.5 py-0.5 text-left text-sm leading-relaxed transition-colors duration-150 hover:bg-accent/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/70"
-      aria-label={row.hasFailure ? `${row.summary}, tool call failed` : undefined}
+      aria-label={
+        row.hasFailure
+          ? `${row.summary}, ${translateWebSource(locale, "Tool call failed")}`
+          : undefined
+      }
       aria-expanded={row.expanded}
       onClick={() => ctx.onToggleWorkGroup(row.groupId, row.id)}
     >
@@ -2854,13 +2896,15 @@ function UserMessageContextChip(props: {
   interactive?: boolean;
   unresolved?: boolean;
 }) {
+  const { locale } = useI18n();
+  const kindLabel = props.kindLabel ? translateWebSource(locale, props.kindLabel) : undefined;
   return (
     <ContextChipShell
       icon={props.icon}
       label={props.label}
       className={cn(CHAT_INLINE_CHIP_CLASS_NAME, props.toneClassName)}
       labelClassName={CHAT_INLINE_CHIP_LABEL_CLASS_NAME}
-      aria-label={props.kindLabel ? `${props.kindLabel}, ${props.label}` : undefined}
+      aria-label={kindLabel ? `${kindLabel}, ${props.label}` : undefined}
       data-markdown-copy={props.copyMarkdown}
       tooltip={props.tooltip}
       interactive={props.interactive === true}
@@ -2894,6 +2938,8 @@ function UserMessagePreviewAnnotationDetails(props: {
   record: Extract<KnownComposerContextRecord, { kind: "preview-annotation" }>;
   image: ChatImageAttachment | null;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const ctx = use(TimelineRowCtx);
   const visibleElements = props.record.elements ?? [];
   return (
@@ -2902,7 +2948,7 @@ function UserMessagePreviewAnnotationDetails(props: {
         <button
           type="button"
           className="block max-h-64 w-full cursor-zoom-in overflow-hidden border-b border-border/70 bg-muted"
-          aria-label={`Preview ${props.image.name}`}
+          aria-label={`${localize("Preview")} ${props.image.name}`}
           onClick={() => {
             if (!props.image) return;
             const preview = buildExpandedImagePreview([props.image], props.image.id);
@@ -2911,18 +2957,18 @@ function UserMessagePreviewAnnotationDetails(props: {
         >
           <img
             src={props.image.previewUrl}
-            alt="Annotated preview crop"
+            alt={localize("Annotated preview crop")}
             className="max-h-64 w-full object-contain"
           />
         </button>
       ) : (
         <div className="border-b border-border/70 bg-muted/40 px-3 py-2 text-secondary-label text-xs">
-          Screenshot unavailable
+          {localize("Screenshot unavailable")}
         </div>
       )}
       <div className="min-w-0 px-3 py-2.5">
         <div className="text-message-foreground text-xs font-medium">
-          {props.record.pageTitle?.trim() || props.record.pageUrl || "Preview annotation"}
+          {props.record.pageTitle?.trim() || props.record.pageUrl || localize("Preview annotation")}
         </div>
         {props.record.comment ? (
           <div className="mt-1 whitespace-pre-wrap wrap-break-word text-sm">
@@ -3052,13 +3098,14 @@ interface UserMessageContextRenderContext {
 }
 
 function UnavailableUserMessageContextChip(props: UserMessageContextRenderContext) {
+  const { locale } = useI18n();
   return (
     <UnresolvedChip
       label={props.reference.label}
       className={CHAT_INLINE_CHIP_CLASS_NAME}
       labelClassName={CHAT_INLINE_CHIP_LABEL_CLASS_NAME}
       copyMarkdown={props.copyMarkdown}
-      tooltip="This context is no longer available."
+      tooltip={translateWebSource(locale, "This context is no longer available.")}
       tooltipClassName="max-w-96 whitespace-pre-wrap leading-tight"
     />
   );
@@ -3422,6 +3469,7 @@ const CollapsibleUserMessageBody = memo(function CollapsibleUserMessageBody(prop
   markdownCwd: string | undefined;
   footer?: ReactNode;
 }) {
+  const { locale } = useI18n();
   const [expanded, setExpanded] = useState(false);
   const hasVisibleBody = props.text.trim().length > 0;
   const canCollapse = hasVisibleBody && shouldCollapseUserMessage(props.text);
@@ -3471,7 +3519,7 @@ const CollapsibleUserMessageBody = memo(function CollapsibleUserMessageBody(prop
               onClick={() => setExpanded((value) => !value)}
               className="-ml-1 h-6 rounded-md px-1.5 text-secondary-label text-xs hover:bg-muted/55 hover:text-message-foreground"
             >
-              {expanded ? "Show less" : "Show full message"}
+              {translateWebSource(locale, expanded ? "Show less" : "Show full message")}
             </Button>
           ) : null}
           {props.footer ? (
@@ -4015,6 +4063,7 @@ const AgentSpawnRow = memo(function AgentSpawnRow(props: {
   active?: boolean | undefined;
   onToggleEntry?: ((collapsed: boolean) => void) | undefined;
 }) {
+  const { locale } = useI18n();
   const { workEntry } = props;
   const { agentPanelModel, expandedSpawnEntryIds, onToggleSpawnRow, onOpenAgents } =
     use(TimelineRowCtx);
@@ -4074,7 +4123,7 @@ const AgentSpawnRow = memo(function AgentSpawnRow(props: {
             onClick={onOpenAgents}
             className="mt-1 self-start rounded-sm px-1 text-xs text-muted-foreground hover:text-foreground"
           >
-            Open Agents panel ›
+            {translateWebSource(locale, "Open Agents panel ›")}
           </button>
         </div>
       ) : null}
@@ -4100,6 +4149,7 @@ function AgentSpawnMemberRow({
   agent: RuntimeSubagent;
   onToggleEntry?: ((collapsed: boolean) => void) | undefined;
 }) {
+  const { locale } = useI18n();
   const [open, setOpen] = useState(false);
   const activeStatus = isActiveSubagentStatus(agent.status);
   const activity = activeStatus
@@ -4143,7 +4193,9 @@ function AgentSpawnMemberRow({
     <div
       role={canExpand ? "button" : undefined}
       tabIndex={canExpand ? 0 : undefined}
-      aria-label={canExpand ? `${agent.title}, ${statusLabel}` : undefined}
+      aria-label={
+        canExpand ? `${agent.title}, ${translateWebSource(locale, statusLabel)}` : undefined
+      }
       aria-expanded={canExpand ? open : undefined}
       onClick={canExpand ? toggleOpen : undefined}
       onKeyDown={
@@ -4179,7 +4231,7 @@ function AgentSpawnMemberRow({
           ) : null}
         </p>
         <span className="shrink-0 font-mono text-[.7rem] tabular-nums text-muted-foreground">
-          {statusLabel}
+          {translateWebSource(locale, statusLabel)}
         </span>
       </div>
       {!open && firstLine ? (
@@ -4234,6 +4286,7 @@ const PlainWorkEntryRow = memo(function PlainWorkEntryRow(props: {
   displayLabel?: string | undefined;
   onToggleEntry?: ((collapsed: boolean) => void) | undefined;
 }) {
+  const { locale } = useI18n();
   const { workEntry, workspaceRoot, isExpandedToolGroupEntry, displayLabel } = props;
   const { threadRef, onImageExpand } = use(TimelineRowCtx);
   const groupView = use(WorkGroupViewCtx);
@@ -4316,7 +4369,7 @@ const PlainWorkEntryRow = memo(function PlainWorkEntryRow(props: {
         : "text-foreground/80";
   const accessiblePreview = [previewText, answerPreview].filter(Boolean).join(": ");
   const accessibleDisplayText = showFailedIndicator
-    ? `${accessiblePreview}, tool call failed`
+    ? `${accessiblePreview}, ${translateWebSource(locale, "Tool call failed")}`
     : accessiblePreview;
   const rowToggleProps = canExpand
     ? {
@@ -4349,7 +4402,9 @@ const PlainWorkEntryRow = memo(function PlainWorkEntryRow(props: {
         <span
           className={iconWrapperClass}
           role={showFailedIndicator ? "img" : undefined}
-          aria-label={showFailedIndicator ? "Tool call failed" : undefined}
+          aria-label={
+            showFailedIndicator ? translateWebSource(locale, "Tool call failed") : undefined
+          }
         >
           <ToolActivityIconView
             icon={entryToolIcon}

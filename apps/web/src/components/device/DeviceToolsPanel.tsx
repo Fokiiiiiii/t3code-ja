@@ -198,7 +198,7 @@ export function DeviceToolsPanel(props: {
           </div>
         ) : null}
 
-        <Section title="App">
+        <Section title={localize("App")}>
           <Row label={localize("Foreground")}>
             <span className="truncate font-mono text-xs">{foregroundApp?.id ?? "—"}</span>
           </Row>
@@ -236,7 +236,7 @@ export function DeviceToolsPanel(props: {
           />
         </Section>
 
-        <Section title={isIos ? "Simulator" : "Emulator"}>
+        <Section title={localize(isIos ? "Simulator" : "Emulator")}>
           <Row label={localize("Appearance")}>
             <ToggleGroup
               aria-label={localize("Appearance")}
@@ -263,7 +263,7 @@ export function DeviceToolsPanel(props: {
           </Row>
           {isIos ? (
             <>
-              <Row label="Liquid Glass">
+              <Row label={localize("Liquid Glass")}>
                 <ToggleGroup
                   aria-label={localize("Liquid Glass")}
                   value={settings?.liquidGlass ? [settings.liquidGlass] : []}
@@ -279,7 +279,7 @@ export function DeviceToolsPanel(props: {
                   <Toggle value="tinted">{localize("Tinted")}</Toggle>
                 </ToggleGroup>
               </Row>
-              <Row label="Color filter">
+              <Row label={localize("Color filter")}>
                 <ChoiceSelect
                   ariaLabel="Color filter"
                   value={settings?.colorFilter ?? null}
@@ -290,7 +290,7 @@ export function DeviceToolsPanel(props: {
               </Row>
             </>
           ) : (
-            <Row label="Orientation">
+            <Row label={localize("Orientation")}>
               <ChoiceSelect
                 ariaLabel="Orientation"
                 value={null}
@@ -302,7 +302,7 @@ export function DeviceToolsPanel(props: {
             </Row>
           )}
           <SwitchRow
-            label="Reduce Motion"
+            label={localize("Reduce Motion")}
             checked={settings?.reduceMotion}
             disabled={disabled}
             onChange={(value) => act({ type: "setToggle", setting: "reduceMotion", value })}
@@ -310,13 +310,13 @@ export function DeviceToolsPanel(props: {
           {isIos ? (
             <>
               <SwitchRow
-                label="Increase Contrast"
+                label={localize("Increase Contrast")}
                 checked={settings?.increaseContrast}
                 disabled={disabled}
                 onChange={(value) => act({ type: "setToggle", setting: "increaseContrast", value })}
               />
               <SwitchRow
-                label="Reduce Transparency"
+                label={localize("Reduce Transparency")}
                 checked={settings?.reduceTransparency}
                 disabled={disabled}
                 onChange={(value) =>
@@ -324,13 +324,13 @@ export function DeviceToolsPanel(props: {
                 }
               />
               <SwitchRow
-                label="Show Borders"
+                label={localize("Show Borders")}
                 checked={settings?.showBorders}
                 disabled={disabled}
                 onChange={(value) => act({ type: "setToggle", setting: "showBorders", value })}
               />
               <SwitchRow
-                label="VoiceOver"
+                label={localize("VoiceOver")}
                 checked={settings?.voiceOver}
                 disabled={disabled}
                 onChange={(value) => act({ type: "setToggle", setting: "voiceOver", value })}
@@ -338,7 +338,7 @@ export function DeviceToolsPanel(props: {
             </>
           ) : (
             <SwitchRow
-              label="Network"
+              label={localize("Network")}
               checked={settings?.networkEnabled}
               disabled={disabled}
               onChange={(value) => act({ type: "setToggle", setting: "networkEnabled", value })}
@@ -662,7 +662,7 @@ function PermissionsSection(props: {
           disabled={props.disabled || !resolvedAppId}
           onClick={() => decide("grant")}
         >
-          Grant
+          {localize("Grant")}
         </Button>
         <Button
           size="xs"
@@ -670,7 +670,7 @@ function PermissionsSection(props: {
           disabled={props.disabled || !resolvedAppId}
           onClick={() => decide("revoke")}
         >
-          Revoke
+          {localize("Revoke")}
         </Button>
         {props.canReset ? (
           <Button
@@ -679,7 +679,7 @@ function PermissionsSection(props: {
             disabled={props.disabled || !resolvedAppId}
             onClick={() => decide("reset")}
           >
-            Reset
+            {localize("Reset")}
           </Button>
         ) : null}
       </div>
@@ -693,6 +693,8 @@ function EventLogSection(props: {
   readonly access: DeviceHubAccess;
   readonly device: DeviceSummary;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [open, setOpen] = useState(false);
   const [entries, setEntries] = useState<ReadonlyArray<DeviceEventLogEntry>>([]);
 
@@ -716,7 +718,7 @@ function EventLogSection(props: {
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger className="flex w-full items-center gap-1.5 border-b px-3 py-2.5 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase">
-        Event log
+        {localize("Event log")}
         <ChevronDown
           className={cn("ml-auto size-3.5 transition-transform", open && "rotate-180")}
         />
@@ -724,7 +726,7 @@ function EventLogSection(props: {
       <CollapsiblePanel>
         <ol className="max-h-64 overflow-y-auto px-3 py-2 font-mono text-[11px] leading-relaxed">
           {entries.length === 0 ? (
-            <li className="text-muted-foreground">No events yet.</li>
+            <li className="text-muted-foreground">{localize("No events yet.")}</li>
           ) : (
             entries.map((entry) => (
               <li key={entry.id} className="flex gap-2">

@@ -32,6 +32,21 @@ import { formatWorktreePathForDisplay } from "../worktreeCleanup";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 import { pullRequestListLines } from "./pullRequest/pullRequestListLines";
 import { resolvePullRequestState } from "./pullRequest/pullRequestPresentation";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
+
+function localizeStatusText(
+  locale: Parameters<typeof translateWebSource>[0],
+  value: string,
+): string {
+  let translated = translateWebSource(locale, value);
+  if (translated !== value) return translated;
+  translated = translated.replace(/\bdraft\b/giu, translateWebSource(locale, "draft"));
+  translated = translated.replace(/\bopen\b/giu, translateWebSource(locale, "open"));
+  translated = translated.replace(/\bclosed\b/giu, translateWebSource(locale, "closed"));
+  translated = translated.replace(/\bmerged\b/giu, translateWebSource(locale, "merged"));
+  return translated;
+}
 
 export interface PrStatusIndicator {
   label: string;
@@ -367,9 +382,12 @@ export function ChangeRequestStatusIcon({
 }
 
 export function PrStatusTooltipContent({ status }: { status: PrStatusIndicator }) {
+  const { locale } = useI18n();
   return (
     <span className="flex max-w-[min(34rem,calc(100vw-2rem))] items-stretch overflow-hidden whitespace-nowrap">
-      <span className="shrink-0 pr-2 font-medium">{status.tooltipLead}</span>
+      <span className="shrink-0 pr-2 font-medium">
+        {localizeStatusText(locale, status.tooltipLead)}
+      </span>
       <span className="min-h-4 shrink-0 border-border/70 border-l" aria-hidden="true" />
       <span className="min-w-0 truncate pl-2">{status.tooltipTitle}</span>
     </span>
@@ -394,6 +412,7 @@ export function ThreadWorktreeIndicator({
 }: {
   thread: Pick<SidebarThreadSummary, "id" | "branch" | "worktreePath">;
 }) {
+  const { locale } = useI18n();
   const worktreePath = thread.worktreePath?.trim();
   if (!worktreePath) {
     return null;
@@ -401,8 +420,8 @@ export function ThreadWorktreeIndicator({
 
   const displayPath = formatWorktreePathForDisplay(worktreePath);
   const tooltip = thread.branch
-    ? `Worktree: ${displayPath} (${thread.branch})`
-    : `Worktree: ${displayPath}`;
+    ? `${translateWebSource(locale, "Worktree:")} ${displayPath} (${thread.branch})`
+    : `${translateWebSource(locale, "Worktree:")} ${displayPath}`;
 
   return (
     <Tooltip>
@@ -430,13 +449,15 @@ export function ThreadStatusLabel({
   status: ThreadStatusPill;
   compact?: boolean;
 }) {
+  const { locale } = useI18n();
+  const label = localizeStatusText(locale, status.label);
   if (compact) {
     return (
       <Tooltip>
         <TooltipTrigger
           render={
             <span
-              aria-label={status.label}
+              aria-label={label}
               className={`inline-flex size-3.5 shrink-0 items-center justify-center ${status.colorClass}`}
             />
           }
@@ -447,7 +468,7 @@ export function ThreadStatusLabel({
             }`}
           />
         </TooltipTrigger>
-        <TooltipPopup side="top">{status.label}</TooltipPopup>
+        <TooltipPopup side="top">{label}</TooltipPopup>
       </Tooltip>
     );
   }
@@ -457,7 +478,7 @@ export function ThreadStatusLabel({
       <TooltipTrigger
         render={
           <span
-            aria-label={status.label}
+            aria-label={label}
             className={`inline-flex items-center gap-1 text-[10px] ${status.colorClass}`}
           />
         }
@@ -467,9 +488,9 @@ export function ThreadStatusLabel({
             status.pulse ? "animate-status-pulse" : ""
           }`}
         />
-        <span className="hidden md:inline">{status.label}</span>
+        <span className="hidden md:inline">{label}</span>
       </TooltipTrigger>
-      <TooltipPopup side="top">{status.label}</TooltipPopup>
+      <TooltipPopup side="top">{label}</TooltipPopup>
     </Tooltip>
   );
 }
@@ -480,6 +501,7 @@ export function ThreadStatusLabel({
  * thread status dot, matching the sidebar's leading indicators.
  */
 export function ThreadRowLeadingStatus({ thread }: { thread: SidebarThreadSummary }) {
+  const { locale } = useI18n();
   const threadRef = scopeThreadRef(thread.environmentId, thread.id);
   const lastVisitedAt = useUiStateStore(
     (state) => state.threadLastVisitedAtById[scopedThreadKey(threadRef)],
@@ -516,7 +538,7 @@ export function ThreadRowLeadingStatus({ thread }: { thread: SidebarThreadSummar
           <TooltipTrigger
             render={
               <span
-                aria-label={prStatus.tooltip}
+                aria-label={localizeStatusText(locale, prStatus.tooltip)}
                 className={`inline-flex items-center justify-center ${prStatus.colorClass}`}
               />
             }
@@ -531,7 +553,7 @@ export function ThreadRowLeadingStatus({ thread }: { thread: SidebarThreadSummar
       {pendingLink ? (
         <GitPullRequestArrowIcon
           className="size-3 text-muted-foreground"
-          aria-label={`PR #${pendingLink.number}, status pending`}
+          aria-label={`PR #${pendingLink.number}, ${translateWebSource(locale, "status pending")}`}
         />
       ) : null}
       {threadStatus ? <ThreadStatusLabel status={threadStatus} /> : null}
@@ -545,6 +567,7 @@ export function ThreadRowLeadingStatus({ thread }: { thread: SidebarThreadSummar
  * environment indicator, matching the sidebar's trailing indicators.
  */
 export function ThreadRowTrailingStatus({ thread }: { thread: SidebarThreadSummary }) {
+  const { locale } = useI18n();
   const runningTerminalIds = useThreadRunningTerminalIds({
     environmentId: thread.environmentId,
     threadId: thread.id,
@@ -555,7 +578,9 @@ export function ThreadRowTrailingStatus({ thread }: { thread: SidebarThreadSumma
   // glyph is what tells the environments apart.
   const isRemoteThread = thread.environmentId !== primaryEnvironmentId;
   const remoteEnvLabel = environment?.label ?? null;
-  const threadEnvironmentLabel = isRemoteThread ? (remoteEnvLabel ?? "Remote") : null;
+  const threadEnvironmentLabel = isRemoteThread
+    ? (remoteEnvLabel ?? translateWebSource(locale, "Remote"))
+    : null;
   const remoteMachine = resolveEnvironmentMachineKind(environment?.serverConfig ?? null);
   const terminalStatus = terminalStatusFromRunningIds(runningTerminalIds);
 
@@ -571,7 +596,7 @@ export function ThreadRowTrailingStatus({ thread }: { thread: SidebarThreadSumma
             render={
               <span
                 role="img"
-                aria-label={terminalStatus.label}
+                aria-label={translateWebSource(locale, terminalStatus.label)}
                 className={`inline-flex items-center justify-center ${terminalStatus.colorClass}`}
               />
             }
@@ -580,7 +605,7 @@ export function ThreadRowTrailingStatus({ thread }: { thread: SidebarThreadSumma
               className={`size-3 ${terminalStatus.pulse ? "animate-status-pulse" : ""}`}
             />
           </TooltipTrigger>
-          <TooltipPopup side="top">{terminalStatus.label}</TooltipPopup>
+          <TooltipPopup side="top">{translateWebSource(locale, terminalStatus.label)}</TooltipPopup>
         </Tooltip>
       ) : null}
       {isRemoteThread ? (
@@ -588,7 +613,7 @@ export function ThreadRowTrailingStatus({ thread }: { thread: SidebarThreadSumma
           <TooltipTrigger
             render={
               <span
-                aria-label={threadEnvironmentLabel ?? "Remote"}
+                aria-label={threadEnvironmentLabel ?? translateWebSource(locale, "Remote")}
                 className="inline-flex items-center justify-center"
               />
             }

@@ -289,13 +289,15 @@ function CodexArtifactTemplateCard(props: {
   readonly template: CodexArtifactTemplate;
   readonly onUse?: ((template: CodexArtifactTemplate) => void) | undefined;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const Icon = ARTIFACT_TEMPLATE_ICON_BY_KIND[props.template.artifactKind];
   const presentationLabel = codexArtifactTemplatePresentationLabel(props.template.artifactKind);
 
   return (
     <div
       role="group"
-      aria-label={`${props.template.displayName} template`}
+      aria-label={`${props.template.displayName} ${localize("template")}`}
       className="chat-markdown-artifact-template my-[0.65rem] flex w-full min-w-0 items-center gap-3 rounded-xl border border-border/70 bg-card/60 px-3 py-2.5 text-foreground shadow-xs"
       data-artifact-kind={props.template.artifactKind}
       data-markdown-copy={`${props.template.displayName} (${presentationLabel})\n\n`}
@@ -323,7 +325,7 @@ function CodexArtifactTemplateCard(props: {
           className="shrink-0"
           onClick={() => props.onUse?.(props.template)}
         >
-          Use template
+          {localize("Use template")}
         </Button>
       ) : null}
     </div>
@@ -1350,6 +1352,7 @@ const MarkdownLinkContext = React.createContext(false);
 function expandableMarkdownImageProps(
   onImageExpand: ((preview: ExpandedImagePreview) => void) | undefined,
   alt: string,
+  locale: Parameters<typeof translateWebSource>[0],
 ) {
   if (!onImageExpand) return {};
   const previewName = alt.trim() || "image";
@@ -1363,7 +1366,7 @@ function expandableMarkdownImageProps(
   return {
     role: "button" as const,
     tabIndex: 0,
-    "aria-label": `Preview ${previewName}`,
+    "aria-label": `${translateWebSource(locale, "Preview")} ${previewName}`,
     onClick: expand,
     onKeyDown: (event: ReactKeyboardEvent) => {
       if (event.key === "Enter" || event.key === " ") expand(event);
@@ -1496,7 +1499,7 @@ function ChatMarkdownImage(props: {
             props.onImageExpand && "cursor-zoom-in",
           )}
           style={props.style}
-          {...expandableMarkdownImageProps(props.onImageExpand, props.alt)}
+          {...expandableMarkdownImageProps(props.onImageExpand, props.alt, locale)}
           {...imageEvents(src)}
         />
       </MediaActions>
@@ -2182,7 +2185,7 @@ const MarkdownFileLink = memo(function MarkdownFileLink({
           ) : (
             <button
               type="button"
-              aria-label={`File options for ${label}`}
+              aria-label={`${localize("File options for")} ${label}`}
               aria-haspopup="menu"
               className={cn(
                 CHAT_FILE_TAG_CHIP_CLASS_NAME,
@@ -2254,6 +2257,8 @@ function useChatMarkdownState({
   renderContextReference,
   headingLevelOffset = 0,
 }: ChatMarkdownProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { resolvedTheme } = useTheme();
   const [localMediaPreview, setLocalMediaPreview] = useState<ExpandedImagePreview | null>(null);
   const markdownRef = useRef<HTMLDivElement>(null);
@@ -2314,11 +2319,11 @@ function useChatMarkdownState({
           toastManager.add(
             stackedThreadToast({
               type: "error",
-              title: "Media unavailable",
+              title: localize("Media unavailable"),
               description:
                 error instanceof Error
                   ? error.message
-                  : "The file could not be loaded. It may have been moved or deleted.",
+                  : localize("The file could not be loaded. It may have been moved or deleted."),
             }),
           );
         },
@@ -2459,7 +2464,7 @@ function useChatMarkdownState({
           AsyncResult.failure<void, BrowserPreviewUnavailableError>(
             Cause.fail(
               new BrowserPreviewUnavailableError({
-                message: "Thread context is unavailable.",
+                message: localize("Thread context is unavailable."),
               }),
             ),
           ),
@@ -2473,7 +2478,7 @@ function useChatMarkdownState({
             toastManager.add(
               stackedThreadToast({
                 type: "error",
-                title: "Unable to open link in browser",
+                title: localize("Unable to open link in browser"),
                 description: error.message,
               }),
             );
@@ -2491,7 +2496,7 @@ function useChatMarkdownState({
           AsyncResult.failure<void, BrowserPreviewUnavailableError>(
             Cause.fail(
               new BrowserPreviewUnavailableError({
-                message: "Environment is not connected.",
+                message: localize("Environment is not connected."),
               }),
             ),
           ),
@@ -2827,6 +2832,8 @@ const CHAT_MARKDOWN_COMPONENTS = {
     );
   },
   a: function MarkdownAnchor({ node, href, children, title: _title, ...props }) {
+    const { locale } = useI18n();
+    const localize = (value: string) => translateWebSource(locale, value);
     const {
       cwd,
       environmentId,
@@ -3019,9 +3026,10 @@ const CHAT_MARKDOWN_COMPONENTS = {
                       type: "error",
                       title:
                         operation === "link-pull-request-to-thread"
-                          ? "Unable to link pull request"
-                          : "Unable to unlink pull request",
-                      description: cause instanceof Error ? cause.message : "The request failed.",
+                          ? localize("Unable to link pull request")
+                          : localize("Unable to unlink pull request"),
+                      description:
+                        cause instanceof Error ? cause.message : localize("The request failed."),
                     }),
                   );
                 }
