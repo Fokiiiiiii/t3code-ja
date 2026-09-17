@@ -223,7 +223,7 @@ export function DeviceToolsPanel(props: {
             </div>
           ) : null}
           <SubmitRow
-            placeholder="https://… or myapp://"
+            placeholder={localize("https://… or myapp://")}
             action={localize("Open")}
             disabled={disabled}
             onSubmit={(url) => act({ type: "openUrl", url })}
@@ -265,7 +265,7 @@ export function DeviceToolsPanel(props: {
             <>
               <Row label="Liquid Glass">
                 <ToggleGroup
-                  aria-label="Liquid Glass"
+                  aria-label={localize("Liquid Glass")}
                   value={settings?.liquidGlass ? [settings.liquidGlass] : []}
                   disabled={disabled || settings?.liquidGlass === undefined}
                   onValueChange={(value) => {
@@ -346,7 +346,7 @@ export function DeviceToolsPanel(props: {
           )}
         </Section>
 
-        <Section title="Accessibility">
+        <Section title={localize("Accessibility")}>
           <SwitchRow
             label={localize("Overlay element frames")}
             checked={props.axOverlay}
@@ -376,7 +376,7 @@ export function DeviceToolsPanel(props: {
         />
 
         {isIos ? (
-          <Section title="Push notification">
+          <Section title={localize("Push notification")}>
             <SubmitRow
               placeholder={localize("Alert text")}
               action={localize("Send")}
@@ -533,6 +533,8 @@ function LocationSection(props: {
   readonly onSet: (latitude: number, longitude: number) => Promise<void>;
   readonly onClear: () => Promise<void>;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const parsed = { latitude: Number(latitude), longitude: Number(longitude) };
@@ -542,12 +544,12 @@ function LocationSection(props: {
     Math.abs(parsed.latitude) <= 90 &&
     Math.abs(parsed.longitude) <= 180;
   return (
-    <Section title="Location">
+    <Section title={localize("Location")}>
       <div className="flex gap-1.5">
         <Input
           size="compact"
           className="min-w-0 flex-1 font-mono"
-          placeholder="Latitude"
+          placeholder={localize("Latitude")}
           inputMode="decimal"
           value={latitude}
           disabled={props.disabled}
@@ -556,7 +558,7 @@ function LocationSection(props: {
         <Input
           size="compact"
           className="min-w-0 flex-1 font-mono"
-          placeholder="Longitude"
+          placeholder={localize("Longitude")}
           inputMode="decimal"
           value={longitude}
           disabled={props.disabled}
@@ -575,9 +577,9 @@ function LocationSection(props: {
             void props.onSet(preset.latitude, preset.longitude);
           }}
         >
-          <SelectTrigger size="xs" className="w-32" aria-label="Location preset">
+          <SelectTrigger size="xs" className="w-32" aria-label={localize("Location preset")}>
             <SelectValue>
-              <span className="text-muted-foreground">Preset…</span>
+              <span className="text-muted-foreground">{localize("Preset…")}</span>
             </SelectValue>
           </SelectTrigger>
           <SelectPopup align="start" alignItemWithTrigger={false}>
@@ -594,7 +596,7 @@ function LocationSection(props: {
           disabled={props.disabled || !valid}
           onClick={() => void props.onSet(parsed.latitude, parsed.longitude)}
         >
-          Set
+          {localize("Set")}
         </Button>
         {props.canClear ? (
           <Button
@@ -607,7 +609,7 @@ function LocationSection(props: {
               void props.onClear();
             }}
           >
-            Clear
+            {localize("Clear")}
           </Button>
         ) : null}
       </div>
@@ -626,24 +628,26 @@ function PermissionsSection(props: {
     decision: "grant" | "revoke" | "reset",
   ) => Promise<void>;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [appId, setAppId] = useState("");
   const [permission, setPermission] = useState<DevicePermission>("camera");
   const resolvedAppId = appId.trim() || props.defaultAppId;
   const decide = (decision: "grant" | "revoke" | "reset") =>
     void props.onDecide(resolvedAppId, permission, decision);
   return (
-    <Section title="Permissions">
+    <Section title={localize("Permissions")}>
       <Input
         size="compact"
         className="font-mono"
-        placeholder={props.defaultAppId || "App ID"}
+        placeholder={props.defaultAppId || localize("App ID")}
         value={appId}
         disabled={props.disabled}
         onChange={(event) => setAppId(event.target.value)}
       />
       <div className="flex flex-wrap items-center gap-1.5">
         <ChoiceSelect
-          ariaLabel="Permission"
+          ariaLabel={localize("Permission")}
           value={permission}
           options={props.permissions}
           disabled={props.disabled}
