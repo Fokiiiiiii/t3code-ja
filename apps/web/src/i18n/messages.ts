@@ -6464,6 +6464,8 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "in the model picker": "モデル選択に",
   "model-slug": "model-slug",
   "Shown in picker": "モデル選択に表示",
+  "for example, a second Codex install pointed at a different workspace.":
+    "たとえば、別のワークスペースを指定した 2 つ目の Codex インストールです。",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {

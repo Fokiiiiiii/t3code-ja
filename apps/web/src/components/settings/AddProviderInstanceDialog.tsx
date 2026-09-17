@@ -3,6 +3,8 @@
 import { Radio as RadioPrimitive } from "@base-ui/react/radio";
 import { CheckIcon } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 import {
   ProviderInstanceId,
   ProviderDriverKind,
@@ -121,6 +123,8 @@ export function AddProviderInstanceDialog({
   environmentLabel,
   onOpenChange,
 }: AddProviderInstanceDialogProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const settings = useEnvironmentSettings(environmentId);
   const updateSettings = useUpdateEnvironmentSettings(environmentId);
 
@@ -208,15 +212,15 @@ export function AddProviderInstanceDialog({
       updateSettings({ providerInstances: nextMap });
       toastManager.add({
         type: "success",
-        title: "Provider instance added",
-        description: `${driverOption.label} instance '${instanceId}' was added.`,
+        title: localize("Provider instance added"),
+        description: `${driverOption.label} ${localize("instance")} '${instanceId}' ${localize("was added.")}`,
       });
       onOpenChange(false);
     } catch (error) {
       toastManager.add({
         type: "error",
-        title: "Could not add provider instance",
-        description: error instanceof Error ? error.message : "Update failed.",
+        title: localize("Could not add provider instance"),
+        description: error instanceof Error ? error.message : localize("Update failed."),
       });
     }
   };
@@ -225,11 +229,11 @@ export function AddProviderInstanceDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <WizardPopup>
         <WizardHeader
-          title="Add provider instance"
+          title={localize("Add provider instance")}
           description={
             <>
-              Configure an additional provider instance on {environmentLabel} — for example, a
-              second Codex install pointed at a different workspace.
+              {localize("Configure an additional provider instance on")} {environmentLabel} —{" "}
+              {localize("for example, a second Codex install pointed at a different workspace.")}
             </>
           }
         >
@@ -244,7 +248,7 @@ export function AddProviderInstanceDialog({
         <WizardPanel>
           <div className={cn("grid gap-2", wizardStep !== 0 && "hidden")}>
             <div id="add-instance-driver-label" className="text-sm font-medium text-foreground">
-              Driver
+              {localize("Driver")}
             </div>
             <RadioGroup
               value={driver}
@@ -262,7 +266,7 @@ export function AddProviderInstanceDialog({
                   >
                     <IconComponent className="size-4 shrink-0" aria-hidden />
                     <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
-                      {option.label}
+                      {localize(option.label)}
                     </span>
                     <RadioPrimitive.Indicator
                       className="grid size-5 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"
@@ -294,7 +298,7 @@ export function AddProviderInstanceDialog({
                       {option.label}
                     </span>
                     <Badge variant="warning" size="sm">
-                      Coming Soon
+                      {localize("Coming Soon")}
                     </Badge>
                   </RadioPrimitive.Root>
                 );
@@ -303,20 +307,20 @@ export function AddProviderInstanceDialog({
           </div>
 
           <label className={cn("grid gap-2", wizardStep !== 1 && "hidden")}>
-            <span className="text-xs font-medium text-foreground">Label</span>
+            <span className="text-xs font-medium text-foreground">{localize("Label")}</span>
             <Input
               className="bg-background"
-              placeholder="e.g. Work"
+              placeholder={localize("e.g. Work")}
               value={label}
               onChange={(event) => setLabel(event.target.value)}
             />
             <span className="text-[11px] text-muted-foreground">
-              Shown in the provider list. Optional.
+              {localize("Shown in the provider list. Optional.")}
             </span>
           </label>
 
           <label className={cn("grid gap-2", wizardStep !== 1 && "hidden")}>
-            <span className="text-xs font-medium text-foreground">Instance ID</span>
+            <span className="text-xs font-medium text-foreground">{localize("Instance ID")}</span>
             <Input
               className="bg-background"
               placeholder={`${driver}_work`}
@@ -327,22 +331,24 @@ export function AddProviderInstanceDialog({
               aria-invalid={showInstanceIdError}
             />
             {showInstanceIdError ? (
-              <span className="text-[11px] text-destructive">{instanceIdError}</span>
+              <span className="text-[11px] text-destructive">{localize(instanceIdError)}</span>
             ) : (
               <span className="text-[11px] text-muted-foreground">
-                Routing key used by threads and sessions. Letters, digits, '-', or '_'.
+                {localize(
+                  "Routing key used by threads and sessions. Letters, digits, '-', or '_'.",
+                )}
               </span>
             )}
           </label>
 
           <div className={cn("grid gap-2", wizardStep !== 1 && "hidden")}>
-            <span className="text-xs font-medium text-foreground">Accent color</span>
+            <span className="text-xs font-medium text-foreground">{localize("Accent color")}</span>
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <input
                 type="color"
                 value={normalizeProviderAccentColor(accentColor) ?? PROVIDER_ACCENT_SWATCHES[0]}
                 onChange={(event) => setAccentColor(event.target.value)}
-                aria-label="Provider instance accent color"
+                aria-label={localize("Provider instance accent color")}
                 className="h-8 w-10 cursor-pointer rounded-xl border border-input bg-background p-0.5"
               />
               <div className="flex flex-wrap gap-1.5">
@@ -360,7 +366,7 @@ export function AddProviderInstanceDialog({
                       )}
                       style={{ backgroundColor: swatch }}
                       onClick={() => setAccentColor(swatch)}
-                      aria-label={`Use ${swatch} accent`}
+                      aria-label={`${localize("Use")} ${swatch} ${localize("accent")}`}
                     />
                   );
                 })}
@@ -373,7 +379,7 @@ export function AddProviderInstanceDialog({
                   className="text-muted-foreground"
                   onClick={() => setAccentColor("")}
                 >
-                  Clear
+                  {localize("Clear")}
                 </Button>
               ) : null}
             </div>
@@ -395,7 +401,9 @@ export function AddProviderInstanceDialog({
           ) : wizardStep === 2 ? (
             <div className="grid gap-2">
               <p className="text-sm text-muted-foreground">
-                This driver has no required configuration. You can add the instance now.
+                {localize(
+                  "This driver has no required configuration. You can add the instance now.",
+                )}
               </p>
             </div>
           ) : null}
@@ -412,12 +420,12 @@ export function AddProviderInstanceDialog({
               setWizardStep((step) => Math.max(0, step - 1));
             }}
           >
-            {wizardStep === 0 ? "Cancel" : "Back"}
+            {localize(wizardStep === 0 ? "Cancel" : "Back")}
           </Button>
           {wizardStep < ADD_PROVIDER_WIZARD_STEPS.length - 1 ? (
-            <Button onClick={() => navigateToStep(wizardStep + 1)}>Next</Button>
+            <Button onClick={() => navigateToStep(wizardStep + 1)}>{localize("Next")}</Button>
           ) : (
-            <Button onClick={handleSave}>Add instance</Button>
+            <Button onClick={handleSave}>{localize("Add instance")}</Button>
           )}
         </WizardFooter>
       </WizardPopup>
