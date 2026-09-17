@@ -8,6 +8,8 @@ import { DiscoveryList } from "../ui/discovery-list";
 import { PreviewLocalServerCard } from "./PreviewLocalServerCard";
 import { PreviewRecentUrlCard } from "./PreviewRecentUrlCard";
 import { useDiscoveredLocalServers } from "./useDiscoveredLocalServers";
+import { useI18n } from "~/i18n/WebI18nProvider";
+import { translateWebSource } from "~/i18n/messages";
 
 interface Props {
   threadRef: ScopedThreadRef;
@@ -26,6 +28,8 @@ export function PreviewEmptyState({
   onRemoveRecent,
   onOpenUrl,
 }: Props) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const servers = useDiscoveredLocalServers({
     environmentId,
     configuredUrls,
@@ -38,10 +42,11 @@ export function PreviewEmptyState({
         <EmptyMedia variant="icon">
           <Globe className="size-4.5 text-muted-foreground" />
         </EmptyMedia>
-        <EmptyTitle>No preview yet</EmptyTitle>
+        <EmptyTitle>{localize("No preview yet")}</EmptyTitle>
         <EmptyDescription>
-          Type a URL above, or run a dev script. Browser-ready localhost servers will show up here
-          automatically.
+          {localize(
+            "Type a URL above, or run a dev script. Browser-ready localhost servers will show up here automatically.",
+          )}
         </EmptyDescription>
       </Empty>
     );
@@ -54,7 +59,7 @@ export function PreviewEmptyState({
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <History className="size-4 shrink-0" />
-              <h2 className="font-medium">Recently used</h2>
+              <h2 className="font-medium">{localize("Recently used")}</h2>
             </div>
             <DiscoveryList>
               {recents.map((entry) => (
@@ -73,7 +78,7 @@ export function PreviewEmptyState({
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <RadioTower className="size-4 shrink-0" />
-              <h2 className="font-medium">Local servers</h2>
+              <h2 className="font-medium">{localize("Local servers")}</h2>
             </div>
             <DiscoveryList>
               {servers.map((server) => (
@@ -86,7 +91,7 @@ export function PreviewEmptyState({
               ))}
             </DiscoveryList>
             <p className="px-1 text-xs text-muted-foreground">
-              Select a live local server to open it in this browser tab.
+              {localize("Select a live local server to open it in this browser tab.")}
             </p>
           </div>
         ) : null}

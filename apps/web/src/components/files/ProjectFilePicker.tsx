@@ -15,6 +15,8 @@ import {
   PROJECT_FILE_PICKER_RESULT_LIMIT,
 } from "./ProjectFilePicker.logic";
 import { useProjectFilePickerQuery } from "./projectFilesQueryState";
+import { useI18n } from "~/i18n/WebI18nProvider";
+import { translateWebSource } from "~/i18n/messages";
 
 interface ProjectFilePickerProps {
   readonly setOpen: (open: boolean) => void;
@@ -51,6 +53,8 @@ function getEmptyStateMessage(query: string, error: string | null, isPending: bo
 }
 
 function EmptyProjectFilePicker() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <CommandPaletteContent
       aria-label="File picker"
@@ -62,7 +66,7 @@ function EmptyProjectFilePicker() {
       value=""
     >
       <div className="py-10 text-center text-sm text-muted-foreground">
-        Open a project to search its files.
+        {localize("Open a project to search its files.")}
       </div>
     </CommandPaletteContent>
   );

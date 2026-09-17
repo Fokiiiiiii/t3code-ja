@@ -15,6 +15,8 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Toggle } from "../ui/toggle";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
 import { HighlightedSearchLine } from "./HighlightedSearchLine";
+import { useI18n } from "~/i18n/WebI18nProvider";
+import { translateWebSource } from "~/i18n/messages";
 
 interface ProjectContentSearchDialogProps {
   readonly onOpenChange: (open: boolean) => void;
@@ -60,12 +62,14 @@ function SearchOptionButton(props: {
   readonly onClick: () => void;
   readonly children: ReactNode;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <Tooltip>
       <TooltipTrigger
         render={
           <Toggle
-            aria-label={props.label}
+            aria-label={localize(props.label)}
             pressed={props.active}
             className="size-8 rounded-[5px] font-mono text-muted-foreground data-pressed:text-foreground sm:size-7"
             size="compact"
@@ -76,12 +80,14 @@ function SearchOptionButton(props: {
       >
         {props.children}
       </TooltipTrigger>
-      <TooltipPopup side="top">{props.label}</TooltipPopup>
+      <TooltipPopup side="top">{localize(props.label)}</TooltipPopup>
     </Tooltip>
   );
 }
 
 function EmptyContentSearchDialog() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <CommandPaletteContent
       aria-label="Search project contents"
@@ -93,7 +99,7 @@ function EmptyContentSearchDialog() {
       testId="project-content-search"
       value=""
     >
-      Open a project to search its files.
+      {localize("Open a project to search its files.")}
     </CommandPaletteContent>
   );
 }
@@ -102,6 +108,8 @@ function OpenContentSearchDialog(props: {
   readonly onOpenChange: (open: boolean) => void;
   readonly target: ActiveProjectTarget;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { target } = props;
   const { resolvedTheme } = useTheme();
   const [query, setQuery] = useState("");
@@ -226,14 +234,20 @@ function OpenContentSearchDialog(props: {
         <div className="flex h-9 shrink-0 items-center border-b px-3 text-xs text-muted-foreground">
           {search.isPending ? (
             <span className="flex items-center gap-2">
-              <Spinner className="size-3.5" /> Searching…
+              <Spinner className="size-3.5" /> {localize("Searching…")}
             </span>
           ) : search.error ? (
             <span className="text-destructive">{search.error}</span>
           ) : search.invalidRegex ? (
-            <span className="text-destructive">Invalid regular expression</span>
+            <span className="text-destructive">{localize("Invalid regular expression")}</span>
           ) : (
-            `${matches.length.toLocaleString()}${search.truncated ? "+" : ""} results in ${fileCount.toLocaleString()} files`
+            localize(
+              search.truncated
+                ? "{results}+ results in {files} files"
+                : "{results} results in {files} files",
+            )
+              .replace("{results}", matches.length.toLocaleString())
+              .replace("{files}", fileCount.toLocaleString())
           )}
         </div>
       ) : null}
@@ -241,8 +255,8 @@ function OpenContentSearchDialog(props: {
       {matches.length === 0 ? (
         <div className="flex flex-1 items-center justify-center px-6 text-center text-sm text-muted-foreground">
           {search.hasQuery && !search.isPending && !search.error
-            ? "No results found."
-            : "Type to search across your project."}
+            ? localize("No results found.")
+            : localize("Type to search across your project.")}
         </div>
       ) : (
         <ScrollArea className="min-h-0 flex-1" scrollFade>

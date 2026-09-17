@@ -21,6 +21,8 @@ import {
 import { Tooltip, TooltipPopup, TooltipTrigger } from "~/components/ui/tooltip";
 
 import { previewBridge } from "./previewBridge";
+import { useI18n } from "~/i18n/WebI18nProvider";
+import { translateWebSource } from "~/i18n/messages";
 
 const COLOR_SCHEME_OPTIONS: ReadonlyArray<{
   value: DesktopPreviewColorScheme;
@@ -83,6 +85,8 @@ export function PreviewMoreMenu({
   profileId,
   profileName,
 }: Props) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   if (!previewBridge) return null;
   const bridge = previewBridge;
   const tabDisabled = !tabId || !hasWebContents;
@@ -99,32 +103,37 @@ export function PreviewMoreMenu({
           render={
             <MenuTrigger
               render={
-                <Button variant="ghost" size="icon-xs" type="button" aria-label="Preview menu" />
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  type="button"
+                  aria-label={localize("Preview menu")}
+                />
               }
             />
           }
         >
           <MoreVertical />
         </TooltipTrigger>
-        <TooltipPopup>More</TooltipPopup>
+        <TooltipPopup>{localize("More")}</TooltipPopup>
       </Tooltip>
       <MenuPopup align="end" sideOffset={6} className="min-w-56">
         <MenuItem onClick={callTab(bridge.hardReload)} disabled={tabDisabled}>
-          Hard reload
+          {localize("Hard reload")}
         </MenuItem>
         <MenuItem onClick={callTab(bridge.openDevTools)} disabled={tabDisabled}>
-          Open DevTools
+          {localize("Open DevTools")}
         </MenuItem>
         <MenuItem onClick={onNativePictureInPicture} disabled={tabDisabled}>
           {nativePictureInPicture
-            ? "Close separate preview window"
-            : "Open separate preview window"}
+            ? localize("Close separate preview window")
+            : localize("Open separate preview window")}
         </MenuItem>
         <MenuItem onClick={onToggleDeviceToolbar} disabled={tabDisabled}>
-          {deviceToolbarVisible ? "Hide device toolbar" : "Show device toolbar"}
+          {localize(deviceToolbarVisible ? "Hide device toolbar" : "Show device toolbar")}
         </MenuItem>
         <MenuSub>
-          <MenuSubTrigger disabled={tabDisabled}>Appearance</MenuSubTrigger>
+          <MenuSubTrigger disabled={tabDisabled}>{localize("Appearance")}</MenuSubTrigger>
           <MenuSubPopup className="min-w-32">
             <MenuRadioGroup
               value={colorScheme}
@@ -137,7 +146,7 @@ export function PreviewMoreMenu({
             >
               {COLOR_SCHEME_OPTIONS.map((option) => (
                 <MenuRadioItem key={option.value} value={option.value}>
-                  {option.label}
+                  {localize(option.label)}
                 </MenuRadioItem>
               ))}
             </MenuRadioGroup>
@@ -154,14 +163,14 @@ export function PreviewMoreMenu({
           className="justify-between"
           disabled={tabDisabled}
         >
-          <span>Zoom</span>
+          <span>{localize("Zoom")}</span>
           <span className="flex items-center gap-1">
             <Button
               variant="outline"
               size="icon-xs"
               type="button"
               onClick={callTab(bridge.zoomOut)}
-              aria-label="Zoom out"
+              aria-label={localize("Zoom out")}
               disabled={tabDisabled}
             >
               <Minus />
@@ -174,7 +183,7 @@ export function PreviewMoreMenu({
               size="icon-xs"
               type="button"
               onClick={callTab(bridge.zoomIn)}
-              aria-label="Zoom in"
+              aria-label={localize("Zoom in")}
               disabled={tabDisabled}
             >
               <PlusIcon />
@@ -184,7 +193,7 @@ export function PreviewMoreMenu({
               size="icon-xs"
               type="button"
               onClick={callTab(bridge.resetZoom)}
-              aria-label="Reset zoom"
+              aria-label={localize("Reset zoom")}
               className="[:hover,[data-pressed]]:bg-foreground/10"
               disabled={tabDisabled}
             >

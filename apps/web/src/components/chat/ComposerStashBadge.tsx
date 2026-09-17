@@ -3,6 +3,8 @@ import { memo } from "react";
 
 import { cn } from "~/lib/utils";
 import { ComposerBanner } from "./ComposerBanner";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 /**
  * Bookmark tab that shows the stash count beside the composer's other attachments
@@ -19,6 +21,8 @@ export const ComposerStashBadge = memo(function ComposerStashBadge(props: {
   pulsing: boolean;
   onToggleMenu: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   if (props.count === 0) return null;
   const count = (
     <ComposerBanner.Count
@@ -43,7 +47,7 @@ export const ComposerStashBadge = memo(function ComposerStashBadge(props: {
       <ComposerBanner.Row
         render={<button type="button" />}
         data-prompt-stash-badge="true"
-        aria-label={`Stashed prompts: ${props.count}. Open stash.`}
+        aria-label={`${localize("Stashed prompts:")} ${props.count}. ${localize("Open stash.")}`}
         aria-expanded={props.menuOpen}
         className={cn(
           "transition-colors duration-200",
@@ -58,7 +62,7 @@ export const ComposerStashBadge = memo(function ComposerStashBadge(props: {
         <ComposerBanner.Icon>
           <BookmarkIcon />
         </ComposerBanner.Icon>
-        <ComposerBanner.Content>Stash</ComposerBanner.Content>
+        <ComposerBanner.Content>{localize("Stash")}</ComposerBanner.Content>
         <ComposerBanner.Actions>{count}</ComposerBanner.Actions>
       </ComposerBanner.Row>
     </ComposerBanner.Root>

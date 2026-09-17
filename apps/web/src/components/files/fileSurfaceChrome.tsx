@@ -6,6 +6,8 @@ import { Toggle } from "~/components/ui/toggle";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "~/components/ui/tooltip";
 import { DIFF_SURFACE_THEME_UNSAFE_CSS } from "~/lib/diffRendering";
 import { cn } from "~/lib/utils";
+import { useI18n } from "~/i18n/WebI18nProvider";
+import { translateWebSource } from "~/i18n/messages";
 
 /**
  * One header row for every file surface in the side panel, whether the file
@@ -73,6 +75,8 @@ export function FileSurfaceAction(props: {
   readonly onPress: () => void;
   readonly children: ReactNode;
 }) {
+  const { locale } = useI18n();
+  const label = translateWebSource(locale, props.label);
   const pressed = props.pressed;
   return (
     <Tooltip>
@@ -84,7 +88,7 @@ export function FileSurfaceAction(props: {
               className="shrink-0"
               disabled={props.disabled ?? false}
               onClick={props.onPress}
-              aria-label={props.label}
+              aria-label={label}
               variant="ghost"
               size="icon-sm"
             >
@@ -96,7 +100,7 @@ export function FileSurfaceAction(props: {
               pressed={pressed}
               disabled={props.disabled ?? false}
               onPressedChange={props.onPress}
-              aria-label={props.label}
+              aria-label={label}
               variant="ghost"
               size="sm"
             >
@@ -105,7 +109,7 @@ export function FileSurfaceAction(props: {
           )
         }
       />
-      <TooltipPopup>{props.label}</TooltipPopup>
+      <TooltipPopup>{label}</TooltipPopup>
     </Tooltip>
   );
 }
@@ -122,10 +126,11 @@ export function FileSurfaceNotice(props: { readonly children: ReactNode }) {
 }
 
 export function FileSurfaceLoading(props: { readonly className?: string }) {
+  const { locale } = useI18n();
   return (
     <div
       role="status"
-      aria-label="Loading file"
+      aria-label={translateWebSource(locale, "Loading file")}
       className={cn(
         "flex min-h-0 flex-1 items-center justify-center text-muted-foreground",
         props.className,
@@ -140,6 +145,7 @@ export function FileSurfaceFailure(props: {
   readonly message: string;
   readonly onRetry?: () => void;
 }) {
+  const { locale } = useI18n();
   return (
     <div
       role="alert"
@@ -152,7 +158,7 @@ export function FileSurfaceFailure(props: {
           onClick={props.onRetry}
           className="rounded-md border border-input px-2.5 py-1 text-xs text-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
         >
-          Try again
+          {translateWebSource(locale, "Try again")}
         </button>
       ) : null}
     </div>
