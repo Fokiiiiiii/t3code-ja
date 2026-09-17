@@ -38,6 +38,8 @@ import { ResourceTelemetryDiagnostics } from "./ResourceTelemetryDiagnostics";
 import { SettingsPageContainer, SettingsSection, useRelativeTimeTick } from "./settingsLayout";
 import { useAtomCommand } from "../../state/use-atom-command";
 import { useSettingsScope } from "./SettingsScopeContext";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const NUMBER_FORMAT = new Intl.NumberFormat();
 
@@ -155,7 +157,12 @@ function StatsGrid({ children }: { children: ReactNode }) {
 }
 
 function EmptyRows({ label }: { label: string }) {
-  return <div className="px-4 py-4 text-xs text-muted-foreground sm:px-5">{label}</div>;
+  const { locale } = useI18n();
+  return (
+    <div className="px-4 py-4 text-xs text-muted-foreground sm:px-5">
+      {translateWebSource(locale, label)}
+    </div>
+  );
 }
 
 function DiagnosticsTable({
@@ -169,6 +176,7 @@ function DiagnosticsTable({
   minTableWidth?: string;
   columnWidths?: ReadonlyArray<string>;
 }) {
+  const { locale } = useI18n();
   return (
     <ScrollArea
       chainVerticalScroll
@@ -196,7 +204,7 @@ function DiagnosticsTable({
                   !columnWidths && index === headers.length - 1 && "w-px",
                 )}
               >
-                {header.replaceAll(" ", "\u00a0")}
+                {translateWebSource(locale, header).replaceAll(" ", "\u00a0")}
               </th>
             ))}
           </tr>
@@ -208,6 +216,7 @@ function DiagnosticsTable({
 }
 
 function TraceIdCell({ traceId }: { traceId: string }) {
+  const { locale } = useI18n();
   const { copyToClipboard, isCopied: copied } = useCopyToClipboard({
     target: "trace ID",
     timeout: 1_200,
@@ -236,14 +245,16 @@ function TraceIdCell({ traceId }: { traceId: string }) {
             <Button
               size="icon-micro"
               variant="ghost-muted"
-              aria-label={copied ? "Copied trace ID" : "Copy trace ID"}
+              aria-label={translateWebSource(locale, copied ? "Copied trace ID" : "Copy trace ID")}
               onClick={() => copyToClipboard(traceId)}
             >
               <CopyIcon className="size-3" />
             </Button>
           }
         />
-        <TooltipPopup side="top">{copied ? "Copied" : "Copy full trace ID"}</TooltipPopup>
+        <TooltipPopup side="top">
+          {translateWebSource(locale, copied ? "Copied" : "Copy full trace ID")}
+        </TooltipPopup>
       </Tooltip>
     </div>
   );
@@ -717,25 +728,37 @@ function ProcessResourceHistoryTable({
 }
 
 function DiagnosticsLastChecked({ checkedAt }: { checkedAt: DateTime.Utc | null }) {
+  const { locale } = useI18n();
   useRelativeTimeTick();
   const relative = getRelativeTimeState(checkedAt ? DateTime.formatIso(checkedAt) : null);
 
   if (relative.status === "missing") {
-    return <span className="text-[11px] text-muted-foreground/50">Checking</span>;
+    return (
+      <span className="text-[11px] text-muted-foreground/50">
+        {translateWebSource(locale, "Checking")}
+      </span>
+    );
   }
 
   if (relative.status === "invalid") {
-    return <span className="text-[11px] text-muted-foreground/50">Checked unavailable</span>;
+    return (
+      <span className="text-[11px] text-muted-foreground/50">
+        {translateWebSource(locale, "Checked unavailable")}
+      </span>
+    );
   }
 
   return (
     <span className="text-[11px] text-muted-foreground/60">
       {relative.suffix ? (
         <>
-          Checked <span className="font-mono tabular-nums">{relative.value}</span> {relative.suffix}
+          {translateWebSource(locale, "Checked")}{" "}
+          <span className="font-mono tabular-nums">{relative.value}</span> {relative.suffix}
         </>
       ) : (
-        <>Checked {relative.value}</>
+        <>
+          {translateWebSource(locale, "Checked")} {relative.value}
+        </>
       )}
     </span>
   );
@@ -750,6 +773,7 @@ function DiagnosticsRefreshButton({
   label: string;
   onClick: () => void;
 }) {
+  const { locale } = useI18n();
   return (
     <Tooltip>
       <TooltipTrigger
@@ -759,18 +783,20 @@ function DiagnosticsRefreshButton({
             variant="ghost-muted"
             disabled={isPending}
             onClick={onClick}
-            aria-label={label}
+            aria-label={translateWebSource(locale, label)}
           >
             <RefreshIcon refreshing={isPending} />
           </Button>
         }
       />
-      <TooltipPopup side="top">{label}</TooltipPopup>
+      <TooltipPopup side="top">{translateWebSource(locale, label)}</TooltipPopup>
     </Tooltip>
   );
 }
 
 export function DiagnosticsSettingsPanel() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { environment } = useSettingsScope();
   // The boundary only mounts this page when the selection resolves to one
   // connected environment, so the representative is the one to inspect.
@@ -840,11 +866,11 @@ export function DiagnosticsSettingsPanel() {
 
     const editor = resolveAndPersistPreferredEditor(availableEditors ?? []);
     if (!editor) {
-      setOpenLogsDirectoryError("No available editors found.");
+      setOpenLogsDirectoryError(localize("No available editors found."));
       return;
     }
     if (environmentId === null) {
-      setOpenLogsDirectoryError("No environment is selected.");
+      setOpenLogsDirectoryError(localize("No environment is selected."));
       return;
     }
 
@@ -862,7 +888,7 @@ export function DiagnosticsSettingsPanel() {
       if (result._tag === "Failure" && !isAtomCommandInterrupted(result)) {
         const error = squashAtomCommandFailure(result);
         setOpenLogsDirectoryError(
-          error instanceof Error ? error.message : "Unable to open logs folder.",
+          error instanceof Error ? error.message : localize("Unable to open logs folder."),
         );
       }
     })();
@@ -893,8 +919,9 @@ export function DiagnosticsSettingsPanel() {
           clearSignaling();
           toastManager.add({
             type: "error",
-            title: "Could not confirm signal",
-            description: error instanceof Error ? error.message : `Failed to send ${signal}.`,
+            title: localize("Could not confirm signal"),
+            description:
+              error instanceof Error ? error.message : `${localize("Failed to send")} ${signal}.`,
           });
           return;
         }
@@ -971,13 +998,13 @@ export function DiagnosticsSettingsPanel() {
       <ResourceTelemetryDiagnostics environmentId={environmentId} />
 
       <SettingsSection
-        title="Live Processes"
+        title={localize("Live Processes")}
         headerAction={
           <div className="flex items-center gap-1.5">
             <DiagnosticsLastChecked checkedAt={processData?.readAt ?? null} />
             <DiagnosticsRefreshButton
               isPending={isProcessPending}
-              label="Refresh process diagnostics"
+              label={localize("Refresh process diagnostics")}
               onClick={refreshProcesses}
             />
           </div>
@@ -985,18 +1012,22 @@ export function DiagnosticsSettingsPanel() {
       >
         <StatsGrid>
           <StatBlock
-            label="Child Processes"
+            label={localize("Child Processes")}
             value={processData ? formatCount(processData.processCount) : "..."}
           />
           <StatBlock
             label="CPU"
             value={processData ? `${processData.totalCpuPercent.toFixed(1)}%` : "..."}
-            tooltip="Total CPU across live child processes of the current server process. The desktop shell and other parent processes are not included."
+            tooltip={localize(
+              "Total CPU across live child processes of the current server process. The desktop shell and other parent processes are not included.",
+            )}
           />
           <StatBlock
             label="Memory"
             value={processData ? formatBytes(processData.totalRssBytes) : "..."}
-            tooltip="Total resident memory across live child processes of the current server process. The desktop shell and other parent processes are not included."
+            tooltip={localize(
+              "Total resident memory across live child processes of the current server process. The desktop shell and other parent processes are not included.",
+            )}
           />
           <StatBlock
             label="Server PID"
@@ -1025,14 +1056,14 @@ export function DiagnosticsSettingsPanel() {
           onSignal={signalProcess}
           emptyLabel={
             isProcessInitialLoading
-              ? "Loading live processes..."
-              : "No live descendant processes found."
+              ? localize("Loading live processes...")
+              : localize("No live descendant processes found.")
           }
         />
       </SettingsSection>
 
       <SettingsSection
-        title="Resource History"
+        title={localize("Resource History")}
         headerAction={
           <div className="flex items-center gap-1.5">
             <ResourceHistoryWindowSelector
@@ -1042,7 +1073,7 @@ export function DiagnosticsSettingsPanel() {
             <DiagnosticsLastChecked checkedAt={resourceData?.readAt ?? null} />
             <DiagnosticsRefreshButton
               isPending={isResourcePending}
-              label="Refresh resource history"
+              label={localize("Refresh resource history")}
               onClick={refreshResources}
             />
           </div>
@@ -1052,12 +1083,16 @@ export function DiagnosticsSettingsPanel() {
           <StatBlock
             label="CPU Time"
             value={resourceData ? formatCpuTime(resourceData.totalCpuSecondsApprox) : "..."}
-            tooltip="Approximate active CPU time for the T3 server root process and its descendants during the selected window. It grows only while sampled processes use CPU and older samples leave as the window moves."
+            tooltip={localize(
+              "Approximate active CPU time for the T3 server root process and its descendants during the selected window. It grows only while sampled processes use CPU and older samples leave as the window moves.",
+            )}
           />
           <StatBlock
             label="Samples"
             value={resourceData ? formatCount(resourceData.retainedSampleCount) : "..."}
-            tooltip="In-memory process samples retained by the server. This resets when the server restarts."
+            tooltip={localize(
+              "In-memory process samples retained by the server. This resets when the server restarts.",
+            )}
           />
           <StatBlock
             label="Interval"
@@ -1089,14 +1124,14 @@ export function DiagnosticsSettingsPanel() {
           processes={resourceData?.topProcesses ?? []}
           emptyLabel={
             isResourcePending && resourceData === null
-              ? "Collecting process resource samples..."
-              : "No process resource samples found for this window."
+              ? localize("Collecting process resource samples...")
+              : localize("No process resource samples found for this window.")
           }
         />
       </SettingsSection>
 
       <SettingsSection
-        title="Trace Diagnostics"
+        title={localize("Trace Diagnostics")}
         headerAction={
           <div className="flex items-center gap-1.5">
             <DiagnosticsLastChecked checkedAt={data?.readAt ?? null} />
@@ -1108,17 +1143,17 @@ export function DiagnosticsSettingsPanel() {
                     variant="ghost-muted"
                     disabled={!observability?.logsDirectoryPath || isOpeningLogsDirectory}
                     onClick={openLogsDirectory}
-                    aria-label="Open logs folder"
+                    aria-label={localize("Open logs folder")}
                   >
                     <FolderOpenIcon />
                   </Button>
                 }
               />
-              <TooltipPopup side="top">Open logs folder</TooltipPopup>
+              <TooltipPopup side="top">{localize("Open logs folder")}</TooltipPopup>
             </Tooltip>
             <DiagnosticsRefreshButton
               isPending={isPending}
-              label="Refresh trace diagnostics"
+              label={localize("Refresh trace diagnostics")}
               onClick={refresh}
             />
           </div>
@@ -1136,8 +1171,8 @@ export function DiagnosticsSettingsPanel() {
             value={data ? formatCount(data.slowSpanCount) : "..."}
             tooltip={
               data
-                ? `Spans with a duration of ${formatDuration(data.slowSpanThresholdMs)} or longer.`
-                : "Spans at or above the configured slow-span threshold."
+                ? `${localize("Spans with a duration of")} ${formatDuration(data.slowSpanThresholdMs)} ${localize("or longer.")}`
+                : localize("Spans at or above the configured slow-span threshold.")
             }
             tone={data && data.slowSpanCount > 0 ? "warning" : "default"}
           />
@@ -1167,7 +1202,7 @@ export function DiagnosticsSettingsPanel() {
                 <AlertTriangleIcon className="mt-0.5 size-3.5 shrink-0" />
                 <span>
                   {traceDiagnosticsPartialFailure
-                    ? `Some trace files could not be read, so diagnostics may be incomplete. ${traceDiagnosticsError.message}`
+                    ? `${localize("Some trace files could not be read, so diagnostics may be incomplete.")} ${traceDiagnosticsError.message}`
                     : traceDiagnosticsError.message}
                 </span>
               </div>
@@ -1182,7 +1217,7 @@ export function DiagnosticsSettingsPanel() {
         ) : null}
       </SettingsSection>
 
-      <SettingsSection title="Latest Failures">
+      <SettingsSection title={localize("Latest Failures")}>
         {data && data.latestFailures.length > 0 ? (
           <DiagnosticsTable headers={["Span", "Cause", "Duration", "Ended"]}>
             {data.latestFailures.map((failure) => (
@@ -1207,7 +1242,7 @@ export function DiagnosticsSettingsPanel() {
         )}
       </SettingsSection>
 
-      <SettingsSection title="Most Common Failures">
+      <SettingsSection title={localize("Most Common Failures")}>
         {data && data.commonFailures.length > 0 ? (
           <DiagnosticsTable
             headers={["Span", "Count", "Cause", "Last Seen"]}
@@ -1237,7 +1272,7 @@ export function DiagnosticsSettingsPanel() {
         )}
       </SettingsSection>
 
-      <SettingsSection title="Slowest Spans">
+      <SettingsSection title={localize("Slowest Spans")}>
         {data && data.slowestSpans.length > 0 ? (
           <DiagnosticsTable
             headers={["Span", "Duration", "Ended", "Trace"]}
