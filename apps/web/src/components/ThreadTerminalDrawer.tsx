@@ -254,12 +254,16 @@ export type TerminalContextMenuAction = "add-to-chat" | "copy" | "paste";
 /** Post-selection popup: available selection actions, always enabled. */
 export function terminalSelectionMenuItems(options?: {
   canAddToChat?: boolean;
+  localize?: (source: string) => string;
 }): ContextMenuItem<"add-to-chat" | "copy">[] {
+  const localize = options?.localize ?? ((source: string) => source);
   return [
     ...(options?.canAddToChat === false
       ? []
-      : ([{ id: "add-to-chat", label: "Add to chat" }] satisfies ContextMenuItem<"add-to-chat">[])),
-    { id: "copy", label: "Copy" },
+      : ([
+          { id: "add-to-chat", label: localize("Add to chat") },
+        ] satisfies ContextMenuItem<"add-to-chat">[])),
+    { id: "copy", label: localize("Copy") },
   ];
 }
 
@@ -272,14 +276,18 @@ export function terminalSelectionMenuItems(options?: {
 export function terminalContextMenuItems(options: {
   hasSelection: boolean;
   canAddToChat?: boolean;
+  localize?: (source: string) => string;
 }): ContextMenuItem<TerminalContextMenuAction>[] {
-  const { hasSelection, canAddToChat = true } = options;
+  const { hasSelection, canAddToChat = true, localize } = options;
   return [
-    ...terminalSelectionMenuItems({ canAddToChat }).map((item) => ({
+    ...terminalSelectionMenuItems({
+      canAddToChat,
+      ...(localize ? { localize } : {}),
+    }).map((item) => ({
       ...item,
       disabled: !hasSelection,
     })),
-    { id: "paste", label: "Paste" },
+    { id: "paste", label: localize?.("Paste") ?? "Paste" },
   ];
 }
 
@@ -353,6 +361,8 @@ export function TerminalViewport({
   drawerHeight,
   keybindings,
 }: TerminalViewportProps) {
+  const { locale } = useI18n();
+  const localize = useCallback((source: string) => translateWebSource(locale, source), [locale]);
   const containerRef = useRef<HTMLDivElement>(null);
   const terminalRef = useRef<GhosttyTerminalSurface | null>(null);
   const visibleRef = useRef(visible);
@@ -667,6 +677,7 @@ export function TerminalViewport({
             terminalContextMenuItems({
               hasSelection: selectionAction !== null,
               canAddToChat: canAddSelectionToChat(),
+              localize,
             }),
             { x: event.clientX, y: event.clientY },
           );
@@ -710,7 +721,7 @@ export function TerminalViewport({
         openSelectionMenuRequestIdRef.current = requestId;
         const clicked = await localApi.contextMenu
           .show(
-            terminalSelectionMenuItems({ canAddToChat: canAddSelectionToChat() }),
+            terminalSelectionMenuItems({ canAddToChat: canAddSelectionToChat(), localize }),
             nextAction.position,
           )
           .finally(() => {
@@ -795,7 +806,7 @@ export function TerminalViewport({
             void localApi.shell.openExternal(text).catch((error: unknown) => {
               writeSystemMessage(
                 latestTerminal,
-                error instanceof Error ? error.message : "Unable to open link",
+                error instanceof Error ? error.message : localize("Unable to open link"),
               );
             });
           };
@@ -809,8 +820,9 @@ export function TerminalViewport({
             toastManager.add(
               stackedThreadToast({
                 type: "error",
-                title: "Unable to open link",
-                description: error instanceof Error ? error.message : "An error occurred.",
+                title: localize("Unable to open link"),
+                description:
+                  error instanceof Error ? error.message : localize("An error occurred."),
               }),
             );
           });

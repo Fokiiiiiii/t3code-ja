@@ -8156,6 +8156,31 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   reset: "リセット",
   Server: "サーバー",
   "to use your tailnet.": "tailnet を使用します。",
+  "Close browser while the agent is using it?": "エージェントが使用中のブラウザーを閉じますか？",
+  "The agent is actively controlling this browser. Closing it may interrupt the current browser action.":
+    "エージェントがこのブラウザーを操作中です。閉じると現在のブラウザー操作が中断される可能性があります。",
+  "The agent is actively controlling these browsers. Closing them may interrupt the current browser actions.":
+    "エージェントがこれらのブラウザーを操作中です。閉じると現在のブラウザー操作が中断される可能性があります。",
+  "Install Antigravity in provider settings before sending.":
+    "送信する前にプロバイダー設定で Antigravity をインストールしてください。",
+  "Sign in to Antigravity in provider settings before sending.":
+    "送信する前にプロバイダー設定で Antigravity にサインインしてください。",
+  "Choose an Antigravity model before sending.":
+    "送信する前に Antigravity のモデルを選択してください。",
+  "Refresh Antigravity models in provider settings before sending.":
+    "送信する前にプロバイダー設定で Antigravity のモデルを更新してください。",
+  "That Antigravity model is no longer available. Choose another model.":
+    "その Antigravity モデルは利用できません。別のモデルを選択してください。",
+  "The environment returned an invalid attachment URL.": "環境から無効な添付 URL が返されました。",
+  "This message has an attachment that cannot be restored.":
+    "このメッセージには復元できない添付ファイルがあります。",
+  "Could not restore attachment:": "添付ファイルを復元できませんでした：",
+  "Could not read image data.": "画像データを読み込めませんでした。",
+  "Failed to read image.": "画像の読み込みに失敗しました。",
+  "Expired terminal context": "期限切れのターミナルコンテキスト",
+  "Expired terminal contexts": "期限切れのターミナルコンテキスト",
+  "The message to rewind is no longer available.": "巻き戻すメッセージは利用できません。",
+  "Timed out waiting for the thread to rewind.": "タスクの巻き戻し待ちがタイムアウトしました。",
   "What should we work on?": "何に取り組みますか？",
   "What's changed": "変更点",
   "without merging it.": "マージせずに閉じます。",
