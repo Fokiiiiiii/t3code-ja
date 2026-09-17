@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 import type { EnvironmentId, ScopedThreadRef } from "@t3tools/contracts";
 
 import { cn } from "~/lib/utils";
@@ -43,6 +45,8 @@ export function PullRequestMarkdownEditor({
   readonly onSave: (next: string) => void;
   readonly onCancel: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [draft, setDraft] = useState(value);
   const [preview, setPreview] = useState(false);
   // The words this draft started from. React keeps a component instance wherever the same
@@ -79,7 +83,7 @@ export function PullRequestMarkdownEditor({
       }}
     >
       <ToggleGroup
-        aria-label="Markdown editor mode"
+        aria-label={localize("Markdown editor mode")}
         variant="segmented"
         value={[preview ? "preview" : "write"]}
         disabled={saving}
@@ -88,13 +92,13 @@ export function PullRequestMarkdownEditor({
           if (mode === "write" || mode === "preview") setPreview(mode === "preview");
         }}
       >
-        <Toggle value="write">Write</Toggle>
-        <Toggle value="preview">Preview</Toggle>
+        <Toggle value="write">{localize("Write")}</Toggle>
+        <Toggle value="preview">{localize("Preview")}</Toggle>
       </ToggleGroup>
       {preview ? (
         <div className="rounded-lg border border-border/60 px-3 py-2">
           {empty ? (
-            <p className="text-xs text-muted-foreground">Nothing to preview.</p>
+            <p className="text-xs text-muted-foreground">{localize("Nothing to preview.")}</p>
           ) : (
             <PullRequestMarkdown
               text={draft}
@@ -117,10 +121,10 @@ export function PullRequestMarkdownEditor({
       )}
       <div className="flex justify-end gap-2">
         <Button size="xs" variant="ghost" disabled={saving} onClick={onCancel}>
-          Cancel
+          {localize("Cancel")}
         </Button>
         <Button size="xs" variant="outline" disabled={saveDisabled} onClick={() => onSave(draft)}>
-          {saving ? "Saving..." : "Save"}
+          {localize(saving ? "Saving..." : "Save")}
         </Button>
       </div>
     </div>

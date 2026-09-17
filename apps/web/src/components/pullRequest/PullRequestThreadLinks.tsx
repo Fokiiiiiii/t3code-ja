@@ -3,6 +3,8 @@ import { scopeThreadRef } from "@t3tools/client-runtime/environment";
 import type { EnvironmentId, PullRequestRef, ScopedThreadRef, ThreadId } from "@t3tools/contracts";
 import { CheckIcon, LinkIcon, MessageSquareIcon, UnlinkIcon } from "lucide-react";
 import { useState } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 import { threadPullRequestLinkMode } from "@t3tools/client-runtime/thread-pull-request-compatibility";
 import { usePullRequestLinking } from "~/hooks/usePullRequestLinking";
 
@@ -48,6 +50,8 @@ function EnabledPullRequestThreadLinks({
   display,
   onPickerOpenChange,
 }: PullRequestThreadLinksProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const parsed = parseChangeRequestUrl(url);
   const currentThreadRef = threadRef?.environmentId === environmentId ? threadRef : null;
   const thread = useThreadShell(currentThreadRef);
@@ -80,7 +84,9 @@ function EnabledPullRequestThreadLinks({
     } catch (error) {
       toastManager.add({
         type: "error",
-        title: remove ? "Could not unlink the pull request" : "Could not link the pull request",
+        title: localize(
+          remove ? "Could not unlink the pull request" : "Could not link the pull request",
+        ),
         description: error instanceof Error ? error.message : String(error),
       });
       return;
@@ -103,8 +109,10 @@ function EnabledPullRequestThreadLinks({
     linking.mode === "multiple" ? ((relations.data ?? lastRelations)?.threads ?? []) : [];
   const linkedThreadsLabel =
     linkedThreads.length > 0
-      ? `Linked from ${linkedThreads.length} ${linkedThreads.length === 1 ? "thread" : "threads"}`
-      : "Linked threads";
+      ? `${localize("Linked from")} ${linkedThreads.length} ${localize(
+          linkedThreads.length === 1 ? "thread" : "threads",
+        )}`
+      : localize("Linked threads");
   return (
     <>
       {display === "count" && (linkedThreads.length > 0 || relations.error !== null) ? (
@@ -129,7 +137,9 @@ function EnabledPullRequestThreadLinks({
               </Button>
             }
           />
-          <TooltipPopup>{linkedThreadsLabel}. Search in the command palette.</TooltipPopup>
+          <TooltipPopup>
+            {linkedThreadsLabel}. {localize("Search in the command palette.")}
+          </TooltipPopup>
         </Tooltip>
       ) : null}
       {display === "menu-item" ? (
@@ -149,10 +159,10 @@ function EnabledPullRequestThreadLinks({
             <LinkIcon aria-hidden className="size-3.5" />
           )}
           {linkedHere
-            ? "Unlink from this thread"
+            ? localize("Unlink from this thread")
             : currentThreadRef
-              ? "Link to this thread"
-              : "Link to thread"}
+              ? localize("Link to this thread")
+              : localize("Link to thread")}
         </MenuItem>
       ) : null}
       {display === "picker" ? (
@@ -183,6 +193,8 @@ function ThreadPicker({
   pending: boolean;
   onSelect: (threadId: ThreadId) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const threads = useThreadShells();
   const linking = usePullRequestLinking(environmentId);
   const projects = useProjects();
@@ -204,12 +216,17 @@ function ThreadPicker({
     )
     .toSorted((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   return (
-    <Command mode="none" value={query} onValueChange={setQuery} aria-label="Choose a thread">
-      <CommandInput placeholder="Search threads or projects..." disabled={pending} />
+    <Command
+      mode="none"
+      value={query}
+      onValueChange={setQuery}
+      aria-label={localize("Choose a thread")}
+    >
+      <CommandInput placeholder={localize("Search threads or projects...")} disabled={pending} />
       <CommandList className="max-h-80 overflow-y-auto">
         {candidates.length === 0 ? (
           <div className="px-3 py-6 text-center text-sm text-muted-foreground">
-            No active threads found.
+            {localize("No active threads found.")}
           </div>
         ) : (
           candidates.map((thread) => {
@@ -223,7 +240,7 @@ function ThreadPicker({
               >
                 <MessageSquareIcon aria-hidden className="size-4 shrink-0" />
                 <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate">{thread.title || "Untitled thread"}</span>
+                  <span className="truncate">{thread.title || localize("Untitled thread")}</span>
                   <span className="truncate text-xs text-muted-foreground">
                     {projectNames.get(thread.projectId)}
                   </span>
@@ -231,7 +248,7 @@ function ThreadPicker({
                 {linked ? (
                   <>
                     <CheckIcon aria-hidden className="size-3.5" />
-                    <span className="text-xs text-muted-foreground">Linked</span>
+                    <span className="text-xs text-muted-foreground">{localize("Linked")}</span>
                   </>
                 ) : null}
               </CommandItem>
