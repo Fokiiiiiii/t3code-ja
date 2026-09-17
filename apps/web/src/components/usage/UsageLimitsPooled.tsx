@@ -74,6 +74,8 @@ function AccountAvatar({
   readonly account: LimitAccount;
   readonly className?: string;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   if (account.redeem) {
     return (
       <ProviderInstanceIcon
@@ -498,6 +500,8 @@ function PoolWindowCard({
   readonly color: string;
   readonly now: number;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   // The soonest reset that hands anything back; an untouched account resets to no effect.
   const nextRefill = pool.resets.find((reset) => reset.restoresPercent > 0);
   return (
@@ -508,13 +512,15 @@ function PoolWindowCard({
           <span className="text-3xl font-semibold text-foreground tabular-nums">
             {pool.remainingPercent}%
           </span>
-          <span className="text-sm text-muted-foreground">left</span>
+          <span className="text-sm text-muted-foreground">{localize("left")}</span>
           {pool.pace ? <PaceIcon pace={pool.pace} /> : null}
         </span>
         {nextRefill ? (
           <span className="text-xs text-muted-foreground tabular-nums">
             <span className="font-medium text-foreground">↻ +{nextRefill.restoresPercent}%</span>{" "}
-            {nextRefill.at <= now ? "now" : `in ${formatDuration(nextRefill.at - now)}`}
+            {nextRefill.at <= now
+              ? localize("now")
+              : `${localize("in")} ${formatDuration(nextRefill.at - now)}`}
           </span>
         ) : null}
       </div>
@@ -524,6 +530,7 @@ function PoolWindowCard({
 }
 
 function PoolSection({ pool, now }: { readonly pool: LimitPool; readonly now: number }) {
+  const { locale } = useI18n();
   const color = barColor(pool.driver);
   const label = getDriverOption(pool.driver)?.label ?? String(pool.driver);
   return (
@@ -536,7 +543,7 @@ function PoolSection({ pool, now }: { readonly pool: LimitPool; readonly now: nu
           className="size-5"
           iconClassName="size-4 text-foreground/80"
         />
-        {label}
+        {translateWebSource(locale, label)}
       </h2>
       {pool.windows.map((window) => (
         <PoolWindowCard key={`${window.kind}:${window.id}`} pool={window} color={color} now={now} />
@@ -557,13 +564,17 @@ export function UsageLimitsPooled({
   readonly presentations: Parameters<typeof collectLimitAccounts>[0];
   readonly now: number;
 }) {
+  const { locale } = useI18n();
   const pools = collectLimitPools(collectLimitAccounts(presentations), now);
   const notices = collectLimitNotices(presentations);
   return (
     <div className="flex flex-col gap-8">
       {pools.length === 0 && notices.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          No provider on the selected environments reports subscription limits.
+          {translateWebSource(
+            locale,
+            "No provider on the selected environments reports subscription limits.",
+          )}
         </p>
       ) : null}
       {pools.map((pool) => (
@@ -576,13 +587,14 @@ export function UsageLimitsPooled({
 
 /** Sources and providers that could not be read, so a missing bar is not mistaken for a full one. */
 function LimitNotices({ notices }: { readonly notices: readonly string[] }) {
+  const { locale } = useI18n();
   if (notices.length === 0) return null;
   return (
     <Alert variant="warning" controlAlignment="first-line">
       <AlertTriangleIcon />
       {notices.map((notice) => (
         <AlertTitle key={notice} className="break-words">
-          {notice}
+          {translateWebSource(locale, notice)}
         </AlertTitle>
       ))}
     </Alert>

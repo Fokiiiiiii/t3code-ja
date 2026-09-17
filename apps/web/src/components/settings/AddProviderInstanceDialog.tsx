@@ -384,7 +384,7 @@ export function AddProviderInstanceDialog({
               ) : null}
             </div>
             <span className="text-[11px] text-muted-foreground">
-              Optional marker shown in the picker.
+              {localize("Optional marker shown in the picker.")}
             </span>
           </div>
 

@@ -3,9 +3,12 @@ import { EnvironmentId } from "@t3tools/contracts";
 import { ProjectSettingsPanel } from "./ProjectSettingsPanel";
 import { useSettingsScope } from "./SettingsScopeContext";
 import { SettingsScopeNotice } from "./SettingsScopeNotice";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 /** Project identity and checkout management for the selected project. */
 export function ProjectsSettings() {
+  const { locale } = useI18n();
   const { search: value, scope } = useSettingsScope();
   // The panel follows remembered members when grouping replaces a project key.
   const projectScope =
@@ -25,7 +28,10 @@ export function ProjectsSettings() {
         <p className="p-8 text-sm text-muted-foreground">{scope.message}</p>
       ) : (
         <SettingsScopeNotice target="project">
-          Choose a project to manage its name, icon, checkouts and actions.
+          {translateWebSource(
+            locale,
+            "Choose a project to manage its name, icon, checkouts and actions.",
+          )}
         </SettingsScopeNotice>
       )}
     </div>

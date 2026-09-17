@@ -109,7 +109,7 @@ export function RelayClientInstallDialog() {
               </p>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 {localize("T3 Code will download and install version")}{" "}
-                {view.status === "confirming" ? view.version : ""} locally.
+                {view.status === "confirming" ? view.version : ""} {localize("locally.")}
               </p>
             </div>
           )}

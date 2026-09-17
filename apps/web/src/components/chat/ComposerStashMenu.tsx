@@ -190,8 +190,9 @@ export const ComposerStashMenu = memo(function ComposerStashMenu(props: {
                     </span>
                   ) : missingImageCount(entry) > 0 ? (
                     <span className="shrink-0 text-warning-foreground">
-                      {missingImageCount(entry)} image
-                      {missingImageCount(entry) === 1 ? "" : "s"} dropped
+                      {missingImageCount(entry)} {localize("image")}
+                      {missingImageCount(entry) === 1 ? "" : localize("images suffix")}{" "}
+                      {localize("dropped")}
                     </span>
                   ) : null}
                   {entry.attachments.length > 0 ? (

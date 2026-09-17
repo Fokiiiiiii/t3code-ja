@@ -16,6 +16,8 @@ import { manualServerUpdateCommand } from "~/versionSkew";
 import { Button } from "./ui/button";
 import { toastManager } from "./ui/toast";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 
 // The wire "installing" stage is a sub-second launcher handoff, so the UI
 // folds it into the download phase; everything after the handoff is the
@@ -52,8 +54,10 @@ type UpdateButtonProps = Pick<ComponentProps<typeof Button>, "variant" | "size" 
 };
 
 function useServerUpdate() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const updateServer = useAtomCommand(serverEnvironment.updateServer, { reportFailure: false });
-  return async (target: ServerUpdateTarget, failureTitle = "Server update failed") => {
+  return async (target: ServerUpdateTarget, failureTitle = localize("Server update failed")) => {
     const { environmentId, serverLabel, selfUpdate, targetVersion } = target;
     if (pendingUpdateEnvironmentIds.has(environmentId)) return;
     pendingUpdateEnvironmentIds.add(environmentId);
@@ -76,14 +80,14 @@ function useServerUpdate() {
         title: `${serverLabel} updated`,
         description:
           selfUpdate === "desktop-managed"
-            ? `Desktop app relaunched on ${result.value.targetVersion}.`
-            : `Reconnected on t3@${result.value.targetVersion}.`,
+            ? `${localize("Desktop app relaunched on")} ${result.value.targetVersion}.`
+            : `${localize("Reconnected on t3@")} ${result.value.targetVersion}.`,
       });
     } catch (error) {
       toastManager.add({
         type: "error",
-        title: failureTitle,
-        description: updateFailureMessage(error),
+        title: localize(failureTitle),
+        description: localize(updateFailureMessage(error)),
       });
     } finally {
       pendingUpdateEnvironmentIds.delete(environmentId);
@@ -101,6 +105,8 @@ export function ServerUpdatesAction({
 }: UpdateButtonProps & {
   readonly targets: ReadonlyArray<ServerUpdateTarget>;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const update = useServerUpdate();
   const pending = useRef(false);
   const [isPending, setIsPending] = useState(false);
@@ -121,12 +127,14 @@ export function ServerUpdatesAction({
       if (desktopTargets.length > 0) {
         const confirmed =
           (await requestConfirmDialog(
-            `Update the T3 Code desktop apps on ${desktopTargets.map((target) => target.serverLabel).join(", ")}? They will close and relaunch on those machines.`,
+            `${localize("Update the T3 Code desktop apps on")} ${desktopTargets.map((target) => target.serverLabel).join(", ")}? ${localize("They will close and relaunch on those machines.")}`,
           )) ?? true;
         if (!confirmed) return;
       }
       await Promise.all(
-        available.map((target) => update(target, `${target.serverLabel} update failed`)),
+        available.map((target) =>
+          update(target, `${target.serverLabel} ${localize("update failed")}`),
+        ),
       );
     } finally {
       pending.current = false;
@@ -141,7 +149,7 @@ export function ServerUpdatesAction({
       disabled={isPending || eligible.length === 0}
       onClick={() => void handleUpdate()}
     >
-      {label}
+      {localize(label)}
     </Button>
   );
 }
@@ -157,14 +165,19 @@ export function ServerUpdateProgress({
 }: {
   readonly state: Exclude<ServerUpdateState, { status: "idle" }>;
 }) {
+  const { locale } = useI18n();
   if (state.status === "failed") {
     return (
       <div className="mt-1 flex min-w-0 items-center gap-2 text-xs text-destructive" role="alert">
         <span className="size-1.5 shrink-0 rounded-full bg-destructive" aria-hidden="true" />
         <Tooltip>
-          <TooltipTrigger render={<span className="min-w-0 truncate">{state.message}</span>} />
+          <TooltipTrigger
+            render={
+              <span className="min-w-0 truncate">{translateWebSource(locale, state.message)}</span>
+            }
+          />
           <TooltipPopup side="top" className="max-w-80">
-            {state.message}
+            {translateWebSource(locale, state.message)}
           </TooltipPopup>
         </Tooltip>
       </div>
@@ -176,7 +189,7 @@ export function ServerUpdateProgress({
         className="size-1.5 shrink-0 animate-status-pulse rounded-full bg-foreground"
         aria-hidden="true"
       />
-      <span>{serverUpdateStageLabel(state.stage)}</span>
+      <span>{translateWebSource(locale, serverUpdateStageLabel(state.stage))}</span>
     </div>
   );
 }
@@ -199,6 +212,8 @@ export function ServerUpdateAction({
   className,
   appearance = "button",
 }: Omit<ServerUpdateTarget, "continueThreadsAfterServerUpdate"> & UpdateButtonProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const isDesktopAppUpdate = selfUpdate === "desktop-managed";
   const continueThreadsAfterServerUpdate = useEnvironmentSettings(
     environmentId,
@@ -210,15 +225,15 @@ export function ServerUpdateAction({
     onCopy: ({ command }) => {
       toastManager.add({
         type: "success",
-        title: "Update command copied",
-        description: `Run \`${command}\` on ${serverLabel} to update it.`,
+        title: localize("Update command copied"),
+        description: `${localize("Run")} \`${command}\` ${localize("on")} ${serverLabel} ${localize("to update it.")}`,
       });
     },
     onError: (error) => {
       toastManager.add({
         type: "error",
-        title: "Could not copy update command",
-        description: error.message,
+        title: localize("Could not copy update command"),
+        description: localize(error.message),
       });
     },
   });
@@ -233,7 +248,7 @@ export function ServerUpdateAction({
       // remote machine installs without asking anyone there.
       const confirmed =
         (await requestConfirmDialog(
-          `Update the T3 Code desktop app that runs the ${serverLabel}? It will close and relaunch on that machine.`,
+          `${localize("Update the T3 Code desktop app that runs on")} ${serverLabel}? ${localize("It will close and relaunch on that machine.")}`,
         )) ?? true;
       if (!confirmed) {
         return;
@@ -253,13 +268,13 @@ export function ServerUpdateAction({
   if (selfUpdate === "desktop-managed" && !desktopAppUpdate) {
     return (
       <span className="text-muted-foreground text-xs">
-        Update the desktop app on that machine to update this server.
+        {localize("Update the desktop app on that machine to update this server.")}
       </span>
     );
   }
 
   const manualCommand = selfUpdate === null ? manualServerUpdateCommand(targetVersion) : null;
-  const actionLabel = manualCommand !== null ? "Copy update command" : label;
+  const actionLabel = localize(manualCommand !== null ? "Copy update command" : label);
   const onClick =
     manualCommand !== null
       ? () => copyToClipboard(manualCommand, { command: manualCommand })
@@ -274,7 +289,7 @@ export function ServerUpdateAction({
               size="icon-xs"
               variant="ghost"
               className={className ?? "text-muted-foreground hover:text-foreground"}
-              aria-label={`${actionLabel} for ${serverLabel}`}
+              aria-label={`${actionLabel} ${localize("for")} ${serverLabel}`}
               onClick={onClick}
             />
           }

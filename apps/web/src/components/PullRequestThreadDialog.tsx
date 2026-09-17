@@ -25,6 +25,8 @@ import {
 } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Spinner } from "./ui/spinner";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 
 interface PullRequestThreadDialogProps {
   open: boolean;
@@ -45,6 +47,8 @@ export function PullRequestThreadDialog({
   onOpenChange,
   onPrepared,
 }: PullRequestThreadDialogProps) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const referenceInputRef = useRef<HTMLInputElement>(null);
   const [reference, setReference] = useState(initialReference ?? "");
   const [referenceDirty, setReferenceDirty] = useState(false);
@@ -171,9 +175,13 @@ export function PullRequestThreadDialog({
   const validationMessage = !referenceDirty
     ? null
     : reference.trim().length === 0
-      ? `Paste a ${terminology.singular} URL, checkout command, or enter 123 / #123.`
+      ? `${localize("Paste a")} ${localize(terminology.singular)} URL, ${localize(
+          "checkout command, or enter 123 / #123.",
+        )}`
       : parsedReference === null
-        ? `Use a ${terminology.singular} URL, checkout command, 123, or #123.`
+        ? `${localize("Use a")} ${localize(terminology.singular)} URL, ${localize(
+            "checkout command, 123, or #123.",
+          )}`
         : null;
   const errorMessage =
     validationMessage ??
@@ -182,7 +190,7 @@ export function PullRequestThreadDialog({
       : preparePullRequestThreadAction.error instanceof Error
         ? preparePullRequestThreadAction.error.message
         : preparePullRequestThreadAction.error
-          ? `Failed to prepare ${terminology.singular} thread.`
+          ? `${localize("Failed to prepare")} ${localize(terminology.singular)} ${localize("thread.")}`
           : null);
 
   return (
@@ -198,11 +206,12 @@ export function PullRequestThreadDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <SourceControlIcon className="size-4" />
-            Checkout {terminology.singular}
+            {localize("Checkout")} {localize(terminology.singular)}
           </DialogTitle>
           <DialogDescription>
-            Resolve a {sourceControlPresentation.providerName} {terminology.singular}, then create
-            the draft thread in the main repo or in a dedicated worktree.
+            {localize("Resolve a")} {sourceControlPresentation.providerName}{" "}
+            {localize(terminology.singular)},{" "}
+            {localize("then create the draft thread in the main repo or in a dedicated worktree.")}
           </DialogDescription>
         </DialogHeader>
         <DialogPanel className="space-y-4">
@@ -236,12 +245,12 @@ export function PullRequestThreadDialog({
                 <div className="min-w-0">
                   <p className="truncate font-medium text-sm">{resolvedPullRequest.title}</p>
                   <p className="truncate text-muted-foreground text-xs">
-                    #{resolvedPullRequest.number} · {resolvedPullRequest.headBranch} to{" "}
-                    {resolvedPullRequest.baseBranch}
+                    #{resolvedPullRequest.number} · {resolvedPullRequest.headBranch}{" "}
+                    {localize("to")} {resolvedPullRequest.baseBranch}
                   </p>
                 </div>
                 <span className={cn("shrink-0 text-xs capitalize", statusTone)}>
-                  {resolvedPullRequest.state}
+                  {localize(resolvedPullRequest.state)}
                 </span>
               </div>
             </div>
@@ -250,7 +259,7 @@ export function PullRequestThreadDialog({
           {isResolving ? (
             <div className="flex items-center gap-2 text-muted-foreground text-xs">
               <Spinner className="size-3.5" />
-              Resolving {terminology.singular}...
+              {localize("Resolving")} {localize(terminology.singular)}…
             </div>
           ) : null}
 
@@ -264,7 +273,7 @@ export function PullRequestThreadDialog({
             onClick={() => onOpenChange(false)}
             disabled={preparePullRequestThreadAction.isPending}
           >
-            Cancel
+            {localize("Cancel")}
           </Button>
           <Button
             type="button"
@@ -280,7 +289,7 @@ export function PullRequestThreadDialog({
               preparePullRequestThreadAction.isPending
             }
           >
-            {preparingMode === "local" ? "Preparing local..." : "Local"}
+            {localize(preparingMode === "local" ? "Preparing local..." : "Local")}
           </Button>
           <Button
             type="button"
@@ -295,7 +304,7 @@ export function PullRequestThreadDialog({
               preparePullRequestThreadAction.isPending
             }
           >
-            {preparingMode === "worktree" ? "Preparing worktree..." : "Worktree"}
+            {localize(preparingMode === "worktree" ? "Preparing worktree..." : "Worktree")}
           </Button>
         </DialogFooter>
       </DialogPopup>

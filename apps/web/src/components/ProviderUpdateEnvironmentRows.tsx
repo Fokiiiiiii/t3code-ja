@@ -26,6 +26,8 @@ import {
 } from "./ProviderUpdateLaunchNotification.logic";
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 
 type ProviderUpdateCommandResult = AtomCommandResult<
   { readonly providers: ReadonlyArray<ServerProvider> },
@@ -115,6 +117,8 @@ function EnvironmentUpdateRow({
   readonly status: ProviderUpdateRowStatus;
   readonly onUpdate: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   let trailing: ReactNode;
   switch (status.kind) {
     case "loading":
@@ -127,14 +131,14 @@ function EnvironmentUpdateRow({
     case "unchanged":
       trailing = (
         <Button size="xs" variant="outline" onClick={onUpdate}>
-          Retry
+          {localize("Retry")}
         </Button>
       );
       break;
     default:
       trailing = (
         <Button size="xs" variant="outline" onClick={onUpdate}>
-          Update
+          {localize("Update")}
         </Button>
       );
       break;
@@ -144,7 +148,9 @@ function EnvironmentUpdateRow({
     <div className="flex items-center justify-between gap-3 py-0.5">
       <div className="flex min-w-0 flex-col">
         <span className="truncate font-medium text-foreground">{group.label}</span>
-        <span className={cn("truncate text-xs", rowToneClass(status.kind))}>{status.text}</span>
+        <span className={cn("truncate text-xs", rowToneClass(status.kind))}>
+          {localize(status.text)}
+        </span>
       </div>
       <div className="shrink-0">{trailing}</div>
     </div>

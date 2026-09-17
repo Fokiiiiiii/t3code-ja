@@ -1111,9 +1111,9 @@ export function EnvironmentProviderSettings({
             <span className="inline-flex items-center gap-1.5">
               {searchableSetting("provider-health-check-interval").title}
               <PolicyTooltip>
-                This interval is configured here, then the shared Background activity policy decides
-                whether provider probes may run when the timer fires. Custom intervals appear as
-                Advanced in General settings.
+                {localize(
+                  "This interval is configured here, then the shared Background activity policy decides whether provider probes may run when the timer fires. Custom intervals appear as Advanced in General settings.",
+                )}
               </PolicyTooltip>
             </span>
           }

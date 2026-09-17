@@ -12,6 +12,7 @@ import type { ComposerBannerStackItem } from "./ComposerBannerStack";
 export function feedbackBannerItem(
   submission: CodexFeedbackSubmission,
   onDismiss: () => void,
+  localize: (value: string) => string = (value) => value,
 ): ComposerBannerStackItem | null {
   const notice = codexFeedbackNotice(submission);
   if (!notice) return null;
@@ -39,11 +40,11 @@ export function feedbackBannerItem(
             );
           }}
         >
-          Copy ID
+          {localize("Copy ID")}
         </Button>
       ) : undefined,
     ...(submission.status !== "uploading"
-      ? { dismissLabel: "Dismiss feedback notice", onDismiss }
+      ? { dismissLabel: localize("Dismiss feedback notice"), onDismiss }
       : {}),
   };
 }

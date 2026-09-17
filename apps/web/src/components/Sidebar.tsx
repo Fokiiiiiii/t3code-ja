@@ -384,7 +384,7 @@ function SidebarThreadTooltip({
             <div className="flex min-w-0 items-start gap-2 text-warning">
               <CircleAlertIcon aria-hidden className="mt-0.5 size-3 shrink-0 stroke-current" />
               <div className="min-w-0 flex-1 wrap-break-word leading-5">
-                You're currently checked out on another branch.
+                {localize("You're currently checked out on another branch.")}
               </div>
             </div>
           ) : null}
@@ -1890,7 +1890,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: {
                             }
                           >
                             <CheckIcon className="size-3.5" />
-                            Settle
+                            {localize("Settle")}
                           </TooltipTrigger>
                           <TooltipPopup>{localize("Settle thread")}</TooltipPopup>
                         </Tooltip>
@@ -4587,7 +4587,7 @@ export default function Sidebar() {
                 role="status"
                 className="px-2 py-6 text-center text-xs text-sidebar-muted-foreground"
               >
-                No threads found
+                {localize("No threads found")}
               </p>
             )
           ) : null}

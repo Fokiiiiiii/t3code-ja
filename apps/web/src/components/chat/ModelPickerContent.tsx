@@ -1007,7 +1007,7 @@ export const ModelPickerContent = memo(function ModelPickerContent(props: {
                 {providerSetupEntries.map((entry) => (
                   <div key={entry.instanceId} className="px-1 py-1.5 text-xs leading-snug">
                     <p className="line-clamp-3 text-muted-foreground">
-                      {getProviderStatusMessage(entry.snapshot)}
+                      {localize(getProviderStatusMessage(entry.snapshot))}
                     </p>
                     <Button
                       className="mt-1 px-0 text-foreground"
@@ -1019,15 +1019,15 @@ export const ModelPickerContent = memo(function ModelPickerContent(props: {
                       variant="link"
                     >
                       {providerSetupEntries.length > 1
-                        ? `Set up ${entry.displayName}`
-                        : "Open provider setup"}
+                        ? `${localize("Set up")} ${entry.displayName}`
+                        : localize("Open provider setup")}
                     </Button>
                   </div>
                 ))}
               </div>
             ) : (
               <ComboboxEmpty className="not-empty:py-6 empty:h-0 text-xs font-normal leading-snug">
-                No models found
+                {localize("No models found")}
               </ComboboxEmpty>
             )}
           </div>

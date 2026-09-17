@@ -218,19 +218,21 @@ export function PreviewMoreMenu({
             // Truncation sits on the label itself: it renders a block box, so
             // `text-overflow` on an inline child inside it never applies and a
             // long name would push the popup past its width instead.
-            <MenuGroupLabel className="max-w-64 truncate">Profile: {profileName}</MenuGroupLabel>
+            <MenuGroupLabel className="max-w-64 truncate">
+              {localize("Profile:")} {profileName}
+            </MenuGroupLabel>
           ) : null}
           <MenuItem
             onClick={() =>
               void bridge.clearCookies(environmentId, profileId).catch(() => undefined)
             }
           >
-            Clear cookies
+            {localize("Clear cookies")}
           </MenuItem>
           <MenuItem
             onClick={() => void bridge.clearCache(environmentId, profileId).catch(() => undefined)}
           >
-            Clear cache
+            {localize("Clear cache")}
           </MenuItem>
         </MenuGroup>
       </MenuPopup>

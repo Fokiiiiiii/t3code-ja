@@ -342,6 +342,7 @@ function ToastBodyContent({
   toastDescription,
   toastType,
 }: ToastBodyContentProps) {
+  const { locale } = useI18n();
   const additionalActions = toastData?.additionalActions ?? [];
   const secondaryActionProps = toastData?.secondaryActionProps;
   const leadingIcon = toastData?.leadingIcon;
@@ -388,7 +389,7 @@ function ToastBodyContent({
           )}
         >
           {copyErrorText !== null ? <CopyErrorButton text={copyErrorText} /> : null}
-          {additionalActions.map(({ id, props: { className, ...props } }) => (
+          {additionalActions.map(({ id, props: { className, children, ...props } }) => (
             <Button
               {...props}
               className={className}
@@ -396,7 +397,9 @@ function ToastBodyContent({
               size="xs"
               type="button"
               variant={secondaryActionVariant}
-            />
+            >
+              {typeof children === "string" ? translateWebSource(locale, children) : children}
+            </Button>
           ))}
           {secondaryActionProps ? (
             <Button
@@ -405,14 +408,20 @@ function ToastBodyContent({
               size="xs"
               type="button"
               variant={secondaryActionVariant}
-            />
+            >
+              {typeof secondaryActionProps.children === "string"
+                ? translateWebSource(locale, secondaryActionProps.children)
+                : secondaryActionProps.children}
+            </Button>
           ) : null}
           {hasVisibleToastAction(actionProps) ? (
             <Toast.Action
               className={cn(buttonVariants({ size: "xs", variant: actionVariant }), "shrink-0")}
               data-slot="toast-action"
             >
-              {actionProps?.children}
+              {typeof actionProps?.children === "string"
+                ? translateWebSource(locale, actionProps.children)
+                : actionProps?.children}
             </Toast.Action>
           ) : null}
         </div>

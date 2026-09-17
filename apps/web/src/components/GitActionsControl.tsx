@@ -934,7 +934,7 @@ function PublishRepositoryDialog(props: PublishRepositoryDialogProps) {
                   {publishRepositoryAction.isPending ? (
                     <>
                       <Spinner className="size-3.5" aria-hidden />
-                      Publishing...
+                      {localize("Publishing...")}
                     </>
                   ) : (
                     "Publish"
@@ -1859,7 +1859,7 @@ export default function GitActionsControl({
                     <span className="text-muted-foreground">{localize("Files")}</span>
                     {!allSelected && !isEditingFiles && (
                       <span className="text-muted-foreground">
-                        ({selectedFiles.length} of {allFiles.length})
+                        ({selectedFiles.length} {localize("of")} {allFiles.length})
                       </span>
                     )}
                   </div>
@@ -1874,7 +1874,7 @@ export default function GitActionsControl({
                   )}
                 </div>
                 {!gitStatusForActions || allFiles.length === 0 ? (
-                  <p className="font-medium">none</p>
+                  <p className="font-medium">{localize("none")}</p>
                 ) : (
                   <div className="space-y-2">
                     <ScrollArea className="h-44 rounded-lg bg-card ring-1 ring-black/5 dark:bg-white/[0.025] dark:ring-white/5">
@@ -2026,7 +2026,7 @@ export default function GitActionsControl({
               size="sm"
               onClick={checkoutFeatureBranchAndContinuePendingAction}
             >
-              Check out feature branch & continue
+              {localize("Check out feature branch & continue")}
             </Button>
           </DialogFooter>
         </DialogPopup>

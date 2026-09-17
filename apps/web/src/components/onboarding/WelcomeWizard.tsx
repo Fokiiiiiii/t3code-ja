@@ -614,7 +614,7 @@ function PairingForm({
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
               {localize("Start T3 Code first, or run")}{" "}
               <code className="font-mono">npx t3 serve</code>. {localize("Add")}{" "}
-              <code className="font-mono">--tailscale</code> to use your tailnet.
+              <code className="font-mono">--tailscale</code> {localize("to use your tailnet.")}
             </p>
           </CollapsiblePanel>
         </Collapsible>

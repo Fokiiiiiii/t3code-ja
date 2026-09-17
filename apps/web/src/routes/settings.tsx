@@ -58,6 +58,8 @@ const DEVICE_ONLY_PATHS = new Set([
 ]);
 
 function SettingsScopeBoundary({ pathname, children }: { pathname: string; children: ReactNode }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { scope, connectedEnvironments } = useSettingsScope();
   const { environments } = useEnvironments();
   const hash = useLocation({ select: (location) => location.hash });
@@ -110,7 +112,7 @@ function SettingsScopeBoundary({ pathname, children }: { pathname: string; child
   if (scope.kind === "environment" && connectedEnvironments.length === 0) {
     return (
       <p className="p-8 text-sm text-muted-foreground">
-        Reconnect {scope.label} to change its settings.
+        {localize("Reconnect")} {scope.label} {localize("to change its settings.")}
       </p>
     );
   }

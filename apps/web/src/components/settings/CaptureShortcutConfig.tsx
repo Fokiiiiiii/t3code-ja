@@ -191,7 +191,7 @@ export function CaptureShortcutConfig({
           ) : null}
           {changed ? (
             <p className="text-xs text-muted-foreground">
-              Only these changes will be saved. We'll keep a backup.
+              {localize("Only these changes will be saved. We'll keep a backup.")}
             </p>
           ) : null}
           <div className="flex gap-2">
@@ -308,7 +308,11 @@ export function CaptureShortcutConfig({
               ? localize("A custom --config or NIRI_CONFIG can change its location.")
               : localize("On Omarchy, use your own bindings file, not its defaults.")}
           </p>
-          {result?.backupPath ? <p className="break-all">Backup: {result.backupPath}</p> : null}
+          {result?.backupPath ? (
+            <p className="break-all">
+              {localize("Backup:")} {result.backupPath}
+            </p>
+          ) : null}
           <p className="font-medium text-foreground">{localize("Manual setup")}</p>
           <p>
             {niri

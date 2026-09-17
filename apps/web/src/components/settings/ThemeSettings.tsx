@@ -924,11 +924,11 @@ export function ThemeLibrary({
             }
           >
             <PaintbrushIcon />
-            Create theme
+            {localize("Create theme")}
           </Button>
           <Button size="xs" variant="outline" onClick={() => onImportOpenChange(true)}>
             <PlusIcon />
-            Add theme
+            {localize("Add theme")}
           </Button>
         </div>
       </div>
@@ -938,14 +938,14 @@ export function ThemeLibrary({
           // Re-apply after collection updates. The update may remove the
           // selected variant, in which case the theme hook falls back safely.
           if (updated) refreshTheme();
-          const verb = updated ? "updated" : "added";
+          const verb = updated ? localize("updated") : localize("added");
           toastManager.add(
             stackedThreadToast({
               type: "success",
               title:
                 importedThemes.length === 1
                   ? `${importedThemes[0]!.label} ${verb}`
-                  : `${importedThemes.length} themes ${verb}`,
+                  : `${importedThemes.length} ${localize("themes")} ${verb}`,
               description: importedThemes.map((imported) => imported.label).join(", "),
             }),
           );
@@ -959,8 +959,8 @@ export function ThemeLibrary({
             toastManager.add(
               stackedThreadToast({
                 type: "success",
-                title: `${importedTheme.label} added`,
-                description: `It’s now your ${modes[0]!} theme.`,
+                title: `${importedTheme.label} ${localize("added")}`,
+                description: `${localize("It’s now your")} ${localize(modes[0]!)} ${localize("theme.")}`,
               }),
             );
             return true;
@@ -969,8 +969,8 @@ export function ThemeLibrary({
           toastManager.add(
             stackedThreadToast({
               type: "success",
-              title: `${importedTheme.label} added`,
-              description: "It’s now active.",
+              title: `${importedTheme.label} ${localize("added")}`,
+              description: localize("It’s now active."),
             }),
           );
           return true;

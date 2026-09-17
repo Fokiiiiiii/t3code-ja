@@ -1,5 +1,7 @@
 import { ContextChipPopover } from "./contextChipParts";
 import { Button } from "./ui/button";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 import { LexicalComposer, type InitialConfigType } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -276,11 +278,13 @@ function ComposerSkillDecorator(props: {
   skillLabel: string;
   skillDescription: string | null;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const actions = use(ComposerContextActionsContext);
   const skill = use(ComposerSkillsContext).find((candidate) => candidate.name === props.skillName);
   return (
     <ContextChipPopover
-      accessibleLabel={`Skill ${props.skillLabel}`}
+      accessibleLabel={`${localize("Skill")} ${props.skillLabel}`}
       triggerClassName={COMPOSER_INLINE_SKILL_CHIP_CLASS_NAME}
       chip={
         <>
@@ -298,11 +302,11 @@ function ComposerSkillDecorator(props: {
         <p>
           {skill?.description ??
             props.skillDescription ??
-            "No description is available for this skill."}
+            localize("No description is available for this skill.")}
         </p>
         {skill?.path ? (
           <Button variant="outline" size="sm" onClick={() => actions.openMention(skill.path)}>
-            View instructions
+            {localize("View instructions")}
           </Button>
         ) : null}
       </div>

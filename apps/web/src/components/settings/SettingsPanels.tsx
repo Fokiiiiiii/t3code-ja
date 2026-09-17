@@ -3124,11 +3124,11 @@ export function GeneralSettingsPanel() {
           control={
             !hasServerTargets ? (
               <span className="text-sm text-muted-foreground">
-                Connect an environment to choose its text generation model.
+                {localize("Connect an environment to choose its text generation model.")}
               </span>
             ) : !hasTextGenerationProvider ? (
               <span className="text-sm text-muted-foreground">
-                No text generation providers available.
+                {localize("No text generation providers available.")}
               </span>
             ) : (
               <div className="flex flex-wrap items-center justify-end gap-1.5">
@@ -3240,7 +3240,7 @@ export function GeneralSettingsPanel() {
               size="sm"
               variant="outline"
             >
-              View diagnostics
+              {localize("View diagnostics")}
             </Button>
           }
         />
@@ -3253,7 +3253,7 @@ export function GeneralSettingsPanel() {
               size="xs"
               variant="outline"
             >
-              View licenses
+              {localize("View licenses")}
             </Button>
           }
         />
@@ -3443,8 +3443,9 @@ export function ArchivedThreadsPanel() {
                 title={thread.title}
                 description={
                   <>
-                    Archived {formatRelativeTimeLabel(thread.archivedAt ?? thread.createdAt)}
-                    {" \u00b7 Created "}
+                    {localize("Archived")}{" "}
+                    {formatRelativeTimeLabel(thread.archivedAt ?? thread.createdAt)}
+                    {` · ${localize("Created")}`}
                     {formatRelativeTimeLabel(thread.createdAt)}
                   </>
                 }

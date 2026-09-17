@@ -6553,8 +6553,9 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
                                   side="top"
                                   className="max-w-64 whitespace-normal leading-tight"
                                 >
-                                  Draft attachment could not be saved locally and may be lost on
-                                  navigation.
+                                  {localize(
+                                    "Draft attachment could not be saved locally and may be lost on navigation.",
+                                  )}
                                 </TooltipPopup>
                               </Tooltip>
                             )}

@@ -2,18 +2,26 @@ import { useEffect, useRef } from "react";
 
 import { type SlowRpcAckRequest, useSlowRpcAckRequests } from "../rpc/requestLatencyState";
 import { toastManager } from "./ui/toast";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 
-function describeSlowRequests(requests: ReadonlyArray<SlowRpcAckRequest>): string {
+function describeSlowRequests(
+  requests: ReadonlyArray<SlowRpcAckRequest>,
+  localize: (value: string) => string,
+): string {
   const count = requests.length;
   // Thresholds vary per method, so report the smallest one the batch has passed.
   const thresholdSeconds = Math.round(
     Math.min(...requests.map((request) => request.thresholdMs)) / 1000,
   );
 
-  return `${count} request${count === 1 ? "" : "s"} waiting longer than ${thresholdSeconds}s.`;
+  return `${count} ${localize(count === 1 ? "request" : "requests")} ${localize(
+    "waiting longer than",
+  )} ${thresholdSeconds}s.`;
 }
 
 function SlowRequestDetails({ requests }: { requests: ReadonlyArray<SlowRpcAckRequest> }) {
+  const { locale } = useI18n();
   return (
     <ul className="space-y-2.5 text-xs text-muted-foreground">
       {requests.map((request) => (
@@ -23,7 +31,8 @@ function SlowRequestDetails({ requests }: { requests: ReadonlyArray<SlowRpcAckRe
         >
           <div className="wrap-break-word font-medium text-foreground">{request.tag}</div>
           <div className="mt-0.5 text-[10px] opacity-75">
-            Started {new Date(request.startedAt).toLocaleTimeString()}
+            {translateWebSource(locale, "Started")}{" "}
+            {new Date(request.startedAt).toLocaleTimeString()}
           </div>
         </li>
       ))}
@@ -32,6 +41,8 @@ function SlowRequestDetails({ requests }: { requests: ReadonlyArray<SlowRpcAckRe
 }
 
 export function SlowRpcRequestToastCoordinator() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const slowRequests = useSlowRpcAckRequests();
   const toastIdRef = useRef<ReturnType<typeof toastManager.add> | null>(null);
 
@@ -48,11 +59,14 @@ export function SlowRpcRequestToastCoordinator() {
       data: {
         expandableContent: <SlowRequestDetails requests={slowRequests} />,
         expandableDescriptionTrigger: true,
-        expandableLabels: { collapse: "Hide requests", expand: "Show requests" },
+        expandableLabels: {
+          collapse: localize("Hide requests"),
+          expand: localize("Show requests"),
+        },
       },
-      description: describeSlowRequests(slowRequests),
+      description: describeSlowRequests(slowRequests, localize),
       timeout: 0,
-      title: "Some requests are slow",
+      title: localize("Some requests are slow"),
       type: "warning" as const,
     };
 

@@ -7,6 +7,8 @@ import type { SettingsScopeSearch } from "./settingsScope";
 import { useSettingsProjectGroups } from "./useSettingsProjectGroups";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import type { EnvironmentId } from "@t3tools/contracts";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 /** Offer an explicit target change when a category has no settings at this scope. */
 export function SettingsScopeNotice({
@@ -20,6 +22,8 @@ export function SettingsScopeNotice({
   targetId?: string;
   eligibleEnvironmentIds?: readonly EnvironmentId[];
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { selectScope, search } = useSettingsScope();
   const navigate = useNavigate({ from: "/settings" });
   const pathname = useLocation({ select: (location) => location.pathname });
@@ -31,7 +35,7 @@ export function SettingsScopeNotice({
           .filter((group) => !search.project || group.projectKey === search.project)
           .flatMap((group) =>
             group.memberProjects.map((member) => ({
-              label: `${group.displayName} · ${member.environmentLabel ?? "Environment"} · ${member.workspaceRoot}`,
+              label: `${group.displayName} · ${member.environmentLabel ?? localize("Environment")} · ${member.workspaceRoot}`,
               search: {
                 project: group.projectKey,
                 machine: member.environmentId,
@@ -60,12 +64,12 @@ export function SettingsScopeNotice({
                   : entry.label,
                 search: { machine: entry.environmentId },
               }))
-          : [{ label: "Open all environments", search: {} }];
+          : [{ label: localize("Open all environments"), search: {} }];
   return (
     <SettingsPageContainer>
       <Alert role="status">
         <AlertDescription>
-          <p>{children}</p>
+          <p>{localize(children)}</p>
           <AlertAction className="flex-wrap gap-2">
             {choices.map((choice) => (
               <Button

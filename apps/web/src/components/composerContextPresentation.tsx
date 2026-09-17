@@ -35,6 +35,8 @@ import {
   createContextPresentationRegistry,
   type ContextPresentationCapability,
 } from "./contextPresentationRegistry";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 import {
   COMPOSER_INLINE_CHIP_CLASS_NAME,
   COMPOSER_INLINE_CHIP_ICON_CLASS_NAME,
@@ -303,18 +305,19 @@ function ComposerPreviewAnnotationDetails({
 }: {
   annotation: PreviewAnnotationPayload;
 }) {
+  const { locale } = useI18n();
   const summary = previewAnnotationTooltip(annotation);
   return (
     <div className="overflow-hidden rounded-lg border border-border/70 bg-background/70">
       {annotation.screenshot?.dataUrl ? (
         <img
           src={annotation.screenshot.dataUrl}
-          alt="Annotated preview crop"
+          alt={translateWebSource(locale, "Annotated preview crop")}
           className="max-h-64 w-full border-border/70 border-b bg-muted object-contain"
         />
       ) : (
         <div className="border-border/70 border-b bg-muted/40 px-3 py-2 text-secondary-label text-xs">
-          Screenshot unavailable
+          {translateWebSource(locale, "Screenshot unavailable")}
         </div>
       )}
       <div className="whitespace-pre-wrap wrap-break-word px-3 py-2.5 text-sm text-foreground">
@@ -325,12 +328,16 @@ function ComposerPreviewAnnotationDetails({
 }
 
 function UnresolvedContextChip(props: { label: string }) {
+  const { locale } = useI18n();
   return (
     <UnresolvedChip
       label={props.label}
       className={COMPOSER_INLINE_CHIP_CLASS_NAME}
       labelClassName={COMPOSER_INLINE_CHIP_LABEL_CLASS_NAME}
-      tooltip="This context is no longer available. Remove it or attach it again."
+      tooltip={translateWebSource(
+        locale,
+        "This context is no longer available. Remove it or attach it again.",
+      )}
       tooltipClassName="max-w-80 leading-tight"
     />
   );

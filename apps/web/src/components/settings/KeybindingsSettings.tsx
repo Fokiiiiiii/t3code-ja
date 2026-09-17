@@ -424,7 +424,7 @@ function WhenExpressionNodeEditor({
           size="compact"
           className="min-w-10"
         >
-          Not
+          {localize("Not")}
         </Toggle>
         <WhenVariableSelect
           value={condition.identifier}
@@ -728,11 +728,11 @@ function WhenExpressionBuilder({
             <div className="flex flex-wrap gap-2">
               <Button type="button" size="compact" onClick={addRootCondition}>
                 <PlusIcon className="size-3.5" />
-                Condition
+                {localize("Condition")}
               </Button>
               <Button type="button" variant="outline" size="compact" onClick={addRootGroup}>
                 <PlusIcon className="size-3.5" />
-                Group
+                {localize("Group")}
               </Button>
             </div>
           </div>

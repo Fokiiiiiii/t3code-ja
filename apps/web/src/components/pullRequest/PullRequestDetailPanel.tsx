@@ -343,6 +343,8 @@ function PullRequestCopyableCode({
   readonly tooltipSide?: "top" | "bottom";
   readonly onError?: (error: Error) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { copyToClipboard, isCopied } = useCopyToClipboard({
     target,
     timeout: 1600,
@@ -378,11 +380,11 @@ function PullRequestCopyableCode({
             isCopied ? "opacity-100" : "opacity-0",
           )}
         >
-          Copied
+          {localize("Copied")}
         </span>
       </TooltipTrigger>
       <TooltipPopup className="max-w-96 wrap-anywhere font-mono" side={tooltipSide}>
-        {`${isCopied ? "Copied" : copyLabel}: ${value}`}
+        {`${isCopied ? localize("Copied") : localize(copyLabel)}: ${value}`}
       </TooltipPopup>
     </Tooltip>
   );
@@ -1696,7 +1698,7 @@ export function PullRequestDetailPanel({
             <TooltipProvider delay={150} closeDelay={150} timeout={400}>
               {!nativeStack && supportsStackActions && nativeStackQuery.error ? (
                 <Button variant="ghost" size="xs" onClick={nativeStackQuery.refresh}>
-                  Retry stack lookup
+                  {localize("Retry stack lookup")}
                 </Button>
               ) : null}
               {nativeStack ? (
@@ -1750,13 +1752,15 @@ export function PullRequestDetailPanel({
                             <Button
                               size="xs"
                               variant="outline"
-                              aria-label={
-                                handoff?.startsWith("checkout") ? "Checking out..." : "Check out"
-                              }
+                              aria-label={localize(
+                                handoff?.startsWith("checkout") ? "Checking out..." : "Check out",
+                              )}
                             >
                               <GitBranchIcon aria-hidden className="size-3.5" />
                               <span className="@max-[35rem]/pr-header:hidden">
-                                {handoff?.startsWith("checkout") ? "Checking out..." : "Check out"}
+                                {localize(
+                                  handoff?.startsWith("checkout") ? "Checking out..." : "Check out",
+                                )}
                               </span>
                               <ChevronDownIcon
                                 aria-hidden
@@ -1775,7 +1779,7 @@ export function PullRequestDetailPanel({
                       <span className="flex min-w-0 flex-col">
                         <span>{localize("In a separate worktree")}</span>
                         <span className="text-xs text-muted-foreground">
-                          Its own folder and thread. Nothing you have open moves.
+                          {localize("Its own folder and thread. Nothing you have open moves.")}
                         </span>
                       </span>
                     </MenuItem>
@@ -1784,7 +1788,8 @@ export function PullRequestDetailPanel({
                       <span className="flex min-w-0 flex-col">
                         <span>{localize("In this repository")}</span>
                         <span className="text-xs text-muted-foreground">
-                          Switches the branch you are working in, like `gh pr checkout`.
+                          {localize("Switches the branch you are working in, like")} `gh pr
+                          checkout`.
                         </span>
                       </span>
                     </MenuItem>
@@ -1817,8 +1822,8 @@ export function PullRequestDetailPanel({
                     }
                   />
                   <TooltipPopup side="top">
-                    {armedAutoMergeLabel}: the host will merge this on its own once its requirements
-                    are met
+                    {armedAutoMergeLabel}:{" "}
+                    {localize("the host will merge this on its own once its requirements are met")}
                   </TooltipPopup>
                 </Tooltip>
               ) : null}
@@ -1899,7 +1904,9 @@ export function PullRequestDetailPanel({
                     }
                   />
                   <TooltipPopup side="top">
-                    {pendingAction === "enable-auto-merge" ? "Enabling..." : pendingAutoMergeLabel}
+                    {pendingAction === "enable-auto-merge"
+                      ? localize("Enabling...")
+                      : pendingAutoMergeLabel}
                   </TooltipPopup>
                 </Tooltip>
               ) : primaryAction === "auto-merge-armed" ? (
@@ -1918,8 +1925,8 @@ export function PullRequestDetailPanel({
                     }
                   />
                   <TooltipPopup side="top">
-                    {armedAutoMergeLabel}: the host will merge this on its own once its requirements
-                    are met
+                    {armedAutoMergeLabel}:{" "}
+                    {localize("the host will merge this on its own once its requirements are met")}
                   </TooltipPopup>
                 </Tooltip>
               ) : primaryAction === "merge" ? (
@@ -1995,31 +2002,33 @@ export function PullRequestDetailPanel({
                       className="size-3.5"
                       refreshing={isInvalidating || detailQuery.isPending}
                     />
-                    Refresh
+                    {localize("Refresh")}
                   </MenuItem>
                   <MenuItem disabled={handoff !== null} onClick={askAboutPullRequest}>
                     <MessageCircleQuestionIcon className="mt-0.5 size-3.5 shrink-0 self-start" />
                     <span className="flex min-w-0 flex-col">
-                      <span>{handoff === "ask" ? "Opening..." : "Ask a question"}</span>
+                      <span>{localize(handoff === "ask" ? "Opening..." : "Ask a question")}</span>
                       <span className="text-xs text-muted-foreground">
                         {attachTarget !== null
-                          ? "Adds the pull request to this thread's composer."
-                          : "Opens a thread that knows which pull request you mean."}
+                          ? localize("Adds the pull request to this thread's composer.")
+                          : localize("Opens a thread that knows which pull request you mean.")}
                       </span>
                     </span>
                   </MenuItem>
                   <MenuItem disabled={handoff !== null} onClick={explainPullRequest}>
                     <BookOpenIcon className="mt-0.5 size-3.5 shrink-0 self-start" />
                     <span className="flex min-w-0 flex-col">
-                      <span>{handoff === "explain" ? "Opening..." : "Explain this PR"}</span>
+                      <span>
+                        {localize(handoff === "explain" ? "Opening..." : "Explain this PR")}
+                      </span>
                       <span className="text-xs text-muted-foreground">
-                        A walk through the diff and what to read closely.
+                        {localize("A walk through the diff and what to read closely.")}
                       </span>
                     </span>
                   </MenuItem>
                   <MenuItem disabled={handoff !== null} onClick={startFixFindings}>
                     <HammerIcon className="size-3.5" />
-                    {handoff === "findings" ? "Preparing..." : handoffLabels.fixFindings}
+                    {localize(handoff === "findings" ? "Preparing..." : handoffLabels.fixFindings)}
                   </MenuItem>
                   {pickableEnvironments.length > 0 ? (
                     <ActOnEnvironmentPicker
@@ -2045,7 +2054,7 @@ export function PullRequestDetailPanel({
                           ) : (
                             <GitPullRequestDraftIcon className="size-3.5" />
                           )}
-                          {detail.isDraft ? "Ready for review" : "Convert to draft"}
+                          {localize(detail.isDraft ? "Ready for review" : "Convert to draft")}
                         </MenuItem>
                       ) : null}
                       {showsMergeNow ? (
@@ -2054,7 +2063,7 @@ export function PullRequestDetailPanel({
                           onClick={() => setConfirmation({ open: true, action: "merge" })}
                         >
                           <GitMergeIcon className="size-3.5" />
-                          Merge now
+                          {localize("Merge now")}
                         </MenuItem>
                       ) : null}
                       {/* The same merge, left with the host to carry out once its requirements
@@ -2066,7 +2075,7 @@ export function PullRequestDetailPanel({
                           onClick={() => void perform("disable-auto-merge")}
                         >
                           <GitMergeIcon className="size-3.5" />
-                          Disable auto-merge
+                          {localize("Disable auto-merge")}
                         </MenuItem>
                       ) : showsAutoMerge ? (
                         <MenuItem
@@ -2076,7 +2085,7 @@ export function PullRequestDetailPanel({
                           }
                         >
                           <GitMergeIcon className="size-3.5" />
-                          Enable auto-merge
+                          {localize("Enable auto-merge")}
                         </MenuItem>
                       ) : null}
                       {/* A preference for the merge action rather than a second action, so it
@@ -2133,14 +2142,14 @@ export function PullRequestDetailPanel({
                   </MenuItem>
                   <MenuItem onClick={() => copyReference(detail.url, "PR link")}>
                     <LinkIcon className="size-3.5" />
-                    Copy link
+                    {localize("Copy link")}
                     <MenuShortcut>
                       {shortcutLabelForCommand(keybindings, "thread.copyReference")}
                     </MenuShortcut>
                   </MenuItem>
                   <MenuItem onClick={() => copyReference(`#${reference.number}`, "PR number")}>
                     <CopyIcon className="size-3.5" />
-                    Copy PR number
+                    {localize("Copy PR number")}
                     <MenuShortcut>
                       {shortcutLabelForCommand(keybindings, "pullRequest.copyNumber")}
                     </MenuShortcut>
@@ -2154,7 +2163,7 @@ export function PullRequestDetailPanel({
                         onClick={() => setConfirmation({ open: true, action: "close" })}
                       >
                         <GitPullRequestClosedIcon className="size-3.5" />
-                        Close pull request
+                        {localize("Close pull request")}
                       </MenuItem>
                     </>
                   ) : detail.state === "closed" && can("reopen") ? (
@@ -2162,7 +2171,7 @@ export function PullRequestDetailPanel({
                       <MenuSeparator />
                       <MenuItem disabled={actionPending} onClick={() => void perform("reopen")}>
                         <GitPullRequestIcon className="size-3.5" />
-                        Reopen pull request
+                        {localize("Reopen pull request")}
                       </MenuItem>
                     </>
                   ) : detail.state === "merged" && can("revert") ? (
@@ -2173,7 +2182,7 @@ export function PullRequestDetailPanel({
                         onClick={() => setConfirmation({ open: true, action: "revert" })}
                       >
                         <RotateCcwIcon className="size-3.5" />
-                        Revert changes
+                        {localize("Revert changes")}
                       </MenuItem>
                     </>
                   ) : null}
@@ -2365,7 +2374,7 @@ export function PullRequestDetailPanel({
                         disabled={titleSaving}
                         onClick={() => setTitleScope(null)}
                       >
-                        Cancel
+                        {localize("Cancel")}
                       </Button>
                       <Button
                         size="xs"
@@ -2373,7 +2382,7 @@ export function PullRequestDetailPanel({
                         disabled={titleSaving || titleDraft.trim().length === 0}
                         onClick={() => void saveTitle(titleDraft)}
                       >
-                        {titleSaving ? "Saving..." : "Save"}
+                        {localize(titleSaving ? "Saving..." : "Save")}
                       </Button>
                     </div>
                   </div>
@@ -2385,7 +2394,9 @@ export function PullRequestDetailPanel({
                       profileUrl={authorProfileUrl}
                       className="font-medium"
                     />
-                    <span>updated {formatRelativeTimeLabel(detail.updatedAt)}</span>
+                    <span>
+                      {localize("updated")} {formatRelativeTimeLabel(detail.updatedAt)}
+                    </span>
                   </PullRequestMetaLine>
                   {checkoutCommand ? (
                     <PullRequestCopyableCode
@@ -2755,33 +2766,35 @@ export function PullRequestDetailPanel({
           <AlertDialogHeader>
             <AlertDialogTitle>
               {confirmAction === "merge"
-                ? "Merge pull request?"
+                ? localize("Merge pull request?")
                 : confirmAction === "enable-auto-merge"
-                  ? "Enable auto-merge?"
+                  ? localize("Enable auto-merge?")
                   : confirmAction === "revert"
-                    ? "Revert these changes?"
+                    ? localize("Revert these changes?")
                     : confirmAction === "approve-workflows"
-                      ? "Approve workflows to run?"
-                      : "Close pull request?"}
+                      ? localize("Approve workflows to run?")
+                      : localize("Close pull request?")}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {confirmAction === "merge"
-                ? `This merges #${reference.number} using ${selectedMergeMethod}.`
+                ? `${localize("This merges")} #${reference.number} ${localize("using")} ${selectedMergeMethod}.`
                 : confirmAction === "enable-auto-merge"
                   ? // The host merges this as soon as it considers the pull request ready, which
                     // may be immediately — there is no telling from here whether anything is
                     // still outstanding.
-                    `This merges #${reference.number} using ${selectedMergeMethod} as soon as the host considers it ready, which may be immediately.`
+                    `${localize("This merges")} #${reference.number} ${localize("using")} ${selectedMergeMethod} ${localize("as soon as the host considers it ready, which may be immediately.")}`
                   : confirmAction === "revert"
-                    ? `This opens a new pull request that reverses the changes merged by #${reference.number}.`
+                    ? `${localize("This opens a new pull request that reverses the changes merged by")} #${reference.number}.`
                     : confirmAction === "approve-workflows"
-                      ? `This allows ${workflowApprovalsRequired} ${workflowApprovalsRequired === 1 ? "workflow" : "workflows"} from #${reference.number} to run. Review the code and workflow changes first.`
-                      : `This closes #${reference.number} without merging it.`}
+                      ? `${localize("This allows")} ${workflowApprovalsRequired} ${localize(
+                          workflowApprovalsRequired === 1 ? "workflow" : "workflows",
+                        )} ${localize("from")} #${reference.number} ${localize("to run. Review the code and workflow changes first.")}`
+                      : `${localize("This closes")} #${reference.number} ${localize("without merging it.")}`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogClose render={<Button variant="outline" size="sm" />}>
-              Cancel
+              {localize("Cancel")}
             </AlertDialogClose>
             <Button
               size="sm"
@@ -2801,12 +2814,12 @@ export function PullRequestDetailPanel({
               {confirmAction === "merge"
                 ? selectedMergeMethodLabel
                 : confirmAction === "enable-auto-merge"
-                  ? "Enable auto-merge"
+                  ? localize("Enable auto-merge")
                   : confirmAction === "revert"
-                    ? "Create revert PR"
+                    ? localize("Create revert PR")
                     : confirmAction === "approve-workflows"
-                      ? "Approve and run"
-                      : "Close"}
+                      ? localize("Approve and run")
+                      : localize("Close")}
             </Button>
           </AlertDialogFooter>
         </AlertDialogPopup>

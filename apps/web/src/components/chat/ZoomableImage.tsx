@@ -7,6 +7,8 @@ import {
   useState,
   type Ref,
 } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const MAX_ZOOM = 8;
 
@@ -26,6 +28,7 @@ export function ZoomableImage({
   onError: () => void;
   ref?: Ref<ZoomableImageHandle>;
 }) {
+  const { locale } = useI18n();
   const viewportRef = useRef<HTMLDivElement>(null);
   const [naturalSize, setNaturalSize] = useState({ width: 0, height: 0 });
   const [windowSize, setWindowSize] = useState(() => ({
@@ -240,7 +243,8 @@ export function ZoomableImage({
         />
       </div>
       <span className="sr-only" aria-live="polite">
-        {Math.round(zoom * 100)}% zoom
+        {Math.round(zoom * 100)}
+        {translateWebSource(locale, "% zoom")}
       </span>
     </div>
   );

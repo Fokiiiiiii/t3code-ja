@@ -474,6 +474,8 @@ function ReviewVerdictEvent({
   onOpen: (url: string) => void;
   reactions: ReactionSurface;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <div className="group relative mb-5 pl-12 [contain-intrinsic-block-size:48px] [content-visibility:auto]">
       {/* Pinned rather than centred: this row grows with a body and a reaction bar, and a
@@ -505,10 +507,12 @@ function ReviewVerdictEvent({
                   />
                 }
               >
-                {pullRequestReviewOutcomeLabel(outcome)}
-                {stale ? <span className="sr-only">, before the latest commits</span> : null}
+                {localize(pullRequestReviewOutcomeLabel(outcome))}
+                {stale ? (
+                  <span className="sr-only">, {localize("before the latest commits")}</span>
+                ) : null}
               </TooltipTrigger>
-              <TooltipPopup>{pullRequestReviewOutcomeStaleLabel(outcome)}</TooltipPopup>
+              <TooltipPopup>{localize(pullRequestReviewOutcomeStaleLabel(outcome))}</TooltipPopup>
             </Tooltip>
           </div>
           {/* The reaction bar rides this line rather than taking one of its own. Its add button

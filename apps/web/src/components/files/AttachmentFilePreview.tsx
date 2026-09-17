@@ -363,8 +363,8 @@ export function AttachmentFilePreview(props: {
       </div>
       {content?.truncated ? (
         <FileSurfaceNotice>
-          Preview limited to the first 1 MB of a {props.sizeBytes.toLocaleString()} byte file. Save
-          the file to read it in full.
+          {localize("Preview limited to the first 1 MB of a")} {props.sizeBytes.toLocaleString()}{" "}
+          {localize("byte file. Save the file to read it in full.")}
         </FileSurfaceNotice>
       ) : null}
       {body}

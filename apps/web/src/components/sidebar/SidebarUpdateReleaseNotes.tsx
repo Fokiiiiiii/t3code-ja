@@ -7,6 +7,8 @@ import {
 } from "../desktopUpdate.logic";
 import { openDesktopUpdateReleaseNotes } from "../desktopUpdate.toast";
 import { Separator } from "../ui/separator";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 type DesktopUpdateShell = Pick<DesktopBridge, "openExternal">;
 
@@ -28,6 +30,8 @@ function ReleaseLink({
   readonly releaseUrl: string;
   readonly shell: DesktopUpdateShell | undefined;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <a
       className="mt-2 inline-flex items-center gap-1 rounded-sm text-xs leading-5 text-muted-foreground underline decoration-dotted underline-offset-4 outline-none transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
@@ -52,8 +56,10 @@ export function SidebarUpdateReleaseNotes({
   readonly state: DesktopUpdateState;
   readonly tooltip: string;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   if (state.channel !== "nightly" || state.releaseNotes.length === 0) {
-    return <>{tooltip}</>;
+    return <>{localize(tooltip)}</>;
   }
 
   return (
@@ -62,7 +68,7 @@ export function SidebarUpdateReleaseNotes({
         {state.status === "available" ? (
           <div>
             <div className="whitespace-nowrap text-sm leading-5 font-medium">
-              Update ready to download
+              {localize("Update ready to download")}
             </div>
             {state.availableVersion ? (
               <div className="mt-0.5 text-xs leading-4 text-muted-foreground">
@@ -71,7 +77,7 @@ export function SidebarUpdateReleaseNotes({
             ) : null}
           </div>
         ) : (
-          <div className="text-sm leading-5 font-medium">{tooltip}</div>
+          <div className="text-sm leading-5 font-medium">{localize(tooltip)}</div>
         )}
       </div>
       <div className="min-h-0 max-h-[min(28rem,calc(100vh-6rem))] overflow-y-auto px-1 pt-4 pb-1">
@@ -80,15 +86,17 @@ export function SidebarUpdateReleaseNotes({
           const omittedItemCount = Math.max(0, releaseNote.totalItems - releaseNote.items.length);
           const linkLabel =
             omittedItemCount === 0
-              ? "View release on GitHub"
-              : `${omittedItemCount} more ${omittedItemCount === 1 ? "change" : "changes"} on GitHub`;
+              ? localize("View release on GitHub")
+              : `${omittedItemCount} ${localize(omittedItemCount === 1 ? "more change" : "more changes")} ${localize("on GitHub")}`;
 
           return (
             <div key={releaseNote.version}>
               {index > 0 && <Separator className="my-3 bg-border/60" />}
               <section>
                 <h3 className="text-foreground text-xs leading-4 font-semibold">
-                  {index === 0 ? "What's changed" : `Changes in ${releaseNote.version}`}
+                  {index === 0
+                    ? localize("What's changed")
+                    : `${localize("Changes in")} ${releaseNote.version}`}
                 </h3>
                 <ul className="mt-2 space-y-1.5 pl-4 text-xs leading-5 text-popover-foreground/90">
                   {keyReleaseNoteItems(releaseNote.items).map(({ item, key }) => (
@@ -110,7 +118,9 @@ export function SidebarUpdateReleaseNotes({
           <div>
             <Separator className="my-3 bg-border/60" />
             <ReleaseLink releaseUrl={getDesktopUpdateReleaseHistoryUrl()} shell={shell}>
-              {`${state.omittedReleaseCount} older ${state.omittedReleaseCount === 1 ? "release" : "releases"} on GitHub`}
+              {`${state.omittedReleaseCount} ${localize(
+                state.omittedReleaseCount === 1 ? "older release" : "older releases",
+              )} ${localize("on GitHub")}`}
             </ReleaseLink>
           </div>
         ) : null}

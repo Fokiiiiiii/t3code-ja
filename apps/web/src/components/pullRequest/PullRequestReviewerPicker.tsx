@@ -126,7 +126,7 @@ export function PullRequestReviewerPicker({
         <>
           <PullRequestActorLabel actor={candidate} className="min-w-0 flex-1 truncate" />
           {candidate.kind === "team" ? (
-            <span className="shrink-0 text-muted-foreground">team</span>
+            <span className="shrink-0 text-muted-foreground">{localize("team")}</span>
           ) : null}
           {candidate.isRequested ? (
             <CheckIcon aria-label={localize("Already asked")} className="size-3.5 shrink-0" />

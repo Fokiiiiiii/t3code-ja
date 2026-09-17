@@ -7,6 +7,8 @@ import * as React from "react";
 import { cn } from "~/lib/utils";
 import { Input } from "~/components/ui/input";
 import { ScrollArea } from "~/components/ui/scroll-area";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const ComboboxContext = React.createContext<{
   chipsRef: React.RefObject<Element | null> | null;
@@ -391,6 +393,7 @@ function ComboboxChipRemove({
   labelId,
   ...props
 }: ComboboxPrimitive.ChipRemove.Props & { labelId: string }) {
+  const { locale } = useI18n();
   const removeLabelId = `${labelId}-remove`;
 
   return (
@@ -401,7 +404,7 @@ function ComboboxChipRemove({
       {...props}
     >
       <span id={removeLabelId} className="sr-only">
-        Remove
+        {translateWebSource(locale, "Remove")}
       </span>
       <XIcon aria-hidden="true" />
     </ComboboxPrimitive.ChipRemove>

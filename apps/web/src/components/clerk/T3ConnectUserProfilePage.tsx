@@ -209,7 +209,7 @@ export function T3ConnectUserProfilePage() {
 
   return (
     <ClerkUserProfilePage
-      title="T3 Connect"
+      title={localize("T3 Connect")}
       description={localize(
         "Environments registered to your account. Connections on this device are managed in Settings.",
       )}
@@ -257,10 +257,12 @@ export function T3ConnectUserProfilePage() {
             </EmptyMedia>
             <EmptyHeader>
               <EmptyTitle className="text-[1.0625rem] leading-6">
-                No T3 Connect environments
+                {localize("No T3 Connect environments")}
               </EmptyTitle>
               <EmptyDescription className="text-[0.8125rem] leading-[1.125rem]">
-                Link an environment from its local Settings to make it available through T3 Connect.
+                {localize(
+                  "Link an environment from its local Settings to make it available through T3 Connect.",
+                )}
               </EmptyDescription>
             </EmptyHeader>
           </Empty>

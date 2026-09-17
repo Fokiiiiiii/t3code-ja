@@ -25,6 +25,8 @@ import {
   resolvePrimaryOperateAccess,
   resolveRemoteOperateAccess,
 } from "./ProviderSettingsPanel.logic";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 /**
  * Why the picker is inert, in the order the user can do something about it.
@@ -85,6 +87,8 @@ export function EnvironmentIconMenu({
   readonly environmentId: EnvironmentId;
   readonly serverConfig: ServerConfig | null;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const updateSettings = useUpdateEnvironmentSettings(environmentId);
   const operateAccess = useEnvironmentOperateAccess(environmentId);
   const lock = resolveEnvironmentIconPickerLock({ serverConfig, operateAccess });
@@ -97,7 +101,7 @@ export function EnvironmentIconMenu({
     <MenuSub>
       <MenuSubTrigger>
         <EnvironmentMachineIcon kind={resolved} />
-        Icon
+        {localize("Icon")}
       </MenuSubTrigger>
       <MenuSubPopup className="min-w-44">
         {lock !== null ? (

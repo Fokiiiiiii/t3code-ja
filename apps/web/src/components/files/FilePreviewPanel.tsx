@@ -49,6 +49,8 @@ import { useEnvironmentHttpBaseUrl, usePrimaryEnvironmentId } from "~/state/envi
 import { previewEnvironment } from "~/state/preview";
 import { useAtomCommand } from "~/state/use-atom-command";
 import { useAtomQueryRunner } from "~/state/use-atom-query-runner";
+import { useI18n } from "~/i18n/WebI18nProvider";
+import { translateWebSource } from "~/i18n/messages";
 
 import { AttachmentFilePreview } from "./AttachmentFilePreview";
 import { AudioPreview } from "./AudioPreview";
@@ -123,6 +125,7 @@ function WorkspaceImagePreview(props: {
   readonly alt: string;
   readonly workspaceMutationId: string | null;
 }) {
+  const { locale } = useI18n();
   const resource = useMemo(
     () => ({
       _tag: "workspace-file" as const,
@@ -150,7 +153,7 @@ function WorkspaceImagePreview(props: {
     return (
       <MediaActions source={actionsSource}>
         <div className="flex min-h-0 flex-1 items-center justify-center px-6 text-center text-xs leading-relaxed text-destructive">
-          Unable to load workspace image.
+          {translateWebSource(locale, "Unable to load workspace image.")}
         </div>
       </MediaActions>
     );
@@ -188,6 +191,7 @@ function WorkspaceBrowserPreview(props: {
   readonly title: string;
   readonly workspaceMutationId: string | null;
 }) {
+  const { locale } = useI18n();
   const insideWorkspace =
     mediaFileReference(props.absolutePath, props.workspaceRoot).relativePath !== undefined;
   const resource = useMemo(
@@ -207,7 +211,7 @@ function WorkspaceBrowserPreview(props: {
   if (assetUrl._tag === "Failure") {
     return (
       <div className="flex min-h-0 flex-1 items-center justify-center px-6 text-center text-xs leading-relaxed text-destructive">
-        Unable to load file preview.
+        {translateWebSource(locale, "Unable to load file preview.")}
       </div>
     );
   }
@@ -920,6 +924,7 @@ export default function FilePreviewPanel({
   selectedFilePending,
   workspaceMutationId,
 }: FilePreviewPanelProps) {
+  const { locale } = useI18n();
   const { resolvedTheme } = useTheme();
   const wordWrap = useClientSettings((settings) => settings.wordWrap);
   const primaryEnvironmentId = usePrimaryEnvironmentId();
@@ -1162,7 +1167,8 @@ export default function FilePreviewPanel({
       !renderBrowserFile &&
       file.data?.truncated ? (
         <div className="shrink-0 border-b border-warning/20 bg-warning-surface px-3 py-1.5 text-[11px] text-warning-foreground">
-          Preview limited to the first 1 MB of a {file.data.byteLength.toLocaleString()} byte file.
+          {translateWebSource(locale, "Preview limited to the first 1 MB of a")}{" "}
+          {file.data.byteLength.toLocaleString()} {translateWebSource(locale, "byte file.")}
         </div>
       ) : null}
       <div className="flex min-h-0 flex-1 overflow-hidden">

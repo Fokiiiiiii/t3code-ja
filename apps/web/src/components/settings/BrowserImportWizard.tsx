@@ -221,7 +221,11 @@ function QuitStep({
           {translateWebSource(locale, "to import")}
         </DialogTitle>
         <DialogDescription>
-          {source.name} is open, so its cookies can&rsquo;t be read yet. Quit it, then continue.
+          {source.name}{" "}
+          {translateWebSource(
+            locale,
+            "is open, so its cookies can’t be read yet. Quit it, then continue.",
+          )}
         </DialogDescription>
       </DialogHeader>
       <DialogFooter>
@@ -380,16 +384,18 @@ function ConfigureStep({
   const targetFeedback =
     targetError ??
     (targetMissing
-      ? "That profile is no longer available. Choose where to import these cookies."
+      ? localize("That profile is no longer available. Choose where to import these cookies.")
       : targetUncreatable
-        ? "You've reached the profile limit. Choose an existing profile to import into."
+        ? localize("You've reached the profile limit. Choose an existing profile to import into.")
         : undefined);
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Import from {source.name}</DialogTitle>
+        <DialogTitle>
+          {localize("Import from")} {source.name}
+        </DialogTitle>
         <DialogDescription>
-          Choose which cookies to import for {destinationEnvironmentName}.
+          {localize("Choose which cookies to import for")} {destinationEnvironmentName}.
         </DialogDescription>
       </DialogHeader>
       <DialogPanel>
@@ -397,7 +403,7 @@ function ConfigureStep({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
           <section className="flex-1 space-y-2">
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              From
+              {localize("From")}
             </p>
             {source.profiles.map((profile) => (
               <SelectableTile
@@ -415,7 +421,7 @@ function ConfigureStep({
           </div>
           <section className="flex-1 space-y-2">
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Into
+              {localize("Into")}
             </p>
             {canCreateProfile ? (
               <SelectableTile
@@ -444,13 +450,13 @@ function ConfigureStep({
       </DialogPanel>
       <DialogFooter>
         <Button variant="outline" onClick={onCancel}>
-          Cancel
+          {localize("Cancel")}
         </Button>
         <Button
           disabled={sourceProfileDirectory === "" || targetMissing || targetUncreatable}
           onClick={onImport}
         >
-          Import
+          {localize("Import")}
         </Button>
       </DialogFooter>
     </>
@@ -567,35 +573,36 @@ function DoneStep({
   readonly onClose: () => void;
 }) {
   const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <>
       <DialogHeader>
         <DialogTitle>
           {imported > 0
-            ? `Imported ${cookieResultCount(imported)}`
+            ? `${localize("Imported")} ${cookieResultCount(imported)}`
             : skipped > 0
-              ? `Skipped ${cookieResultCount(skipped)}`
-              : "No cookies found"}
+              ? `${localize("Skipped")} ${cookieResultCount(skipped)}`
+              : localize("No cookies found")}
         </DialogTitle>
         <DialogDescription>
           {imported > 0
-            ? `Added to ${targetName} for ${destinationEnvironmentName}.${skipped > 0 ? ` ${cookieResultCount(skipped)} skipped.` : ""}`
+            ? `${localize("Added to")} ${targetName} ${localize("for")} ${destinationEnvironmentName}.${skipped > 0 ? ` ${cookieResultCount(skipped)} ${localize("skipped.")}` : ""}`
             : skipped > 0
-              ? `No cookies were imported for ${destinationEnvironmentName}.`
-              : `There were no cookies to import for ${destinationEnvironmentName}.`}
+              ? `${localize("No cookies were imported for")} ${destinationEnvironmentName}.`
+              : `${localize("There were no cookies to import for")} ${destinationEnvironmentName}.`}
         </DialogDescription>
       </DialogHeader>
       {skippedDomains.length > 0 ? (
         <DialogPanel>
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Skipped
+            {localize("Skipped")}
           </p>
           <p className="mt-1 text-sm text-foreground">{formatSkippedDomains(skippedDomains)}</p>
         </DialogPanel>
       ) : null}
       <DialogFooter>
         <DialogClose render={<Button />} onClick={onClose}>
-          Done
+          {localize("Done")}
         </DialogClose>
       </DialogFooter>
     </>
@@ -614,15 +621,18 @@ function BlockedStep({
   readonly onRetry: (() => void) | undefined;
 }) {
   const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Couldn&rsquo;t import from {source.name}</DialogTitle>
-        <DialogDescription>{BROWSER_IMPORT_FAILURE_COPY[reason]}</DialogDescription>
+        <DialogTitle>
+          {localize("Couldn’t import from")} {source.name}
+        </DialogTitle>
+        <DialogDescription>{localize(BROWSER_IMPORT_FAILURE_COPY[reason])}</DialogDescription>
       </DialogHeader>
       <DialogFooter>
         <Button variant="outline" onClick={onClose}>
-          Close
+          {localize("Close")}
         </Button>
         {onRetry ? (
           <Button onClick={onRetry}>{translateWebSource(locale, "Try again")}</Button>

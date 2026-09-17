@@ -16,6 +16,8 @@ import {
 } from "../threadNotifications";
 import { resolveSidebarThreadStatus } from "./Sidebar.logic";
 import { toastManager } from "./ui/toast";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 
 export function ThreadNotificationCoordinator() {
   const { environments } = useEnvironments();
@@ -88,6 +90,8 @@ function EnvironmentNotifications({
   environmentId: EnvironmentId;
   onNotification: (environmentId: EnvironmentId, notification: Notification) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const shell = useAtomValue(environmentShell.stateValueAtom(environmentId));
   const mode = useClientSettings((settings) => settings.notificationMode);
   const inAppNotificationsEnabled = useClientSettings(
@@ -133,12 +137,12 @@ function EnvironmentNotifications({
       if (!kind) continue;
       const title =
         kind === "completion"
-          ? "Thread completed"
+          ? localize("Thread completed")
           : status === "approval"
-            ? "Approval needed"
+            ? localize("Approval needed")
             : status === "failed"
-              ? "Thread failed"
-              : "Input needed";
+              ? localize("Thread failed")
+              : localize("Input needed");
       if (hasNotificationSound(mode)) {
         void playNotificationSound(kind, () =>
           hasNotificationSound(getClientSettings().notificationMode),
@@ -156,7 +160,7 @@ function EnvironmentNotifications({
           description: thread.title,
           data: { hideCopyButton: true },
           actionProps: {
-            children: "Open thread",
+            children: localize("Open thread"),
             onClick: () => {
               toastManager.close(toastId);
               void navigate({

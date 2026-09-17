@@ -1230,13 +1230,13 @@ function BrowserProfilesSetting({ disabled }: { readonly disabled: boolean }) {
                       }
                     }}
                   >
-                    Set as default
+                    {localize("Set as default")}
                   </MenuItem>
                   <MenuItem
                     disabled={!settingsHydrated || !removalAvailable}
                     onClick={() => clearProfileData(profile.id, profile.name)}
                   >
-                    Clear cookies and cache
+                    {localize("Clear cookies and cache")}
                   </MenuItem>
                   {builtIn ? null : (
                     <MenuItem
@@ -1246,7 +1246,7 @@ function BrowserProfilesSetting({ disabled }: { readonly disabled: boolean }) {
                         if (settingsHydrated) setProfilePendingRemoval(profile);
                       }}
                     >
-                      Remove profile and data
+                      {localize("Remove profile and data")}
                     </MenuItem>
                   )}
                   {!removalAvailable ? (
@@ -1254,8 +1254,8 @@ function BrowserProfilesSetting({ disabled }: { readonly disabled: boolean }) {
                       <MenuSeparator />
                       <MenuItem disabled>
                         {environmentsReady
-                          ? "Connect to an environment to clear profile data"
-                          : "Checking environments…"}
+                          ? localize("Connect to an environment to clear profile data")
+                          : localize("Checking environments…")}
                       </MenuItem>
                     </>
                   ) : null}
@@ -1276,10 +1276,13 @@ function BrowserProfilesSetting({ disabled }: { readonly disabled: boolean }) {
       >
         <AlertDialogPopup>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remove “{profilePendingRemoval?.name}”?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {localize("Remove")} “{profilePendingRemoval?.name}”?
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Its cookies and logins are deleted. Tabs already open in this profile stay open until
-              you close them.
+              {localize(
+                "Its cookies and logins are deleted. Tabs already open in this profile stay open until you close them.",
+              )}
             </AlertDialogDescription>
             {profileRemovalError ? (
               <p aria-live="polite" className="text-sm text-destructive">
@@ -1288,7 +1291,7 @@ function BrowserProfilesSetting({ disabled }: { readonly disabled: boolean }) {
             ) : null}
             {!removalAvailable ? (
               <p className="text-sm text-muted-foreground">
-                Connect to an environment to remove this profile and its data.
+                {localize("Connect to an environment to remove this profile and its data.")}
               </p>
             ) : null}
           </AlertDialogHeader>
@@ -1297,7 +1300,7 @@ function BrowserProfilesSetting({ disabled }: { readonly disabled: boolean }) {
               disabled={profileRemovalInFlight}
               render={<Button variant="outline" disabled={profileRemovalInFlight} />}
             >
-              Cancel
+              {localize("Cancel")}
             </AlertDialogClose>
             <Button
               variant="destructive"
@@ -1308,7 +1311,7 @@ function BrowserProfilesSetting({ disabled }: { readonly disabled: boolean }) {
                 }
               }}
             >
-              {profileRemovalInFlight ? "Removing…" : "Remove profile"}
+              {localize(profileRemovalInFlight ? "Removing…" : "Remove profile")}
             </Button>
           </AlertDialogFooter>
         </AlertDialogPopup>

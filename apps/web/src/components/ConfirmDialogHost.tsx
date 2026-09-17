@@ -81,10 +81,10 @@ export function ConfirmDialogHost() {
     >
       <AlertDialogPopup className="max-w-lg">
         <AlertDialogHeader>
-          <AlertDialogTitle>{copy.title}</AlertDialogTitle>
+          <AlertDialogTitle>{localize(copy.title)}</AlertDialogTitle>
           {copy.description ? (
             <AlertDialogDescription className="whitespace-pre-line">
-              {copy.description}
+              {localize(copy.description)}
             </AlertDialogDescription>
           ) : null}
         </AlertDialogHeader>

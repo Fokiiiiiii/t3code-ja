@@ -1,6 +1,8 @@
 import { CircleCheckIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { Button } from "../ui/button";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 export interface PermissionItem {
   id: string;
@@ -18,6 +20,8 @@ export function PermissionChecklist({
   permissions: readonly PermissionItem[];
   busy?: boolean;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <div className="space-y-2">
       {permissions.map((permission) => (
@@ -30,11 +34,11 @@ export function PermissionChecklist({
           {permission.granted ? (
             <span role="status" className="flex items-center gap-1 text-xs text-success">
               <CircleCheckIcon className="size-4" aria-hidden="true" />
-              Allowed
+              {localize("Allowed")}
             </span>
           ) : (
             <Button size="xs" variant="outline" disabled={busy} onClick={permission.onAllow}>
-              Allow
+              {localize("Allow")}
             </Button>
           )}
         </div>
@@ -49,9 +53,11 @@ export function PermissionContinueButton({
   children = "Continue",
   ...props
 }: Omit<ComponentProps<typeof Button>, "disabled"> & { ready: boolean; busy?: boolean }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <Button {...props} disabled={!ready || busy}>
-      {children}
+      {typeof children === "string" ? localize(children) : children}
     </Button>
   );
 }

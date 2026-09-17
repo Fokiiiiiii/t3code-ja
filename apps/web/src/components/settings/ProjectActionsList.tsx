@@ -5,6 +5,8 @@ import { commandForProjectScript } from "../../projectScripts";
 import { ScriptIcon } from "../projectScriptEditor";
 import { Button } from "../ui/button";
 import { SettingsRow } from "./settingsLayout";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 export function ProjectActionsList({
   scripts,
@@ -17,10 +19,12 @@ export function ProjectActionsList({
   disabled: boolean;
   onEdit: (script: ProjectScript) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   if (scripts.length === 0)
     return (
       <p className="px-3 py-2 text-base text-muted-foreground sm:px-4 sm:text-sm">
-        No actions configured.
+        {localize("No actions configured.")}
       </p>
     );
   return scripts.map((script) => {
@@ -35,12 +39,12 @@ export function ProjectActionsList({
             <span className="min-w-0 truncate">{script.name}</span>
             {script.runOnWorktreeCreate ? (
               <span className="shrink-0 rounded-sm border border-border/60 px-1.5 py-px text-[11px] font-normal text-muted-foreground">
-                setup
+                {localize("setup")}
               </span>
             ) : null}
             {script.previewUrl ? (
               <span className="shrink-0 rounded-sm border border-border/60 px-1.5 py-px text-[11px] font-normal text-muted-foreground max-sm:hidden">
-                preview · desktop only
+                {localize("preview · desktop only")}
               </span>
             ) : null}
           </span>
@@ -55,7 +59,7 @@ export function ProjectActionsList({
               size="icon-xs"
               variant="ghost"
               className="shrink-0 text-muted-foreground opacity-0 group-focus-within:opacity-100 group-hover:opacity-100"
-              aria-label={`Edit ${script.name}`}
+              aria-label={`${localize("Edit")} ${script.name}`}
               disabled={disabled}
               onClick={() => onEdit(script)}
             >

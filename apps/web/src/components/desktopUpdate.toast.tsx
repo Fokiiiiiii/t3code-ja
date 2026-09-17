@@ -6,6 +6,8 @@ import {
   getDesktopUpdateReleaseUrl,
 } from "./desktopUpdate.logic";
 import { toastManager } from "./ui/toast";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 
 type DesktopUpdateShell = Pick<DesktopBridge, "openExternal">;
 
@@ -28,6 +30,7 @@ function ReleaseNotesLink({
   shell: DesktopUpdateShell;
   releaseUrl: string;
 }) {
+  const { locale } = useI18n();
   return (
     <button
       className="ml-2 inline cursor-pointer text-muted-foreground underline decoration-dotted underline-offset-4 transition-colors hover:text-foreground"
@@ -36,13 +39,29 @@ function ReleaseNotesLink({
       }}
       type="button"
     >
-      Read more
+      {translateWebSource(locale, "Read more")}
       <ArrowRightIcon
         aria-hidden
         className="ml-1 inline size-3 -rotate-45 align-[-0.125em]"
         strokeWidth={2.25}
       />
     </button>
+  );
+}
+
+function DownloadedUpdateDescription({
+  releaseUrl,
+  shell,
+}: {
+  releaseUrl: string | null;
+  shell: DesktopUpdateShell;
+}) {
+  const { locale } = useI18n();
+  return (
+    <>
+      {translateWebSource(locale, "Restart the app from the update button to install it.")}
+      {releaseUrl ? <ReleaseNotesLink releaseUrl={releaseUrl} shell={shell} /> : null}
+    </>
   );
 }
 
@@ -54,11 +73,6 @@ export function showDesktopUpdateDownloadedToast(
   toastManager.add({
     type: "success",
     title: "Update downloaded",
-    description: (
-      <>
-        Restart the app from the update button to install it.
-        {releaseUrl ? <ReleaseNotesLink releaseUrl={releaseUrl} shell={shell} /> : null}
-      </>
-    ),
+    description: <DownloadedUpdateDescription releaseUrl={releaseUrl} shell={shell} />,
   });
 }

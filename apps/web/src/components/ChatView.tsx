@@ -2179,7 +2179,7 @@ export default function ChatView(props: ChatViewProps) {
               )
             }
           >
-            Cancel
+            {localize("Cancel")}
           </Button>
         ),
       };
@@ -2198,7 +2198,7 @@ export default function ChatView(props: ChatViewProps) {
             variant="ghost"
             onClick={() => void removeClonedProject({ environmentId, projectId })}
           >
-            Remove project
+            {localize("Remove project")}
           </Button>
           <Button
             size="xs"
@@ -2209,7 +2209,7 @@ export default function ChatView(props: ChatViewProps) {
               )
             }
           >
-            Retry
+            {localize("Retry")}
           </Button>
         </>
       ),
@@ -2647,7 +2647,7 @@ export default function ChatView(props: ChatViewProps) {
             void handleDisconnectActiveEnvironment(activeEnvironmentUnavailableState.environmentId)
           }
         >
-          Disconnect server
+          {localize("Disconnect server")}
         </Button>
       ) : undefined;
     const environmentReconnecting =
@@ -2708,7 +2708,7 @@ export default function ChatView(props: ChatViewProps) {
                     )
                   }
                 >
-                  Reconnect
+                  {localize("Reconnect")}
                 </Button>
               ) : null}
               {disconnectAction}
@@ -2747,7 +2747,7 @@ export default function ChatView(props: ChatViewProps) {
                     type="button"
                     className="block max-w-full cursor-help truncate rounded-sm text-left"
                   >
-                    Server update available
+                    {localize("Server update available")}
                   </button>
                 }
               />
@@ -3120,6 +3120,7 @@ export default function ChatView(props: ChatViewProps) {
             usageLimitsReport,
             environmentId,
             () => setUsageLimitsPanel(null),
+            localize,
           )
         : null,
     [environmentId, usageLimitsPanel, usageLimitsReport],
@@ -6361,7 +6362,7 @@ export default function ChatView(props: ChatViewProps) {
           composerRef.current?.compactContext();
         }}
       >
-        Compact
+        {localize("Compact")}
       </Button>
     );
     return {
@@ -6406,17 +6407,21 @@ export default function ChatView(props: ChatViewProps) {
   const feedbackBannerItems = useMemo(
     () =>
       feedbackSubmissions.flatMap((submission) => {
-        const item = feedbackBannerItem(submission, () => {
-          setFeedbackSubmissionsByThreadKey((current) => ({
-            ...current,
-            [routeThreadKey]: (current[routeThreadKey] ?? []).filter(
-              (entry) => entry.id !== submission.id,
-            ),
-          }));
-        });
+        const item = feedbackBannerItem(
+          submission,
+          () => {
+            setFeedbackSubmissionsByThreadKey((current) => ({
+              ...current,
+              [routeThreadKey]: (current[routeThreadKey] ?? []).filter(
+                (entry) => entry.id !== submission.id,
+              ),
+            }));
+          },
+          localize,
+        );
         return item ? [item] : [];
       }),
-    [feedbackSubmissions, routeThreadKey],
+    [feedbackSubmissions, localize, routeThreadKey],
   );
   const composerBannerItems = useMemo<ComposerBannerStackItem[]>(() => {
     const backgroundLivenessItems =
@@ -6466,8 +6471,8 @@ export default function ChatView(props: ChatViewProps) {
                 }
               />
               <TooltipPopup side="top" className="max-w-80">
-                This thread last ran on {localCheckoutBranchMismatch.threadBranch}. Sending will
-                continue on {localCheckoutBranchMismatch.currentBranch}.
+                {localize("This thread last ran on")} {localCheckoutBranchMismatch.threadBranch}.{" "}
+                {localize("Sending will continue on")} {localCheckoutBranchMismatch.currentBranch}.
               </TooltipPopup>
             </Tooltip>
           </span>
@@ -9463,7 +9468,7 @@ export default function ChatView(props: ChatViewProps) {
                   className="flex items-center gap-2 rounded-full border border-primary/25 bg-background/95 px-4 py-2.5 text-sm font-medium text-foreground shadow-lg"
                 >
                   <PaperclipIcon className="size-4 text-primary" aria-hidden="true" />
-                  Drop files to attach
+                  {localize("Drop files to attach")}
                 </div>
               </div>
             ) : null}
@@ -9843,15 +9848,16 @@ export default function ChatView(props: ChatViewProps) {
               <AlertDialogPopup>
                 <AlertDialogHeader>
                   <AlertDialogTitle>
-                    Switch to{" "}
+                    {localize("Switch to")}{" "}
                     <code className="font-medium">
                       {localCheckoutBranchMismatch?.threadBranch ?? ""}
                     </code>
                     ?
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    You have uncommitted changes. They'll carry over to the other branch, or block
-                    the switch if they conflict.
+                    {localize(
+                      "You have uncommitted changes. They'll carry over to the other branch, or block the switch if they conflict.",
+                    )}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -9865,7 +9871,7 @@ export default function ChatView(props: ChatViewProps) {
                       void handleSwitchCheckoutToThread();
                     }}
                   >
-                    Switch branch
+                    {localize("Switch branch")}
                   </Button>
                 </AlertDialogFooter>
               </AlertDialogPopup>

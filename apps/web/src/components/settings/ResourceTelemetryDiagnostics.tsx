@@ -1344,7 +1344,8 @@ export function ResourceTelemetryDiagnostics({
         headerAction={
           snapshot ? (
             <span className="text-[10px] text-muted-foreground/55">
-              {localize("Identity")}: <span className="font-mono">PID + start time</span>
+              {localize("Identity")}:{" "}
+              <span className="font-mono">{localize("PID + start time")}</span>
             </span>
           ) : null
         }

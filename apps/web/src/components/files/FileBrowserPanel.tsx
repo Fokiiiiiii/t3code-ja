@@ -534,7 +534,7 @@ export default function FileBrowserPanel({
       ) : null}
       {(isPending || pathSearch.isPending) && (
         <div role="status" className="px-3 py-1 text-xs text-muted-foreground">
-          Loading files…
+          {localize("Loading files…")}
         </div>
       )}
       <FileTree

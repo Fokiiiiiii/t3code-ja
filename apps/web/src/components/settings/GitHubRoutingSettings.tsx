@@ -15,6 +15,8 @@ import { toastManager } from "../ui/toast";
 import { EnvironmentRow, environmentTransportLabel } from "./EnvironmentRow";
 import { FoldedSettingsSection } from "./FoldedSettingsSection";
 import { searchableSetting } from "./settingsSearch";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 const options: ReadonlyArray<{ value: GitHubRoutingPermission; label: string }> = [
   { value: "off", label: "Off" },
@@ -51,6 +53,8 @@ export function GitHubRoutingSettings({
 }: {
   readonly environments: ReadonlyArray<EnvironmentPresentation>;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const permissions = useAtomValue(environmentCatalog.githubRoutingPermissionsValueAtom);
   const catalog = useAtomValue(environmentCatalog.catalogValueAtom);
   const update = useAtomCommand(environmentCatalog.setGitHubRoutingPermission);
@@ -69,13 +73,13 @@ export function GitHubRoutingSettings({
             label: environment.label,
             permission: gitHubRoutingPermissionFor(environment.entry, permissions),
           })),
-        ) ?? "Off"
+        ) ?? localize("Off")
       }
     >
       <p className="px-3 py-2.5 text-xs text-muted-foreground sm:px-4">
-        Machines you trust here can read PR data through each other's GitHub access. Enable both
-        machines. Read and act may use broader permissions than the machine that owns them. This
-        applies only to this device.
+        {localize(
+          "Machines you trust here can read PR data through each other's GitHub access. Enable both machines. Read and act may use broader permissions than the machine that owns them. This applies only to this device.",
+        )}
       </p>
       {environments.map((environment) => (
         <EnvironmentRow
@@ -99,7 +103,7 @@ export function GitHubRoutingSettings({
                   if (result._tag === "Failure")
                     toastManager.add({
                       type: "error",
-                      title: "Could not save GitHub routing permission",
+                      title: localize("Could not save GitHub routing permission"),
                     });
                 },
               );
@@ -115,7 +119,7 @@ export function GitHubRoutingSettings({
             <SelectPopup align="end" alignItemWithTrigger={false}>
               {options.map(({ value, label }) => (
                 <SelectItem key={value} value={value}>
-                  {label}
+                  {localize(label)}
                 </SelectItem>
               ))}
             </SelectPopup>

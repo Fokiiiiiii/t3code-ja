@@ -490,7 +490,7 @@ export function ProviderModelsSection({
             </code>
           ) : null}
           {model.isCustom ? (
-            <span className="text-[11px] text-muted-foreground/70">custom</span>
+            <span className="text-[11px] text-muted-foreground/70">{localize("custom")}</span>
           ) : null}
         </span>
         {/*

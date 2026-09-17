@@ -3016,8 +3016,8 @@ function UserMessagePreviewAnnotationDetails(props: {
             })}
             {(props.record.elements?.length ?? 0) > visibleElements.length ? (
               <div className="text-secondary-label text-[10px]">
-                {(props.record.elements?.length ?? 0) - visibleElements.length} more selected
-                elements
+                {(props.record.elements?.length ?? 0) - visibleElements.length}{" "}
+                {localize("more selected")} {localize("elements")}
               </div>
             ) : null}
           </div>

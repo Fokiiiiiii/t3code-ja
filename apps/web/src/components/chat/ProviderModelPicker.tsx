@@ -25,6 +25,8 @@ import {
   type ComposerControlSize,
 } from "./ComposerControl";
 import { useComposerMenuProps } from "./composerEventScope";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 export const ProviderModelPicker = memo(function ProviderModelPicker(props: {
   /**
@@ -56,6 +58,8 @@ export const ProviderModelPicker = memo(function ProviderModelPicker(props: {
   getModelDisabledReason?: (instanceId: ProviderInstanceId, model: string) => string | null;
   onInstanceModelChange: (instanceId: ProviderInstanceId, model: string) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const composerFloatingLayerProps = useComposerMenuProps();
   const [uncontrolledIsMenuOpen, setUncontrolledIsMenuOpen] = useState(false);
   const isMenuOpen = props.open ?? uncontrolledIsMenuOpen;
@@ -214,7 +218,7 @@ export const ProviderModelPicker = memo(function ProviderModelPicker(props: {
           </Tooltip>
           {selectedModel?.isUnavailable && props.triggerLabel === undefined ? (
             <Badge variant="outline" size="sm">
-              Unavailable
+              {localize("Unavailable")}
             </Badge>
           ) : null}
         </span>

@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 
 import { cn } from "../../lib/utils";
 import { Button } from "../ui/button";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 export function ClerkUserProfilePage({
   action,
@@ -48,6 +50,7 @@ export function ClerkUserProfileRefreshButton({
   readonly isPending: boolean;
   readonly onClick: () => void;
 }) {
+  const { locale } = useI18n();
   return (
     <Button
       size="sm"
@@ -57,7 +60,7 @@ export function ClerkUserProfileRefreshButton({
       onClick={onClick}
     >
       <RefreshIcon aria-hidden="true" className="size-3.5" refreshing={isPending} />
-      Refresh
+      {translateWebSource(locale, "Refresh")}
     </Button>
   );
 }

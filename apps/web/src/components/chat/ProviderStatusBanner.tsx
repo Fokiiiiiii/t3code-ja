@@ -5,6 +5,8 @@ import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
 import { formatProviderDriverKindLabel } from "../../providerModels";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 export function getProviderStatusBannerKey(status: ServerProvider | null): string | null {
   if (!status || status.status === "ready" || status.status === "disabled") return null;
@@ -70,6 +72,8 @@ export const ProviderStatusBanner = memo(function ProviderStatusBanner({
   onOpenProviderSetup?: (instanceId: ProviderInstanceId) => void;
   status: ServerProvider | null;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   if (!status || getProviderStatusBannerKey(status) === null) {
     return null;
   }
@@ -77,9 +81,9 @@ export const ProviderStatusBanner = memo(function ProviderStatusBanner({
   const providerName = status.displayName?.trim() || formatProviderDriverKindLabel(status.driver);
   const isUnauthenticated = status.status === "error" && status.auth.status === "unauthenticated";
   const title = isUnauthenticated
-    ? `${providerName} is unauthenticated`
-    : `${providerName} provider status`;
-  const message = getProviderStatusMessage(status);
+    ? `${providerName} ${localize("is unauthenticated")}`
+    : `${providerName} ${localize("provider status")}`;
+  const message = localize(getProviderStatusMessage(status));
 
   return (
     <div className="pointer-events-auto mx-auto w-fit max-w-[calc(100%-2rem)] pt-3">
@@ -111,12 +115,12 @@ export const ProviderStatusBanner = memo(function ProviderStatusBanner({
               size="xs"
               variant="link"
             >
-              Open provider setup
+              {localize("Open provider setup")}
             </Button>
           ) : null}
         </div>
         <Button
-          aria-label={`Dismiss ${providerName} provider ${status.status}`}
+          aria-label={`${localize("Dismiss")} ${providerName} ${localize("provider")} ${localize(status.status)}`}
           className="absolute top-2 right-2 size-6 text-muted-foreground hover:text-foreground"
           onClick={onDismiss}
           size="icon-xs"

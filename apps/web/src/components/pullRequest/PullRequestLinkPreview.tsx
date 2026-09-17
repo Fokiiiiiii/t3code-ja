@@ -9,6 +9,8 @@ import { useEnvironmentQuery } from "~/state/query";
 
 import { PreviewCard, PreviewCardPopup, PreviewCardTrigger } from "../ui/preview-card";
 import { PullRequestActorAvatar, resolvePullRequestState } from "./pullRequestPresentation";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 interface PullRequestLinkPreviewTarget {
   readonly environmentId: EnvironmentId;
@@ -32,6 +34,8 @@ export function PullRequestLinkPreview({
   onOpenPullRequest: (url: string) => boolean;
   onOpenFallback: (url: string) => Promise<void>;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [open, setOpen] = useState(false);
   const [resolvingClick, setResolvingClick] = useState(false);
   const detailQuery = useEnvironmentQuery(
@@ -87,7 +91,7 @@ export function PullRequestLinkPreview({
       <PreviewCardPopup align="center" className="w-80 max-w-[calc(100vw-2rem)] p-3">
         {detail === null ? (
           <p className="text-xs leading-relaxed text-muted-foreground wrap-anywhere">
-            {detailQuery.isPending ? "Loading pull request details…" : originalUrl}
+            {detailQuery.isPending ? localize("Loading pull request details…") : originalUrl}
           </p>
         ) : (
           <div className="min-w-0">
@@ -98,7 +102,7 @@ export function PullRequestLinkPreview({
               {state === null ? null : (
                 <span className="inline-flex shrink-0 items-center gap-1">
                   <state.Icon aria-hidden className={`size-3 ${state.toneClassName}`} />
-                  {state.label}
+                  {localize(state.label)}
                 </span>
               )}
             </div>
@@ -109,7 +113,9 @@ export function PullRequestLinkPreview({
               <PullRequestActorAvatar actor={detail.author} className="size-4" />
               <span className="min-w-0 truncate">{authorLabel}</span>
               <span aria-hidden>·</span>
-              <span className="shrink-0">opened {formatRelativeTimeLabel(detail.createdAt)}</span>
+              <span className="shrink-0">
+                {localize("opened")} {formatRelativeTimeLabel(detail.createdAt)}
+              </span>
             </div>
           </div>
         )}

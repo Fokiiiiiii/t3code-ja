@@ -10,6 +10,8 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "../ui/empty";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 export function PullRequestsUnavailableState({
   title = "Could not load pull requests",
@@ -24,16 +26,18 @@ export function PullRequestsUnavailableState({
   refreshing?: boolean;
   gitHubUrl?: string;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <Empty className="min-h-0 justify-center-safe overflow-y-auto px-4 py-16 md:px-4 [&>*]:shrink-0">
       <EmptyMedia variant="icon">
         <GitPullRequestIcon />
       </EmptyMedia>
       <EmptyHeader>
-        <EmptyTitle>{title}</EmptyTitle>
+        <EmptyTitle>{localize(title)}</EmptyTitle>
         {/* The caller names the fix — update the environment, install gh, sign in — so this
             shows its message rather than trying to infer one from the failure text. */}
-        <EmptyDescription>{error}</EmptyDescription>
+        <EmptyDescription>{localize(error)}</EmptyDescription>
       </EmptyHeader>
       {onRetry || gitHubUrl ? (
         <EmptyContent className="flex-row flex-wrap justify-center gap-2">
@@ -46,7 +50,7 @@ export function PullRequestsUnavailableState({
               aria-busy={refreshing}
             >
               <RefreshIcon className="size-3.5" refreshing={refreshing} />
-              Retry
+              {localize("Retry")}
             </Button>
           ) : null}
           {gitHubUrl ? (
@@ -56,7 +60,7 @@ export function PullRequestsUnavailableState({
               render={<a href={gitHubUrl} target="_blank" rel="noopener noreferrer" />}
             >
               <ExternalLinkIcon aria-hidden className="size-3.5" />
-              Open on GitHub
+              {localize("Open on GitHub")}
             </Button>
           ) : null}
         </EmptyContent>
