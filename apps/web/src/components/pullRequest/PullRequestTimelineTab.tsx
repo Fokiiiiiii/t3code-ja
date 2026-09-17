@@ -570,6 +570,8 @@ export function PullRequestTimelineTab({
   onOpenCommit: (oid: string) => void;
   onRefresh: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const events = buildPullRequestTimeline(detail);
   const newestCommitAt = newestPullRequestCommitAt(detail.commits);
   const reactions: ReactionSurface = {
@@ -635,7 +637,7 @@ export function PullRequestTimelineTab({
         {events.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground">
             <GitPullRequestIcon className="mb-2 size-5" />
-            <p className="text-xs">No activity yet.</p>
+            <p className="text-xs">{localize("No activity yet.")}</p>
           </div>
         ) : null}
       </div>

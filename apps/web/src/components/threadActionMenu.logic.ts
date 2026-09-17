@@ -51,8 +51,9 @@ export interface ThreadActionMenuState {
  */
 export function buildThreadActionMenuItems(
   state: ThreadActionMenuState,
+  localize: (value: string) => string = (value) => value,
 ): ReadonlyArray<ContextMenuItem<ThreadActionMenuId>> {
-  return [
+  const items: ReadonlyArray<ContextMenuItem<ThreadActionMenuId>> = [
     ...(state.branch
       ? [
           {
@@ -143,4 +144,13 @@ export function buildThreadActionMenuItems(
       icon: "trash",
     },
   ];
+  const translateItems = (
+    entries: ReadonlyArray<ContextMenuItem<ThreadActionMenuId>>,
+  ): ReadonlyArray<ContextMenuItem<ThreadActionMenuId>> =>
+    entries.map((item) => ({
+      ...item,
+      label: localize(item.label),
+      ...(item.children ? { children: translateItems(item.children) } : {}),
+    }));
+  return translateItems(items);
 }

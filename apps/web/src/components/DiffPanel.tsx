@@ -691,7 +691,7 @@ export default function DiffPanel({
                     <span className="text-right">{localize("Remote")}</span>
                   </div>
                 </div>
-                <ComboboxEmpty>No matching refs.</ComboboxEmpty>
+                <ComboboxEmpty>{localize("No matching refs.")}</ComboboxEmpty>
                 <ComboboxList className="max-h-64 min-w-0 overflow-x-hidden">
                   <ComboboxItem
                     className="h-8 w-full min-w-0 grid-cols-[1rem_minmax(0,1fr)] py-0"

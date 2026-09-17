@@ -507,11 +507,15 @@ function ImportingStep() {
     <>
       <DialogHeader>
         <DialogTitle>{translateWebSource(locale, "Importing cookies")}</DialogTitle>
-        <DialogDescription>This may take a moment.</DialogDescription>
+        <DialogDescription>
+          {translateWebSource(locale, "This may take a moment.")}
+        </DialogDescription>
       </DialogHeader>
       <DialogPanel className="flex items-center gap-3 py-6">
         <Spinner className="size-4 text-muted-foreground" />
-        <span className="text-sm text-muted-foreground">Importing…</span>
+        <span className="text-sm text-muted-foreground">
+          {translateWebSource(locale, "Importing…")}
+        </span>
       </DialogPanel>
     </>
   );

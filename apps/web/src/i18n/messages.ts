@@ -7395,6 +7395,7 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Usage providers": "使用量プロバイダー",
   "Word wrap": "折り返し",
   "WSL backend": "WSL バックエンド",
+  idle: "待機中",
   "Environment identification": "環境の識別",
   "Local environment": "ローカル環境",
   "Quit shortcut": "終了ショートカット",

@@ -189,14 +189,14 @@ function BreadcrumbMenuContent(props: {
           <MenuSeparator />
           <MenuItem closeOnClick={false} onClick={entriesQuery.refresh}>
             <RefreshIcon refreshing={entriesQuery.isPending} />
-            Refresh failed — retry
+            {localize("Refresh failed — retry")}
           </MenuItem>
         </>
       ) : null}
       {entriesTruncated ? (
         <>
           <MenuSeparator />
-          <MenuItem disabled>Some workspace entries are not shown.</MenuItem>
+          <MenuItem disabled>{localize("Some workspace entries are not shown.")}</MenuItem>
         </>
       ) : null}
     </MenuPopup>
@@ -204,6 +204,7 @@ function BreadcrumbMenuContent(props: {
 }
 
 function DirectoryBreadcrumb(props: FileBreadcrumbsProps & { readonly crumb: FileBreadcrumb }) {
+  const { locale } = useI18n();
   const [open, setOpen] = useState(false);
   const [directoryPath, setDirectoryPath] = useState(props.crumb.path);
 
@@ -226,7 +227,7 @@ function DirectoryBreadcrumb(props: FileBreadcrumbsProps & { readonly crumb: Fil
               render={
                 <button
                   type="button"
-                  aria-label={`Browse ${props.crumb.label}`}
+                  aria-label={`${translateWebSource(locale, "Browse")} ${props.crumb.label}`}
                   className="relative block max-w-40 cursor-pointer rounded-sm px-0.5 text-left text-muted-foreground outline-none pointer-coarse:after:-inset-y-3 pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring data-popup-open:bg-accent data-popup-open:text-foreground"
                 />
               }

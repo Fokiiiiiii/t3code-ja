@@ -6,6 +6,8 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 import { MobileClientsUserProfilePage } from "./MobileClientsUserProfilePage";
 import { T3ConnectUserProfilePage } from "./T3ConnectUserProfilePage";
 import { useT3ConnectAuthPrompt } from "./useT3ConnectAuthPrompt";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 export function T3ConnectSidebarSignIn() {
   if (!hasCloudPublicConfig()) return null;
@@ -20,6 +22,8 @@ export function T3ConnectSidebarAvatar() {
 }
 
 function ConfiguredT3ConnectSidebarAvatar() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { isLoaded, isSignedIn } = useAuth();
 
   if (!isLoaded || !isSignedIn) return null;
@@ -34,14 +38,14 @@ function ConfiguredT3ConnectSidebarAvatar() {
       }}
     >
       <UserButton.UserProfilePage
-        label="Mobile clients"
+        label={localize("Mobile clients")}
         labelIcon={<SmartphoneIcon className="size-4" />}
         url="mobile-clients"
       >
         <MobileClientsUserProfilePage />
       </UserButton.UserProfilePage>
       <UserButton.UserProfilePage
-        label="T3 Connect"
+        label={localize("T3 Connect")}
         labelIcon={<ServerIcon className="size-4" />}
         url="t3-connect"
       >
@@ -52,6 +56,7 @@ function ConfiguredT3ConnectSidebarAvatar() {
 }
 
 function ConfiguredT3ConnectSidebarSignIn() {
+  const { locale } = useI18n();
   const { isLoaded, isSignedIn } = useAuth();
   const { authPrompt, openAuthPrompt } = useT3ConnectAuthPrompt();
 
@@ -63,7 +68,7 @@ function ConfiguredT3ConnectSidebarSignIn() {
         <SidebarMenuItem>
           <SidebarMenuButton onClick={openAuthPrompt}>
             <LogInIcon />
-            <span>Sign in to T3 Connect</span>
+            <span>{translateWebSource(locale, "Sign in to T3 Connect")}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

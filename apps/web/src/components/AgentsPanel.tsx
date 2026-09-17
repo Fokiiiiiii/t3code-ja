@@ -600,13 +600,23 @@ export function AgentsPanel({
         <span className="flex items-center gap-2">
           {model.runningCount + model.waitingCount > 0 ? (
             <span className="text-info-foreground">
-              ● {model.runningCount + model.waitingCount} working
+              ● {model.runningCount + model.waitingCount} {localize("working")}
             </span>
           ) : null}
-          {model.idleCount > 0 ? <span>{model.idleCount} idle</span> : null}
-          {model.settledCount > 0 ? <span>{model.settledCount} settled</span> : null}
+          {model.idleCount > 0 ? (
+            <span>
+              {model.idleCount} {localize("idle")}
+            </span>
+          ) : null}
+          {model.settledCount > 0 ? (
+            <span>
+              {model.settledCount} {localize("settled")}
+            </span>
+          ) : null}
         </span>
-        <span className="tabular-nums">Σ {formatSubagentTokenCount(model.totalTokens)} tok</span>
+        <span className="tabular-nums">
+          Σ {formatSubagentTokenCount(model.totalTokens)} {localize("tok")}
+        </span>
       </footer>
     </div>
   );

@@ -40,6 +40,8 @@ import { useCopyToClipboard } from "./useCopyToClipboard";
 import { useNewThreadHandler } from "./useHandleNewThread";
 import { useClientSettings } from "./useSettings";
 import { useThreadActions } from "./useThreadActions";
+import { useI18n } from "../i18n/WebI18nProvider";
+import { translateWebSource } from "../i18n/messages";
 
 function failureToast(title: string, error: unknown) {
   toastManager.add(
@@ -67,6 +69,8 @@ export function useThreadActionMenu(input: {
   readonly projectCwd: string | null;
   readonly onStartRename: () => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { threadRef, projectCwd, onStartRename } = input;
   const router = useRouter();
   const projects = useProjects();
@@ -138,17 +142,20 @@ export function useThreadActionMenu(input: {
         };
         const isRegeneratingTitle = thread.titleRegeneration != null;
         const snoozePresets = resolveSnoozePresets(now, timestampFormat);
-        const items = buildThreadActionMenuItems({
-          branch: thread.branch ?? null,
-          isPinned: thread.pinnedAt != null,
-          isSettled: supports.settlement && thread.settledOverride === "settled",
-          isSnoozed: supports.snooze && effectiveSnoozed(thread, { now: now.toISOString() }),
-          canSnoozeNow: canSnooze(thread, { now: now.toISOString() }),
-          isRegeneratingTitle,
-          isRunning: thread.session?.status === "running" && thread.session.activeTurnId != null,
-          supports,
-          snoozePresets,
-        });
+        const items = buildThreadActionMenuItems(
+          {
+            branch: thread.branch ?? null,
+            isPinned: thread.pinnedAt != null,
+            isSettled: supports.settlement && thread.settledOverride === "settled",
+            isSnoozed: supports.snooze && effectiveSnoozed(thread, { now: now.toISOString() }),
+            canSnoozeNow: canSnooze(thread, { now: now.toISOString() }),
+            isRegeneratingTitle,
+            isRunning: thread.session?.status === "running" && thread.session.activeTurnId != null,
+            supports,
+            snoozePresets,
+          },
+          localize,
+        );
         const clicked = await settlePromise(() => api.contextMenu.show(items, position));
         if (clicked._tag === "Failure" || clicked.value === null) return;
         const action: ThreadActionMenuId = clicked.value;

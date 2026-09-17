@@ -708,17 +708,17 @@ function PullRequestCodeTab({
         >
           {diffQuery.error !== null ? (
             <>
-              <span>The rest of this diff could not be loaded.</span>
+              <span>{localize("The rest of this diff could not be loaded.")}</span>
               <Button size="xs" variant="outline" onClick={() => diffQuery.refresh()}>
-                Retry
+                {localize("Retry")}
               </Button>
             </>
           ) : diffQuery.isPending ? (
-            "Loading more files..."
+            localize("Loading more files...")
           ) : null}
         </div>
       ),
-    [nextCursor, diffQuery.error, diffQuery.isPending, diffQuery.refresh],
+    [nextCursor, diffQuery.error, diffQuery.isPending, diffQuery.refresh, localize],
   );
 
   const renderHeaderPrefix = useCallback(

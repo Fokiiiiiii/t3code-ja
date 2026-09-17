@@ -414,13 +414,15 @@ function PullRequestBaseFreshnessWarning({
   readonly onUpdate: (method: PullRequestUpdateMethod) => void;
   readonly iconClassName?: string;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const behind =
     freshness.behindBy === null
       ? ""
-      : ` by ${freshness.behindBy.toLocaleString()} ${
-          freshness.behindBy === 1 ? "commit" : "commits"
-        }`;
-  const summary = `This branch is out-of-date with ${baseBranch}${behind}.`;
+      : ` ${localize("by")} ${freshness.behindBy.toLocaleString()} ${localize(
+          freshness.behindBy === 1 ? "commit" : "commits",
+        )}`;
+  const summary = `${localize("This branch is out-of-date with")} ${baseBranch}${behind}。`;
   return (
     <Popover>
       <PopoverTrigger
@@ -444,7 +446,9 @@ function PullRequestBaseFreshnessWarning({
         viewportClassName="py-2.5 [--viewport-inline-padding:--spacing(3)]"
       >
         <p className="text-xs text-foreground">{summary}</p>
-        <p className="mt-0.5 text-xs text-muted-foreground">Changes can be cleanly merged.</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">
+          {localize("Changes can be cleanly merged.")}
+        </p>
         {/* Each way the host offers and this reader may take, as its own button: a split button
             would need a menu inside a popover, and two buttons say the same thing in one layer. */}
         {freshness.methods.length > 0 ? (
@@ -458,7 +462,7 @@ function PullRequestBaseFreshnessWarning({
                 onClick={() => onUpdate(method)}
               >
                 <GitMergeIcon aria-hidden className="size-3" />
-                {method === "rebase" ? "Update with rebase" : "Update branch"}
+                {localize(method === "rebase" ? "Update with rebase" : "Update branch")}
               </Button>
             ))}
           </span>

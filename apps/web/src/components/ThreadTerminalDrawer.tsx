@@ -45,6 +45,8 @@ import { PanelTabCloseButton } from "~/components/ui/panel-tab-close-button";
 import { stackedThreadToast, toastManager } from "~/components/ui/toast";
 import { readTextFromClipboard, writeTextToClipboard } from "~/hooks/useCopyToClipboard";
 import { cn } from "~/lib/utils";
+import { useI18n } from "~/i18n/WebI18nProvider";
+import { translateWebSource } from "~/i18n/messages";
 import { type TerminalContextSelection } from "~/lib/terminalContext";
 import {
   observeSelectionActions,
@@ -1076,6 +1078,7 @@ export default function ThreadTerminalDrawer({
   terminalLabelsById,
   terminalLaunchLocationsById,
 }: ThreadTerminalDrawerProps) {
+  const { locale } = useI18n();
   const isPanel = mode === "panel";
   const [advancedTypography] = useLocalStorage(
     TYPOGRAPHY_ADVANCED_STORAGE_KEY,
@@ -1409,7 +1412,7 @@ export default function ThreadTerminalDrawer({
           />
         ) : null}
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 px-4 py-6 text-center text-sm text-muted-foreground">
-          <p>No terminal sessions for this thread yet.</p>
+          <p>{translateWebSource(locale, "No terminal sessions for this thread yet.")}</p>
           <Button size="xs" variant="outline" onClick={onNewTerminalAction}>
             {newTerminalActionLabel}
           </Button>

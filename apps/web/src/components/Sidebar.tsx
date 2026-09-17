@@ -3800,26 +3800,32 @@ export default function Sidebar() {
       const clicked = await settlePromise(() =>
         api.contextMenu.show(
           [
-            ...(unpinMenuItem ? [unpinMenuItem] : []),
-            { id: "settle", label: `Settle (${count})` },
+            ...(unpinMenuItem ? [{ ...unpinMenuItem, label: localize(unpinMenuItem.label) }] : []),
+            { id: "settle", label: `${localize("Settle")} (${count})` },
             ...(canSnoozeSelection
               ? [
                   {
                     id: "snooze",
-                    label: `Snooze (${count})`,
+                    label: `${localize("Snooze")} (${count})`,
                     children: [
                       ...snoozePresets.map((preset) => ({
                         id: `snooze:${preset.id}`,
                         label: `${preset.label} (${preset.whenLabel})`,
                       })),
-                      { id: "snooze:custom", label: "Custom…", separatorBefore: true },
+                      {
+                        id: "snooze:custom",
+                        label: localize("Custom…"),
+                        separatorBefore: true,
+                      },
                     ],
                   },
                 ]
               : []),
-            ...(titleRegenerationMenuItem ? [titleRegenerationMenuItem] : []),
-            { id: "mark-unread", label: `Mark unread (${count})` },
-            { id: "delete", label: `Delete (${count})`, destructive: true },
+            ...(titleRegenerationMenuItem
+              ? [{ ...titleRegenerationMenuItem, label: localize(titleRegenerationMenuItem.label) }]
+              : []),
+            { id: "mark-unread", label: `${localize("Mark unread")} (${count})` },
+            { id: "delete", label: `${localize("Delete")} (${count})`, destructive: true },
           ],
           position,
         ),
@@ -4034,23 +4040,26 @@ export default function Sidebar() {
         const snoozePresets = resolveSnoozePresets(new Date(), timestampFormat);
         const clicked = await settlePromise(() =>
           api.contextMenu.show(
-            buildThreadActionMenuItems({
-              branch: thread.branch ?? null,
-              isPinned,
-              isSettled,
-              isSnoozed,
-              canSnoozeNow: canSnooze(thread, { now: new Date().toISOString() }),
-              isRegeneratingTitle,
-              isRunning:
-                thread.session?.status === "running" && thread.session.activeTurnId != null,
-              supports: {
-                settlement: supportsSettlement,
-                snooze: supportsSnooze,
-                pinning: supportsPinning,
-                titleRegeneration: supportsTitleRegeneration,
+            buildThreadActionMenuItems(
+              {
+                branch: thread.branch ?? null,
+                isPinned,
+                isSettled,
+                isSnoozed,
+                canSnoozeNow: canSnooze(thread, { now: new Date().toISOString() }),
+                isRegeneratingTitle,
+                isRunning:
+                  thread.session?.status === "running" && thread.session.activeTurnId != null,
+                supports: {
+                  settlement: supportsSettlement,
+                  snooze: supportsSnooze,
+                  pinning: supportsPinning,
+                  titleRegeneration: supportsTitleRegeneration,
+                },
+                snoozePresets,
               },
-              snoozePresets,
-            }),
+              localize,
+            ),
             position,
           ),
         );
