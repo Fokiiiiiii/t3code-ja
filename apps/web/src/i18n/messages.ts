@@ -6200,6 +6200,65 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   Active: "アクティブ",
   Snoozed: "スヌーズ中",
   Settled: "整理済み",
+  "Applying…": "適用中…",
+  "Clipboard copy unavailable": "クリップボードへのコピーを利用できません",
+  "Connected for": "接続時間",
+  "Could not change WSL backend": "WSL バックエンドを変更できませんでした",
+  "Could not copy hosted app link": "ホストアプリのリンクをコピーできませんでした",
+  "Could not copy pairing URL": "ペアリング URL をコピーできませんでした",
+  "Could not copy pairing code": "ペアリングコードをコピーできませんでした",
+  "Could not copy trace ID": "トレース ID をコピーできませんでした",
+  "Could not create pairing URL": "ペアリング URL を作成できませんでした",
+  "Create a new link to share from this client.":
+    "このクライアントから共有する新しいリンクを作成してください。",
+  "Endpoint the pairing QR code and URL use": "ペアリング QR コードと URL に使うエンドポイント",
+  "Failed to create pairing URL.": "ペアリング URL の作成に失敗しました。",
+  "Failed to update WSL backend.": "WSL バックエンドの更新に失敗しました。",
+  "Hosted app link copied": "ホストアプリのリンクをコピーしました",
+  "Last connected at": "最終接続日時",
+  "Loading hosts…": "ホストを読み込み中…",
+  "More actions for": "その他の操作：",
+  "More actions for this machine": "このマシンのその他の操作",
+  "Not connected yet.": "まだ接続されていません。",
+  "Open it in the browser on the device you want to connect.":
+    "接続先のデバイスのブラウザーで開いてください。",
+  "Open it in the client you want to pair to this environment.":
+    "この環境とペアリングするクライアントで開いてください。",
+  "Pairing URL copied": "ペアリング URL をコピーしました",
+  "Pairing code copied": "ペアリングコードをコピーしました",
+  "Pairing link — scan to open on another device":
+    "ペアリングリンク — 別のデバイスで開くにはスキャンしてください",
+  "Paste it into another client to finish pairing.":
+    "別のクライアントに貼り付けてペアリングを完了してください。",
+  "Primary environment": "プライマリ環境",
+  "Publish agent activity to mobile clients":
+    "エージェントのアクティビティをモバイルクライアントに公開",
+  Restarting: "再起動中",
+  "Retry update": "更新を再試行",
+  "Run only the WSL backend. T3 Code restarts when this changes.":
+    "WSL バックエンドだけを実行します。この設定を変更すると T3 Code が再起動します。",
+  "SSH host or alias": "SSH ホストまたはエイリアス",
+  "Search hosts or type devbox": "ホストを検索するか devbox と入力",
+  "Showing the full value instead.": "代わりに完全な値を表示します。",
+  "Sign in to T3 Connect to manage this environment.":
+    "この環境を管理するには T3 Connect にサインインしてください。",
+  "Switched off": "オフに切り替え済み",
+  "T3 Connect linked": "T3 Connect にリンクしました",
+  "T3 Connect tunnel disabled": "T3 Connect トンネルを無効にしました",
+  "T3 Connect unlinked": "T3 Connect のリンクを解除しました",
+  "The managed tunnel was removed. Agent activity publishing stays on.":
+    "管理対象トンネルを削除しました。エージェントアクティビティの公開は続きます。",
+  "This environment is available through T3 Connect.": "この環境は T3 Connect 経由で利用できます。",
+  "This environment is no longer available through T3 Connect.":
+    "この環境は T3 Connect 経由では利用できなくなりました。",
+  "This environment will stop publishing agent activity.":
+    "この環境ではエージェントアクティビティの公開を停止します。",
+  "Trace ID copied": "トレース ID をコピーしました",
+  "Update to": "更新先：",
+  "WSL backend couldn't start": "WSL バックエンドを起動できませんでした",
+  "Your session does not have permission to manage T3 Connect access.":
+    "このセッションには T3 Connect アクセスを管理する権限がありません。",
+  server: "サーバー",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
