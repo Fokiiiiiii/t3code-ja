@@ -8181,6 +8181,24 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Expired terminal contexts": "期限切れのターミナルコンテキスト",
   "The message to rewind is no longer available.": "巻き戻すメッセージは利用できません。",
   "Timed out waiting for the thread to rewind.": "タスクの巻き戻し待ちがタイムアウトしました。",
+  "Each paragraph or code block appears as soon as it is complete.":
+    "各段落またはコードブロックが完成すると、すぐに表示します。",
+  "Start with files expanded or collapsed when opening diffs or a pull request's Code tab.":
+    "差分またはプルリクエストのCodeタブを開くとき、ファイルを展開または折りたたんだ状態で開始します。",
+  "Show diffs stacked or side by side. The toggle in the diff toolbar changes this too.":
+    "差分を上下または左右に並べて表示します。差分ツールバーの切り替えでも変更できます。",
+  "Open linked pull requests when found and turn diffs when work changes files.":
+    "関連するプルリクエストが見つかったら開き、作業でファイルが変更されたら差分に切り替えます。",
+  "Also include skills in the / command menu. Skills always appear when you type $.":
+    "/ コマンドメニューにスキルも含めます。スキルは $ を入力すると常に表示されます。",
+  "Rest the composer of an existing thread into a single line when you scroll the conversation. Focus the composer or start typing to expand it again.":
+    "会話をスクロールすると、既存タスクの入力欄を1行に折りたたみます。入力欄にフォーカスするか入力を始めると再び展開します。",
+  "Codex and Claude can be updated from provider settings.":
+    "Codex と Claude はプロバイダー設定から更新できます。",
+  "Service Tier": "サービス階層",
+  Medium: "中",
+  Fast: "高速",
+  "1.5x speed, increased usage": "速度1.5倍、使用量増加",
   "What should we work on?": "何に取り組みますか？",
   "What's changed": "変更点",
   "without merging it.": "マージせずに閉じます。",
