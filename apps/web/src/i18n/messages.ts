@@ -6704,6 +6704,31 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
     "この環境は複数の紐づき済みプルリクエストに対応していません。",
   "Waiting for host state": "ホストの状態を待機中",
   "Open activity on host": "ホストでアクティビティを開く",
+  Checkouts: "チェックアウト",
+  "Deletes all checkout entries and their threads on every machine. Files on disk are not touched.":
+    "すべてのマシンのチェックアウト項目とタスクを削除します。ディスク上のファイルは変更しません。",
+  "Deletes the selected machine's checkout entries and their threads. Other machines and files on disk are not touched.":
+    "選択したマシンのチェックアウト項目とタスクを削除します。他のマシンとディスク上のファイルは変更しません。",
+  "Choose one environment to edit its list. Adding an action here adds it on every selected environment.":
+    "編集する環境を 1 つ選択してください。ここでアクションを追加すると、選択したすべての環境に追加されます。",
+  "Commands that run in this project's checkout or its worktree, with optional shortcuts.":
+    "このプロジェクトのチェックアウトまたは worktree で実行するコマンドです。ショートカットも設定できます。",
+  "Different actions across environments": "環境ごとに異なるアクション",
+  "Custom emoji": "カスタム絵文字",
+  Emoji: "絵文字",
+  "Icon color": "アイコンの色",
+  "Icon type": "アイコンの種類",
+  Icons: "アイコン",
+  "No icons found.": "アイコンが見つかりません。",
+  "Or paste any emoji": "または絵文字を貼り付け",
+  "Paste an emoji": "絵文字を貼り付け",
+  "Pick any Lucide icon and color, or use an emoji.":
+    "Lucide アイコンと色を選ぶか、絵文字を使用します。",
+  "Save icon": "アイコンを保存",
+  "Search all Lucide icons": "Lucide アイコンをすべて検索",
+  "Search Lucide icons": "Lucide アイコンを検索",
+  "Could not open image picker": "画像ピッカーを開けませんでした",
+  "Search image files…": "画像ファイルを検索…",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {

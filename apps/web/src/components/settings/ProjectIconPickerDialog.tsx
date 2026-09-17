@@ -1,6 +1,8 @@
 import type { ProjectIconColor, ProjectIconOverride } from "@t3tools/contracts";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 import {
   filterProjectIconNames,
   firstEmoji,
@@ -44,6 +46,8 @@ export function ProjectIconPickerDialog({
   readonly onOpenChange: (open: boolean) => void;
   readonly onSelect: (icon: ProjectIconOverride) => void;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [mode, setMode] = useState<"lucide" | "emoji">(
     current?.kind === "emoji" ? "emoji" : "lucide",
   );
@@ -83,12 +87,14 @@ export function ProjectIconPickerDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup className="w-full sm:w-[32rem]">
         <DialogHeader>
-          <DialogTitle>Choose project icon</DialogTitle>
-          <DialogDescription>Pick any Lucide icon and color, or use an emoji.</DialogDescription>
+          <DialogTitle>{localize("Choose project icon")}</DialogTitle>
+          <DialogDescription>
+            {localize("Pick any Lucide icon and color, or use an emoji.")}
+          </DialogDescription>
         </DialogHeader>
         <DialogPanel className="flex min-h-0 flex-col gap-4">
           <ToggleGroup
-            aria-label="Icon type"
+            aria-label={localize("Icon type")}
             variant="segmented"
             value={[mode]}
             onValueChange={(next) => {
@@ -96,20 +102,26 @@ export function ProjectIconPickerDialog({
               if (value === "lucide" || value === "emoji") setMode(value);
             }}
           >
-            <Toggle value="lucide">Icons</Toggle>
-            <Toggle value="emoji">Emoji</Toggle>
+            <Toggle value="lucide">{localize("Icons")}</Toggle>
+            <Toggle value="emoji">{localize("Emoji")}</Toggle>
           </ToggleGroup>
 
           {mode === "lucide" ? (
             <>
               <div>
-                <div className="mb-2 text-xs font-medium text-muted-foreground">Color</div>
-                <div className="flex flex-wrap gap-1.5" role="group" aria-label="Icon color">
+                <div className="mb-2 text-xs font-medium text-muted-foreground">
+                  {localize("Color")}
+                </div>
+                <div
+                  className="flex flex-wrap gap-1.5"
+                  role="group"
+                  aria-label={localize("Icon color")}
+                >
                   {PROJECT_ICON_COLORS.map((option) => (
                     <button
                       key={option.value}
                       type="button"
-                      aria-label={option.label}
+                      aria-label={localize(option.label)}
                       aria-pressed={color === option.value}
                       className={cn(
                         "flex size-6 items-center justify-center rounded-full border border-transparent outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -125,8 +137,8 @@ export function ProjectIconPickerDialog({
               <Input
                 type="search"
                 value={query}
-                aria-label="Search Lucide icons"
-                placeholder="Search all Lucide icons"
+                aria-label={localize("Search Lucide icons")}
+                placeholder={localize("Search all Lucide icons")}
                 onChange={(event) => setQuery(event.currentTarget.value)}
               />
               <ScrollArea scrollFade className="max-h-64">
@@ -150,7 +162,9 @@ export function ProjectIconPickerDialog({
                 </div>
               </ScrollArea>
               {icons.length === 0 ? (
-                <p className="py-8 text-center text-sm text-muted-foreground">No icons found.</p>
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  {localize("No icons found.")}
+                </p>
               ) : null}
             </>
           ) : (
@@ -176,12 +190,12 @@ export function ProjectIconPickerDialog({
               </ScrollArea>
               <div>
                 <div className="mb-2 text-xs font-medium text-muted-foreground">
-                  Or paste any emoji
+                  {localize("Or paste any emoji")}
                 </div>
                 <Input
                   value={customEmoji}
-                  aria-label="Custom emoji"
-                  placeholder="Paste an emoji"
+                  aria-label={localize("Custom emoji")}
+                  placeholder={localize("Paste an emoji")}
                   onChange={(event) => {
                     const value = event.currentTarget.value;
                     setCustomEmoji(value);
@@ -195,9 +209,9 @@ export function ProjectIconPickerDialog({
         </DialogPanel>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {localize("Cancel")}
           </Button>
-          <Button onClick={save}>Save icon</Button>
+          <Button onClick={save}>{localize("Save icon")}</Button>
         </DialogFooter>
       </DialogPopup>
     </Dialog>
