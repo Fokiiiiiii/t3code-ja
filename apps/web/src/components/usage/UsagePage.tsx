@@ -12,6 +12,8 @@ import {
   SlidersHorizontalIcon,
 } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 import {
   isCompatibleUsageContractVersion,
@@ -92,6 +94,8 @@ function isUsageWindowDays(value: number): value is UsagePagePreferences["window
 }
 
 export function UsagePage() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [preferences, setPreferences] = useState(readUsagePagePreferences);
   const [windowSelection, setWindowSelection] = useState(() => ({
     days: preferences.windowDays,
@@ -203,13 +207,13 @@ export function UsagePage() {
   };
   const windowLabel =
     isPast24Hours && window.sinceTime !== undefined && window.untilTime !== undefined
-      ? `${formatDateTimeShort(window.sinceTime, window.timeZone)} to ${formatDateTimeShort(window.untilTime, window.timeZone)}`
-      : `${formatDayShort(window.sinceDay)} to ${formatDayShort(window.untilDay)}`;
+      ? `${formatDateTimeShort(window.sinceTime, window.timeZone)} ${localize("to")} ${formatDateTimeShort(window.untilTime, window.timeZone)}`
+      : `${formatDayShort(window.sinceDay)} ${localize("to")} ${formatDayShort(window.untilDay)}`;
   const topbarContent = (
     <div className="grid w-full min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 py-2 xl:flex">
-      <WorkspaceBreadcrumb ariaLabel="Usage breadcrumb" className="col-span-2 min-w-0">
+      <WorkspaceBreadcrumb ariaLabel={localize("Usage breadcrumb")} className="col-span-2 min-w-0">
         <WorkspaceBreadcrumbItem>
-          <h1>Usage</h1>
+          <h1>{localize("Usage")}</h1>
         </WorkspaceBreadcrumbItem>
         <WorkspaceBreadcrumbSeparator />
         <WorkspaceBreadcrumbItem current className="min-w-10">
@@ -232,7 +236,7 @@ export function UsagePage() {
       ) : null}
       <div className="ms-auto hidden min-w-0 items-center justify-end gap-2 xl:flex">
         <ToggleGroup
-          aria-label="Usage metric"
+          aria-label={localize("Usage metric")}
           variant="segmented"
           value={[metric]}
           onValueChange={(next) => {
@@ -242,14 +246,14 @@ export function UsagePage() {
         >
           {METRIC_OPTIONS.map((option) => (
             <Toggle key={option.value} value={option.value}>
-              {option.label}
+              {localize(option.label)}
             </Toggle>
           ))}
         </ToggleGroup>
         {/* The period does not apply to Limits, so it stays in place but
             disabled; unmounting it shifted the metric toggle ~300px. */}
         <ToggleGroup
-          aria-label="Usage period"
+          aria-label={localize("Usage period")}
           variant="segmented"
           value={[String(windowDays)]}
           disabled={showingLimits}
@@ -260,13 +264,13 @@ export function UsagePage() {
         >
           {WINDOW_OPTIONS.map((option) => (
             <Toggle key={option.days} value={String(option.days)}>
-              {option.label}
+              {localize(option.label)}
             </Toggle>
           ))}
         </ToggleGroup>
         <Button
           onClick={refreshWindow}
-          aria-label={showingLimits ? "Refresh limits" : "Refresh usage"}
+          aria-label={localize(showingLimits ? "Refresh limits" : "Refresh usage")}
           aria-busy={isRefreshing}
           disabled={isRefreshing}
           size="icon-sm"
@@ -283,19 +287,19 @@ export function UsagePage() {
           }}
         >
           <SelectTrigger
-            aria-label="Usage metric"
+            aria-label={localize("Usage metric")}
             size="compact"
             variant="ghost"
             className="w-auto min-w-0"
           >
             <SelectValue>
-              {METRIC_OPTIONS.find((option) => option.value === metric)?.label}
+              {localize(METRIC_OPTIONS.find((option) => option.value === metric)?.label ?? "")}
             </SelectValue>
           </SelectTrigger>
           <SelectPopup align="end" alignItemWithTrigger={false}>
             {METRIC_OPTIONS.map((option) => (
               <SelectItem key={option.value} value={option.value}>
-                {option.label}
+                {localize(option.label)}
               </SelectItem>
             ))}
           </SelectPopup>
@@ -306,26 +310,26 @@ export function UsagePage() {
           onValueChange={(value) => selectWindow(Number(value))}
         >
           <SelectTrigger
-            aria-label="Usage period"
+            aria-label={localize("Usage period")}
             size="compact"
             variant="ghost"
             className="w-auto min-w-0"
           >
             <SelectValue>
-              {WINDOW_OPTIONS.find((option) => option.days === windowDays)?.label}
+              {localize(WINDOW_OPTIONS.find((option) => option.days === windowDays)?.label ?? "")}
             </SelectValue>
           </SelectTrigger>
           <SelectPopup align="end" alignItemWithTrigger={false}>
             {WINDOW_OPTIONS.map((option) => (
               <SelectItem key={option.days} value={String(option.days)}>
-                {option.label}
+                {localize(option.label)}
               </SelectItem>
             ))}
           </SelectPopup>
         </Select>
         <Button
           onClick={refreshWindow}
-          aria-label={showingLimits ? "Refresh limits" : "Refresh usage"}
+          aria-label={localize(showingLimits ? "Refresh limits" : "Refresh usage")}
           aria-busy={isRefreshing}
           disabled={isRefreshing}
           size="icon-sm"
@@ -349,8 +353,16 @@ export function UsagePage() {
             {selectedEnvironments.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 {environments.length === 0
-                  ? `Connect an environment to see ${showingLimits ? "limits" : "usage"}.`
-                  : `Select an environment to see ${showingLimits ? "limits" : "usage"}.`}
+                  ? localize(
+                      showingLimits
+                        ? "Connect an environment to see limits."
+                        : "Connect an environment to see usage.",
+                    )
+                  : localize(
+                      showingLimits
+                        ? "Select an environment to see limits."
+                        : "Select an environment to see usage.",
+                    )}
               </p>
             ) : showingLimits ? (
               <UsageLimitsSection selectedEnvironmentIds={selectedEnvironmentIds} now={limitsNow} />
@@ -368,12 +380,12 @@ export function UsagePage() {
                       </span>
                       <span className="text-xs text-muted-foreground">
                         {metric !== "cost"
-                          ? `${formatCount(merged.sessions)} sessions`
+                          ? `${formatCount(merged.sessions)} ${localize("sessions")}`
                           : merged.costQuality.unpricedShare > 0
-                            ? `${formatCount(merged.sessions)} sessions · API estimate excludes ${formatPercent(
+                            ? `${formatCount(merged.sessions)} ${localize("sessions")} · ${localize("API estimate excludes")} ${formatPercent(
                                 merged.costQuality.unpricedShare,
-                              )} unpriced records`
-                            : `${formatCount(merged.sessions)} sessions · API estimate`}
+                              )} ${localize("unpriced records")}`
+                            : `${formatCount(merged.sessions)} ${localize("sessions")} · ${localize("API estimate")}`}
                       </span>
                     </div>
 
@@ -382,9 +394,9 @@ export function UsagePage() {
                       const share =
                         metric === "cost" ? (totals?.costShare ?? 0) : (totals?.tokenShare ?? 0);
                       const providerSessions = totals?.sessions ?? 0;
-                      const sessionLabel = `${formatCount(providerSessions)} ${
-                        providerSessions === 1 ? "session" : "sessions"
-                      }`;
+                      const sessionLabel = `${formatCount(providerSessions)} ${localize(
+                        providerSessions === 1 ? "session" : "sessions",
+                      )}`;
                       return (
                         <div key={provider} className="flex flex-col gap-1">
                           <div className="flex items-baseline justify-between gap-4">
@@ -414,8 +426,8 @@ export function UsagePage() {
                           </div>
                           <span className="text-xs text-muted-foreground">
                             {metric === "cost"
-                              ? `${formatPercent(share)} of cost · ${formatTokens(totals?.totalTokens ?? 0)} tokens`
-                              : `${formatPercent(share)} of tokens · ${formatUsd(totals?.costUsd ?? 0)}`}
+                              ? `${formatPercent(share)} ${localize("of cost")} · ${formatTokens(totals?.totalTokens ?? 0)} ${localize("tokens")}`
+                              : `${formatPercent(share)} ${localize("of tokens")} · ${formatUsd(totals?.costUsd ?? 0)}`}
                           </span>
                         </div>
                       );
@@ -424,8 +436,8 @@ export function UsagePage() {
 
                   <div className="flex min-w-0 flex-col gap-3">
                     <h2 className="text-sm font-medium text-foreground">
-                      {isPast24Hours ? "Hourly" : "Daily"}{" "}
-                      {metric === "tokens" ? "processed tokens" : "cost"}
+                      {localize(isPast24Hours ? "Hourly" : "Daily")}{" "}
+                      {localize(metric === "tokens" ? "processed tokens" : "cost")}
                     </h2>
                     <UsageProviderChart
                       providers={activeProviders}
@@ -442,7 +454,7 @@ export function UsagePage() {
                 </section>
 
                 <section className="flex flex-col gap-2">
-                  <h2 className="text-sm font-medium text-foreground">Totals</h2>
+                  <h2 className="text-sm font-medium text-foreground">{localize("Totals")}</h2>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-4 py-1 md:grid-cols-5">
                     <Metric label="Processed tokens" value={formatTokens(merged.totalTokens)} />
                     <Metric label="Cached input" value={formatTokens(merged.cachedInputTokens)} />
@@ -460,9 +472,9 @@ export function UsagePage() {
 
                 <section className="flex flex-col gap-3">
                   <div className="flex items-center justify-between gap-3">
-                    <h2 className="text-sm font-medium text-foreground">Breakdown</h2>
+                    <h2 className="text-sm font-medium text-foreground">{localize("Breakdown")}</h2>
                     <ToggleGroup
-                      aria-label="Usage breakdown"
+                      aria-label={localize("Usage breakdown")}
                       variant="segmented"
                       value={[breakdown]}
                       onValueChange={(next) => {
@@ -472,8 +484,8 @@ export function UsagePage() {
                     >
                       {(
                         [
-                          { value: "model", label: "Model" },
-                          { value: "time", label: isPast24Hours ? "Hour" : "Day" },
+                          { value: "model", label: localize("Model") },
+                          { value: "time", label: localize(isPast24Hours ? "Hour" : "Day") },
                         ] as const
                       ).map((option) => (
                         <Toggle key={option.value} value={option.value}>
@@ -493,17 +505,17 @@ export function UsagePage() {
                       </colgroup>
                       <thead>
                         <tr className="border-b border-border text-left text-xs text-muted-foreground">
-                          <th className="py-2 font-normal">Model</th>
-                          <th className="py-2 text-right font-normal">Cost</th>
-                          <th className="py-2 text-right font-normal">Share</th>
-                          <th className="py-2 text-right font-normal">Tokens</th>
+                          <th className="py-2 font-normal">{localize("Model")}</th>
+                          <th className="py-2 text-right font-normal">{localize("Cost")}</th>
+                          <th className="py-2 text-right font-normal">{localize("Share")}</th>
+                          <th className="py-2 text-right font-normal">{localize("Tokens")}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {breakdownModels.length === 0 ? (
                           <tr>
                             <td colSpan={4} className="py-6 text-center text-muted-foreground">
-                              No activity in this window.
+                              {localize("No activity in this window.")}
                             </td>
                           </tr>
                         ) : (
@@ -520,7 +532,9 @@ export function UsagePage() {
                               </td>
                               <td className="py-2 text-right text-foreground tabular-nums">
                                 {isModelCostUnknown(model) ? (
-                                  <span className="text-muted-foreground">Unpriced</span>
+                                  <span className="text-muted-foreground">
+                                    {localize("Unpriced")}
+                                  </span>
                                 ) : (
                                   formatUsd(model.costUsd)
                                 )}
@@ -548,14 +562,16 @@ export function UsagePage() {
                       </colgroup>
                       <thead>
                         <tr className="border-b border-border text-left text-xs text-muted-foreground">
-                          <th className="py-2 font-normal">{isPast24Hours ? "Hour" : "Day"}</th>
+                          <th className="py-2 font-normal">
+                            {localize(isPast24Hours ? "Hour" : "Day")}
+                          </th>
                           {activeProviders.map((provider) => (
                             <th key={provider} className="py-2 text-right font-normal">
                               {PROVIDER_PRESENTATION[provider].label}
                             </th>
                           ))}
-                          <th className="py-2 text-right font-normal">Total</th>
-                          <th className="py-2 text-right font-normal">Tokens</th>
+                          <th className="py-2 text-right font-normal">{localize("Total")}</th>
+                          <th className="py-2 text-right font-normal">{localize("Tokens")}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -565,7 +581,7 @@ export function UsagePage() {
                               colSpan={activeProviders.length + 3}
                               className="py-6 text-center text-muted-foreground"
                             >
-                              No activity in this window.
+                              {localize("No activity in this window.")}
                             </td>
                           </tr>
                         ) : (
@@ -622,9 +638,10 @@ function ProviderMark({
 }
 
 function Metric({ label, value }: { readonly label: string; readonly value: string }) {
+  const { locale } = useI18n();
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
-      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="text-xs text-muted-foreground">{translateWebSource(locale, label)}</span>
       <span className="text-base font-medium text-foreground tabular-nums">{value}</span>
     </div>
   );
@@ -643,6 +660,8 @@ function UsageCoverageNotice({
   readonly duplicateSources: readonly string[];
   readonly staleEnvironments: readonly string[];
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const failed = environments.filter((environment) => environment.error !== null);
   const stale = environments.filter((environment) =>
     staleEnvironments.includes(environment.environmentId),
@@ -654,16 +673,19 @@ function UsageCoverageNotice({
   return (
     <div className="flex flex-col gap-1 border-t border-border px-2 py-2 text-xs text-muted-foreground">
       {failed.map((environment) => (
-        <span key={environment.label}>{environment.label} could not report usage.</span>
+        <span key={environment.label}>
+          {environment.label} {localize("could not report usage.")}
+        </span>
       ))}
       {stale.map((environment) => (
         <span key={environment.label}>
-          {environment.label} runs an older server version and is excluded from totals.
+          {environment.label}{" "}
+          {localize("runs an older server version and is excluded from totals.")}
         </span>
       ))}
       {duplicateSources.length > 0 ? (
         <span>
-          Counted once across environments sharing a transcript directory:{" "}
+          {localize("Counted once across environments sharing a transcript directory:")}{" "}
           {duplicateSources.join(", ")}
         </span>
       ) : null}
@@ -691,13 +713,15 @@ function UsageEnvironmentFilter({
   readonly duplicateSources: readonly string[];
   readonly staleEnvironments: readonly string[];
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const [modelPricesOpen, setModelPricesOpen] = useState(false);
   const allSelected = selectedEnvironmentIds === null;
   const label = allSelected
-    ? "All environments"
+    ? localize("All environments")
     : selectedEnvironments.length === 1
       ? selectedEnvironments[0]!.label
-      : `${selectedEnvironments.length} environments`;
+      : `${selectedEnvironments.length} ${localize("environments")}`;
   const pendingCount = selectedEnvironments.filter(
     (environment) =>
       environment.error === null && (environment.isPending || environment.summary === null),
@@ -716,15 +740,15 @@ function UsageEnvironmentFilter({
               <>
                 <CircleDashedIcon className="size-3.5" aria-hidden />
                 <span className="sr-only">
-                  {pendingCount} {pendingCount === 1 ? "environment" : "environments"} still
-                  scanning
-                  {isPartial ? "; totals are partial" : ""}
+                  {pendingCount} {localize(pendingCount === 1 ? "environment" : "environments")}{" "}
+                  {localize("still scanning")}
+                  {isPartial ? `; ${localize("totals are partial")}` : ""}
                 </span>
               </>
             ) : showUsageStatus && hasIssue ? (
               <CircleAlertIcon
                 className="size-3.5 text-amber-600 dark:text-amber-400"
-                aria-label="Some environments could not report usage"
+                aria-label={localize("Some environments could not report usage")}
               />
             ) : (
               <ChevronDownIcon
@@ -740,7 +764,7 @@ function UsageEnvironmentFilter({
             closeOnClick={false}
             onCheckedChange={(checked) => onSelectionChange(checked ? null : new Set())}
           >
-            All environments
+            {localize("All environments")}
           </MenuCheckboxItem>
           <MenuSeparator />
           {environments.map((environment) => {
@@ -749,18 +773,18 @@ function UsageEnvironmentFilter({
               selectedEnvironmentIds.has(environment.environmentId);
             const status =
               environment.error !== null
-                ? "Unavailable"
+                ? localize("Unavailable")
                 : environment.summary !== null &&
                     !isCompatibleUsageContractVersion(
                       environment.summary.contractVersion,
                       USAGE_CONTRACT_VERSION,
                     )
-                  ? "Update required"
+                  ? localize("Update required")
                   : environment.summary === null
-                    ? "Scanning…"
+                    ? localize("Scanning…")
                     : environment.isPending
-                      ? "Refreshing…"
-                      : "Ready";
+                      ? localize("Refreshing…")
+                      : localize("Ready");
             return (
               <MenuCheckboxItem
                 key={environment.environmentId}
@@ -791,11 +815,13 @@ function UsageEnvironmentFilter({
             );
           })}
           {environments.length === 0 ? (
-            <p className="px-2 py-2 text-xs text-muted-foreground">No environments connected.</p>
+            <p className="px-2 py-2 text-xs text-muted-foreground">
+              {localize("No environments connected.")}
+            </p>
           ) : null}
           {showUsageStatus && isPartial ? (
             <p className="px-2 py-2 text-xs text-muted-foreground">
-              Totals are partial while selected environments scan.
+              {localize("Totals are partial while selected environments scan.")}
             </p>
           ) : null}
           {showUsageStatus ? (
@@ -808,7 +834,7 @@ function UsageEnvironmentFilter({
           <MenuSeparator />
           <MenuItem onClick={() => setModelPricesOpen(true)}>
             <SlidersHorizontalIcon aria-hidden />
-            Model prices
+            {localize("Model prices")}
           </MenuItem>
         </MenuPopup>
       </Menu>
@@ -829,6 +855,8 @@ function UsageEnvironmentFilter({
  * Replaced by results as soon as the first environment answers.
  */
 function UsageSkeleton() {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   return (
     <>
       <section className="grid gap-6 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
@@ -862,12 +890,12 @@ function UsageSkeleton() {
       </section>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-foreground">Totals</h2>
+        <h2 className="text-sm font-medium text-foreground">{localize("Totals")}</h2>
         <div className="grid grid-cols-2 gap-x-6 gap-y-4 py-1 md:grid-cols-5">
           {["Processed tokens", "Cached input", "Uncached input", "Output", "Cache savings"].map(
             (label) => (
               <div key={label} className="flex flex-col gap-0.5">
-                <span className="text-xs text-muted-foreground">{label}</span>
+                <span className="text-xs text-muted-foreground">{localize(label)}</span>
                 <Skeleton className="h-6 w-16" />
               </div>
             ),
@@ -877,7 +905,7 @@ function UsageSkeleton() {
 
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-sm font-medium text-foreground">Breakdown</h2>
+          <h2 className="text-sm font-medium text-foreground">{localize("Breakdown")}</h2>
           <Skeleton className="h-7 w-28 rounded-lg" />
         </div>
         <Skeleton className="h-44 bg-muted-foreground/10" />
