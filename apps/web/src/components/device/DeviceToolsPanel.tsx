@@ -176,12 +176,12 @@ export function DeviceToolsPanel(props: {
       className={cn("flex min-h-0 flex-col border-border bg-background text-sm", props.className)}
     >
       <div className="flex h-9 shrink-0 items-center gap-2 border-b px-3">
-        <span className="font-medium">Tools</span>
+        <span className="font-medium">{localize("Tools")}</span>
         {pending ? <Spinner className="size-3.5" /> : null}
         <Button
           size="icon-xs"
           variant="ghost-muted"
-          aria-label="Close tools"
+          aria-label={localize("Close tools")}
           className="ml-auto"
           onClick={props.onClose}
         >
@@ -194,12 +194,12 @@ export function DeviceToolsPanel(props: {
         ) : null}
         {detail === null && !error ? (
           <div className="flex items-center gap-2 px-3 py-3 text-xs text-muted-foreground">
-            <Spinner className="size-3.5" /> Reading device settings…
+            <Spinner className="size-3.5" /> {localize("Reading device settings…")}
           </div>
         ) : null}
 
         <Section title="App">
-          <Row label="Foreground">
+          <Row label={localize("Foreground")}>
             <span className="truncate font-mono text-xs">{foregroundApp?.id ?? "—"}</span>
           </Row>
           {foregroundApp ? (
@@ -210,7 +210,7 @@ export function DeviceToolsPanel(props: {
                 disabled={disabled}
                 onClick={() => void act({ type: "terminateApp", appId: foregroundApp.id })}
               >
-                Terminate
+                {localize("Terminate")}
               </Button>
               <Button
                 size="xs"
@@ -218,28 +218,28 @@ export function DeviceToolsPanel(props: {
                 disabled={disabled}
                 onClick={() => void act({ type: "launchApp", appId: foregroundApp.id })}
               >
-                Relaunch
+                {localize("Relaunch")}
               </Button>
             </div>
           ) : null}
           <SubmitRow
             placeholder="https://… or myapp://"
-            action="Open"
+            action={localize("Open")}
             disabled={disabled}
             onSubmit={(url) => act({ type: "openUrl", url })}
           />
           <SubmitRow
-            placeholder={isIos ? "Bundle ID to launch" : "Package name to launch"}
-            action="Launch"
+            placeholder={localize(isIos ? "Bundle ID to launch" : "Package name to launch")}
+            action={localize("Launch")}
             disabled={disabled}
             onSubmit={(appId) => act({ type: "launchApp", appId })}
           />
         </Section>
 
         <Section title={isIos ? "Simulator" : "Emulator"}>
-          <Row label="Appearance">
+          <Row label={localize("Appearance")}>
             <ToggleGroup
-              aria-label="Appearance"
+              aria-label={localize("Appearance")}
               value={settings?.appearance ? [settings.appearance] : []}
               disabled={disabled}
               onValueChange={(value) => {
@@ -248,11 +248,11 @@ export function DeviceToolsPanel(props: {
                   void act({ type: "setAppearance", value: next });
               }}
             >
-              <Toggle value="light">Light</Toggle>
-              <Toggle value="dark">Dark</Toggle>
+              <Toggle value="light">{localize("Light")}</Toggle>
+              <Toggle value="dark">{localize("Dark")}</Toggle>
             </ToggleGroup>
           </Row>
-          <Row label="Text size">
+          <Row label={localize("Text size")}>
             <ChoiceSelect
               ariaLabel="Text size"
               value={settings?.textSize ?? null}
