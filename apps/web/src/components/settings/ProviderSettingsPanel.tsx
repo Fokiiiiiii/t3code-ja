@@ -27,6 +27,8 @@ import * as Equal from "effect/Equal";
 import * as Result from "effect/Result";
 import { PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useI18n } from "../../i18n/WebI18nProvider";
+import { translateWebSource } from "../../i18n/messages";
 
 import { isDesktopLocalConnectionTarget } from "../../connection/desktopLocal";
 import { isElectron } from "../../env";
@@ -138,6 +140,7 @@ function configuredBinaryPath(config: unknown): string {
 }
 
 function ProviderLastChecked({ lastCheckedAt }: { lastCheckedAt: string | null }) {
+  const { locale } = useI18n();
   useRelativeTimeTick();
   const lastCheckedRelative = getRelativeTimeState(lastCheckedAt);
 
@@ -146,18 +149,21 @@ function ProviderLastChecked({ lastCheckedAt }: { lastCheckedAt: string | null }
   }
 
   if (lastCheckedRelative.status === "invalid") {
-    return <span>Checked unavailable</span>;
+    return <span>{translateWebSource(locale, "Checked unavailable")}</span>;
   }
 
   return (
     <span>
       {lastCheckedRelative.suffix ? (
         <>
-          Checked <span className="font-mono tabular-nums">{lastCheckedRelative.value}</span>{" "}
+          {translateWebSource(locale, "Checked")}{" "}
+          <span className="font-mono tabular-nums">{lastCheckedRelative.value}</span>{" "}
           {lastCheckedRelative.suffix}
         </>
       ) : (
-        <>Checked {lastCheckedRelative.value}</>
+        <>
+          {translateWebSource(locale, "Checked")} {lastCheckedRelative.value}
+        </>
       )}
     </span>
   );
@@ -193,6 +199,7 @@ function ProviderSettingsPlaceholder({
   readonly description: string;
   readonly children?: ReactNode;
 }) {
+  const { locale } = useI18n();
   return (
     <SettingsSection {...searchableSetting("providers")} hideTitle variant="plain">
       {deviceTabs ? (
@@ -208,8 +215,8 @@ function ProviderSettingsPlaceholder({
         <Empty className="min-h-88">
           <EmptyMedia variant="icon">{icon}</EmptyMedia>
           <EmptyHeader>
-            <EmptyTitle>{title}</EmptyTitle>
-            <EmptyDescription>{description}</EmptyDescription>
+            <EmptyTitle>{translateWebSource(locale, title)}</EmptyTitle>
+            <EmptyDescription>{translateWebSource(locale, description)}</EmptyDescription>
           </EmptyHeader>
           {children ? <EmptyContent className="max-w-xl">{children}</EmptyContent> : null}
         </Empty>
@@ -227,18 +234,20 @@ function EnvironmentUnavailablePlaceholder({
   readonly access: Exclude<ProviderEnvironmentAccess, { kind: "editable" | "read-only" }>;
   readonly deviceTabs?: ReactNode;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const isLoading = access.kind === "loading";
   const title = isLoading
-    ? "Loading provider settings"
+    ? localize("Loading provider settings")
     : access.kind === "error"
-      ? "Could not connect to this device"
-      : "Provider settings are unavailable";
+      ? localize("Could not connect to this device")
+      : localize("Provider settings are unavailable");
   // Keep the description to a short status; the raw failure can be a
   // multi-paragraph CLI dump, so it goes below, clamped and expandable.
   const description = isLoading
     ? access.reason === "permissions"
-      ? "Checking what this session is allowed to change."
-      : `Waiting for ${environment.label}'s configuration.`
+      ? localize("Checking what this session is allowed to change.")
+      : `${localize("Waiting for")} ${environment.label}${localize("'s configuration.")}`
     : connectionStatusTitle(environment.connection);
   const error = isLoading ? null : environment.connection.error;
   // No spinner: this state can persist indefinitely for a wedged device, and a
@@ -281,6 +290,8 @@ export function ProviderSettingsPanel(target: ProviderSettingsTarget) {
 }
 
 function ProviderSettingsPanelContent(target: ProviderSettingsTarget) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const { environments, isReady } = useEnvironments();
   const primaryEnvironmentId = usePrimaryEnvironmentId();
   const searchTargetId = useSettingsSearchTargetId();
@@ -338,7 +349,7 @@ function ProviderSettingsPanelContent(target: ProviderSettingsTarget) {
     !target.scoped && !onlyPrimaryDevice && options.length > 0 ? (
       <ScrollArea hideScrollbars scrollFade className="h-11 min-w-0 flex-1 rounded-none">
         <ToggleGroup
-          aria-label="Devices"
+          aria-label={localize("Devices")}
           variant="segmented"
           className="my-2"
           value={effectiveEnvironmentId ? [effectiveEnvironmentId] : []}
@@ -390,18 +401,20 @@ function ProviderSettingsPanelContent(target: ProviderSettingsTarget) {
         <ProviderSettingsPlaceholder
           deviceTabs={deviceTabs}
           icon={<EnvironmentMachineIcon kind={resolveEnvironmentMachineKind(null)} />}
-          title="Device unavailable"
-          description="Reconnect this device to set up its provider, or select another device."
+          title={localize("Device unavailable")}
+          description={localize(
+            "Reconnect this device to set up its provider, or select another device.",
+          )}
         />
       ) : null}
       {options.length === 0 && !targetEnvironmentMissing ? (
         <ProviderSettingsPlaceholder
           icon={<EnvironmentMachineIcon kind={resolveEnvironmentMachineKind(null)} />}
-          title={isReady ? "No connected devices" : "Loading devices"}
+          title={localize(isReady ? "No connected devices" : "Loading devices")}
           description={
             isReady
-              ? "Connect an execution environment before configuring providers."
-              : "Reading connected execution environments."
+              ? localize("Connect an execution environment before configuring providers.")
+              : localize("Reading connected execution environments.")
           }
         />
       ) : null}
@@ -570,6 +583,8 @@ export function EnvironmentProviderSettings({
    */
   readonly readOnly?: boolean;
 }) {
+  const { locale } = useI18n();
+  const localize = (value: string) => translateWebSource(locale, value);
   const settings = useEnvironmentSettings(environmentId);
   // Provider instances hold per-machine credentials and binaries, so this
   // page always edits exactly the environment it displays.
@@ -1010,10 +1025,10 @@ export function EnvironmentProviderSettings({
                         onClick={() => void refreshProviders()}
                       >
                         <RefreshIcon refreshing={isRefreshingProviders} />
-                        <span className="sr-only">Refresh provider status</span>
+                        <span className="sr-only">{localize("Refresh provider status")}</span>
                         <span className="hidden min-w-0 truncate sm:inline">
                           {isRefreshingProviders ? (
-                            "Refreshing providers"
+                            localize("Refreshing providers")
                           ) : (
                             <ProviderLastChecked lastCheckedAt={lastCheckedAt} />
                           )}
@@ -1021,7 +1036,7 @@ export function EnvironmentProviderSettings({
                       </Button>
                     }
                   />
-                  <TooltipPopup side="top">Refresh provider status</TooltipPopup>
+                  <TooltipPopup side="top">{localize("Refresh provider status")}</TooltipPopup>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger
@@ -1030,13 +1045,13 @@ export function EnvironmentProviderSettings({
                         size="icon-xs"
                         variant="ghost-muted"
                         onClick={() => setIsAddInstanceDialogOpen(true)}
-                        aria-label="Add provider"
+                        aria-label={localize("Add provider")}
                       >
                         <PlusIcon />
                       </Button>
                     }
                   />
-                  <TooltipPopup side="top">Add provider</TooltipPopup>
+                  <TooltipPopup side="top">{localize("Add provider")}</TooltipPopup>
                 </Tooltip>
               </>
             )}
@@ -1045,8 +1060,8 @@ export function EnvironmentProviderSettings({
         {readOnly ? (
           <div className={cn(providerCardClassName, "overflow-hidden")}>
             <SettingsRow
-              title="Limited permissions"
-              description={`This session can view ${environmentLabel}'s providers but can't change their settings.`}
+              title={localize("Limited permissions")}
+              description={`${localize("This session can view")} ${environmentLabel} ${localize("'s providers but can't change their settings.")}`}
             />
           </div>
         ) : null}
@@ -1073,8 +1088,8 @@ export function EnvironmentProviderSettings({
             ) : (
               <div className="p-6 text-sm text-muted-foreground">
                 {targetInstanceMissing
-                  ? "This provider instance is no longer available on this device."
-                  : "No providers configured."}
+                  ? localize("This provider instance is no longer available on this device.")
+                  : localize("No providers configured.")}
               </div>
             )}
           </div>
@@ -1089,7 +1104,7 @@ export function EnvironmentProviderSettings({
         readOnly={readOnly}
       />
 
-      <SettingsSection title="Advanced">
+      <SettingsSection title={localize("Advanced")}>
         <SettingsRow
           id={searchableSetting("provider-health-check-interval").id}
           title={
@@ -1151,12 +1166,18 @@ export function EnvironmentProviderSettings({
                 }
               >
                 <NumberFieldGroup>
-                  <NumberFieldDecrement aria-label="Decrease provider health check interval" />
-                  <NumberFieldInput aria-label="Provider health check interval in seconds" />
-                  <NumberFieldIncrement aria-label="Increase provider health check interval" />
+                  <NumberFieldDecrement
+                    aria-label={localize("Decrease provider health check interval")}
+                  />
+                  <NumberFieldInput
+                    aria-label={localize("Provider health check interval in seconds")}
+                  />
+                  <NumberFieldIncrement
+                    aria-label={localize("Increase provider health check interval")}
+                  />
                 </NumberFieldGroup>
               </NumberField>
-              <span className="text-xs text-muted-foreground">seconds</span>
+              <span className="text-xs text-muted-foreground">{localize("seconds")}</span>
             </div>
           }
         />

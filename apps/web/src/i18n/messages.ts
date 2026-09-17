@@ -6382,6 +6382,17 @@ const JA_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
   "Favorites, visibility, and ordering are saved on this device. Custom models are saved on the selected environment.":
     "お気に入り、表示状態、並び順はこのデバイスに保存されます。カスタムモデルは選択した環境に保存されます。",
   "Update available — view details": "更新があります — 詳細を表示",
+  "'s providers but can't change their settings.":
+    "のプロバイダーを表示できますが、設定は変更できません。",
+  "Decrease provider health check interval": "プロバイダーのヘルスチェック間隔を減らす",
+  "Device unavailable": "デバイスを利用できません",
+  "Increase provider health check interval": "プロバイダーのヘルスチェック間隔を増やす",
+  "Provider health check interval in seconds": "プロバイダーのヘルスチェック間隔（秒）",
+  "Reconnect this device to set up its provider, or select another device.":
+    "プロバイダーを設定するにはこのデバイスに再接続するか、別のデバイスを選択してください。",
+  "Refreshing providers": "プロバイダーを更新中",
+  "This provider instance is no longer available on this device.":
+    "このプロバイダーインスタンスはこのデバイスで利用できなくなりました。",
 };
 
 const ZH_CN_SOURCE_MESSAGES: Readonly<Record<string, string>> = {
